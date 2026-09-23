@@ -35,6 +35,17 @@
   pointer-events: none;
 }
 
+/* Hover dot grid (js/dots.js) — sits over the photo, under the line and signature.
+   Currently switched off: the script tag is commented out in index-v2.html. */
+.stage__dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 650px;
+  height: 518px;
+  pointer-events: none;
+}
+
 /* Dotted signing line — Line 515: 231px, dash 2/2, at (209, 250) */
 .stage__line {
   position: absolute;
@@ -86,6 +97,11 @@
 }
 
 /* ---------- Responsive ---------- */
+
+@media (min-width: 961px) {
+  /* Centre the copy + form against the image */
+  .newsletter__inner { align-items: center; }
+}
 
 @media (max-width: 960px) {
   /* Put the paper above the form so the signature is visible while typing */
