@@ -1,0 +1,98 @@
+/* v2: signature is written onto the paper in the image instead of below the form.
+   Loaded after styles.css and overrides its signature block. */
+
+.title {
+  font-family: "Serrif", Georgia, serif;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+}
+
+.newsletter__media {
+  aspect-ratio: 650 / 518;
+}
+
+/* Everything inside the stage uses Figma frame coordinates (650×518).
+   js/v2.js sets --stage-scale so it always fills the media box. */
+.stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 650px;
+  height: 518px;
+  transform: scale(var(--stage-scale, 1));
+  transform-origin: 0 0;
+}
+
+/* Crop matches Figma: image at 1346×753 @ (-575, -108) */
+.newsletter__media .stage__image {
+  position: absolute;
+  left: -575px;
+  top: -108px;
+  width: 1346px;
+  height: 753px;
+  max-width: none;
+  object-fit: fill;
+  pointer-events: none;
+}
+
+/* Dotted signing line — Line 515: 231px, dash 2/2, at (209, 250) */
+.stage__line {
+  position: absolute;
+  left: 209px;
+  top: 250px;
+  width: 231px;
+  height: 1px;
+  background: repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 4px);
+}
+
+/* ---------- Signature on the paper ---------- */
+
+.signature {
+  --baseline: 30px;   /* where the glyphs' baseline sits inside their 51px box */
+  --inset: 4px;       /* pen starts slightly in from the left of the line */
+  --lift: 8px;        /* gap between the signature's baseline and the dotted line */
+  --fit: 2.2;         /* signature scale: large for short names, shrinks to fit long ones (js/v2.js) */
+
+  position: absolute;
+  left: 209px;
+  top: 250px;
+  width: 231px;
+  height: 0;
+  display: block;
+  opacity: 1;
+  pointer-events: none;
+  transition: none;
+}
+
+.signature__line {
+  position: absolute;
+  left: var(--offset, var(--inset));
+  top: calc(-1 * var(--baseline) - var(--lift));
+  width: max-content;
+  min-height: 51px;
+  padding: 0;
+  border: 0;
+  flex-wrap: nowrap;
+  transform: scale(var(--fit));
+  transform-origin: 0 var(--baseline);
+  transition: transform 0.35s var(--ease), left 0.35s var(--ease);
+  mix-blend-mode: multiply;
+}
+
+.signature .glyph path {
+  stroke: #1b2a6b; /* dark blue ballpoint ink */
+  /* keep the pen weight constant however much the signature is scaled */
+  stroke-width: calc(1.8 / var(--fit));
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 960px) {
+  /* Put the paper above the form so the signature is visible while typing */
+  .newsletter__media { order: -1; }
+  .newsletter__inner { row-gap: 40px; }
+}
+
+@media (max-width: 560px) {
+  .newsletter__media { aspect-ratio: 650 / 518; border-radius: 12px; }
+}

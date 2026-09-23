@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kamino Newsletter</title>
+  <meta name="description" content="Monthly updates on Kamino products, markets, and the onchain credit ecosystem.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main>
+    <section class="newsletter" aria-labelledby="newsletter-title">
+      <div class="newsletter__inner">
+        <div class="newsletter__content">
+          <div class="copy">
+            <p class="eyebrow">Newsletter</p>
+            <h1 class="title" id="newsletter-title">Sign here for alpha.</h1>
+            <p class="lede">Monthly updates on Kamino products, markets, and the onchain credit ecosystem.</p>
+          </div>
+
+          <!-- Set data-endpoint to your ESP / API URL to POST signups as JSON. Empty = demo mode. -->
+          <form class="form" id="newsletter-form" data-endpoint="" novalidate>
+            <div class="field-row">
+              <label class="visually-hidden" for="first-name">First name</label>
+              <input class="input input--name" id="first-name" name="firstName" type="text"
+                     placeholder="First Name" autocomplete="given-name" maxlength="40" required>
+
+              <label class="visually-hidden" for="email">Email</label>
+              <input class="input input--email" id="email" name="email" type="email"
+                     placeholder="you@company.com" autocomplete="email" required>
+
+              <button class="button" type="submit">
+                <span class="button__label">Sign</span>
+              </button>
+            </div>
+
+            <div class="signature" aria-hidden="true">
+              <div class="signature__inner">
+                <span class="signature__label">Signed by,</span>
+                <div class="signature__line"></div>
+              </div>
+            </div>
+
+            <div class="legal">
+              <label class="consent">
+                <input class="consent__input" type="checkbox" name="consent" required>
+                <span class="consent__box" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M4 8.2 6.8 11 12 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="consent__text">Yes, send me the Kamino newsletter.</span>
+              </label>
+              <p class="fineprint">By subscribing you agree to our <a href="#">Privacy Policy</a> and consent to receive marketing emails from Kamino. Unsubscribe at any time.</p>
+            </div>
+
+            <p class="status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div class="newsletter__media">
+          <img src="assets/hero.jpg" alt="" width="2000" height="1120">
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/glyphs.js"></script>
+  <script src="js/signature.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
