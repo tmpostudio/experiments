@@ -11,6 +11,13 @@
   aspect-ratio: 650 / 518;
 }
 
+/* Tighter gap between the lede and the fields (styles.css: 45px) */
+.form { margin-top: 32px; }
+
+/* First name is where the signing starts, so it's highlighted */
+.input--name,
+.input--name:focus { background: #e2edf2; }
+
 /* Everything inside the stage uses Figma frame coordinates (650×518).
    js/v2.js sets --stage-scale so it always fills the media box. */
 .stage {
