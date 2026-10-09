@@ -199,29 +199,33 @@ html { overflow-x: clip; }
 .l-hero__copy--studio .l-hero__lede { max-width: 22em; margin-top: 24px; color: #000; letter-spacing: -0.02em; line-height: 1.2; }
 .l-hero__copy--studio .l-hero__actions { margin-top: 32px; }
 
-/* Studio on the dark coin photo: white type, inverted buttons, logos over the photo */
-.l-hero:is([data-hero="studio"], [data-hero="app"]) { background: #6884a6; color: #fff; }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-hero__photo { object-position: 70% 50%; }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-nav__logo img { filter: brightness(0) invert(1); }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-menu__button,
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-nav__actions .l-link { color: #fff; }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-menu__button img { filter: brightness(0) invert(1); }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-menu__button:hover,
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-menu.is-open .l-menu__button { background: rgba(255, 255, 255, 0.14); }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-menu__panel { color: #000; }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-btn--dark { background: #fff; color: #000 !important; }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-btn--dark:hover { opacity: 1; background: var(--l-sky); }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-btn--outline { border-color: rgba(255, 255, 255, 0.85); color: #fff; }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) .l-btn--outline:hover { background: #fff; color: #000 !important; }
+/* Dark photo headers (App screen): white type, inverted buttons, logos in white */
+.l-hero[data-hero="app"] { background: #6884a6; color: #fff; }
+/* Studio on the pale still life: default black type and buttons; the objects sit right of the copy */
+.l-hero[data-hero="studio"] { background: #e6e4e3; }
+.l-hero[data-hero="studio"] .l-hero__photo { object-position: 74% 55%; }
+.l-hero[data-hero="app"] .l-nav__logo img { filter: brightness(0) invert(1); }
+.l-hero[data-hero="app"] .l-menu__button,
+.l-hero[data-hero="app"] .l-nav__actions .l-link { color: #fff; }
+.l-hero[data-hero="app"] .l-menu__button img { filter: brightness(0) invert(1); }
+.l-hero[data-hero="app"] .l-menu__button:hover,
+.l-hero[data-hero="app"] .l-menu.is-open .l-menu__button { background: rgba(255, 255, 255, 0.14); }
+.l-hero[data-hero="app"] .l-menu__panel { color: #000; }
+.l-hero[data-hero="app"] .l-btn--dark { background: #fff; color: #000 !important; }
+.l-hero[data-hero="app"] .l-btn--dark:hover { opacity: 1; background: var(--l-sky); }
+.l-hero[data-hero="app"] .l-btn--outline { border-color: rgba(255, 255, 255, 0.85); color: #fff; }
+.l-hero[data-hero="app"] .l-btn--outline:hover { background: #fff; color: #000 !important; }
 .l-hero[data-hero="studio"] .l-hero__copy--studio { top: clamp(130px, 25vh, 225px); }
-.l-hero[data-hero="studio"] .l-hero__title--serif { max-width: 7.4em; color: #fff; font-size: clamp(46px, 4.7vw, 72px); line-height: 1.04; }
-.l-hero[data-hero="studio"] .l-hero__copy--studio .l-hero__lede { max-width: 21.5em; margin-top: 44px; color: rgba(255, 255, 255, 0.92); }
+.l-hero[data-hero="studio"] .l-hero__title--serif { max-width: 7.4em; color: #000; font-size: clamp(46px, 4.7vw, 72px); line-height: 1.04; }
+.l-hero[data-hero="studio"] .l-hero__copy--studio .l-hero__lede { max-width: 21.5em; margin-top: 44px; color: rgba(0, 0, 0, 0.82); }
 .l-hero[data-hero="studio"] .l-hero__copy--studio .l-hero__actions { margin-top: 40px; }
-/* Hiring tab + pill aren't in the coin mockup */
+/* Hiring tab + pill aren't in the photo mockups */
 .l-hero:is([data-hero="studio"], [data-hero="app"]) :is(.l-hiring-tab, .l-hiring-pill) { display: none; }
-/* Marquee rides up over the bottom of the photo, logos in white */
+/* Marquee rides up over the bottom of the photo */
 .l-hero:is([data-hero="studio"], [data-hero="app"]) + .l-marquee { position: relative; z-index: 2; margin-top: -102px; padding: 0 0 46px; }
-.l-hero:is([data-hero="studio"], [data-hero="app"]) + .l-marquee .l-marquee__row img { filter: brightness(0) invert(1); opacity: 0.95; }
+/* Studio: every logo solid black over the pale photo */
+.l-hero[data-hero="studio"] + .l-marquee .l-marquee__row img { filter: brightness(0); opacity: 1; }
+.l-hero[data-hero="app"] + .l-marquee .l-marquee__row img { filter: brightness(0) invert(1); opacity: 0.95; }
 
 /* Black side tab poking in from the right edge */
 .l-hiring-tab {
@@ -832,6 +836,13 @@ html { overflow-x: clip; }
   .l-hero { height: auto; min-height: 100svh; }
   .l-hero:is([data-hero="studio"], [data-hero="app"]) { height: 100svh; }
   .l-hero__copy--studio { position: absolute; top: 110px; }
+  /* Studio on a phone: copy up top, the still life scaled into the lower half and faded into the backdrop */
+  .l-hero[data-hero="studio"] { background: #e3e1e0; }
+  .l-hero[data-hero="studio"] .l-hero__copy--studio { top: 104px; }
+  .l-hero[data-hero="studio"] .l-hero__photo {
+    top: auto; bottom: 0; height: 56%; object-position: 76% 100%;
+    -webkit-mask-image: linear-gradient(transparent, #000 28%); mask-image: linear-gradient(transparent, #000 28%);
+  }
   .l-hero__copy--app { position: absolute; top: 110px; transform: none; }
   .l-hero__app { left: 20px; top: auto; bottom: 120px; height: auto; width: 150vw; }
   .l-hiring-pill { left: 20px; right: auto; }
