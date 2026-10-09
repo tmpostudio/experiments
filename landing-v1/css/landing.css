@@ -202,7 +202,7 @@ html { overflow-x: clip; }
 /* Dark photo headers (App screen): white type, inverted buttons, logos in white */
 .l-hero[data-hero="app"] { background: #6884a6; color: #fff; }
 /* Studio on the pale still life: default black type and buttons; the objects sit right of the copy */
-.l-hero[data-hero="studio"] { background: #e6e4e3; }
+.l-hero[data-hero="studio"] { height: max(640px, 100svh); background: #e6e4e3; } /* fills the screen */
 .l-hero[data-hero="studio"] .l-hero__photo { object-position: 74% 55%; }
 .l-hero[data-hero="app"] .l-nav__logo img { filter: brightness(0) invert(1); }
 .l-hero[data-hero="app"] .l-menu__button,
@@ -289,6 +289,8 @@ html { overflow-x: clip; }
 .l-hero[data-hero="app"] .l-hero__photo { object-position: 50% 50%; }
 /* Hover dot grid (js/landing.js): over the photo, under the screenshot, copy and nav */
 .l-hero__dots { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.l-hero[data-hero="dots"] .l-hero__dots { display: none; }
+.l-hero__copy, .l-hero__app { z-index: 1; }
 /* Logo strip sits lower than on Studio: 46px off the bottom edge instead of 72px */
 .l-hero[data-hero="app"] + .l-marquee { margin-top: -76px; padding-bottom: 20px; }
 .l-hero__copy--app { bottom: auto; top: calc(50% + 21px); transform: translateY(-50%); }
@@ -340,7 +342,7 @@ html { overflow-x: clip; }
 /* ---------- Marquee ---------- */
 
 .l-marquee { padding: 54px 0 0; overflow: hidden; }
-.l-marquee__track { display: flex; width: max-content; animation: l-marquee 60s linear infinite; }
+.l-marquee__track { display: flex; width: max-content; animation: l-marquee 30s linear infinite; }
 .l-marquee__row { display: flex; align-items: center; gap: 74px; margin: 0; padding: 0 37px; list-style: none; }
 .l-marquee__row img { display: block; height: 30px; width: auto; max-width: 146px; opacity: 0.9; }
 @keyframes l-marquee { to { transform: translateX(-50%); } }

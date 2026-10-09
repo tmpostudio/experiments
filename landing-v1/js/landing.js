@@ -63,7 +63,7 @@
   if (!startHero) try { startHero = localStorage.getItem("landing-v3:hero"); } catch (e) {}
   setHero(["dots", "studio"].includes(startHero) ? startHero : "app", false); // default: App screen
 
-  // ---------- Hover dot grid over the App screen header photo ----------
+  // ---------- Hover dot grid over the photo headers (App screen, Studio) ----------
   // After kamino-sign-here/js/dots.js, reworked for the header: a fine grid of invisible
   // white dots. The pointer lights a wide soft pool around it and sends out ripples;
   // every lit dot twinkles at its own pace, so the trail glimmers as it fades.
@@ -194,7 +194,7 @@
     }
 
     hero.addEventListener("pointermove", (event) => {
-      if (dotCanvas.hidden) return;
+      if (hero.dataset.hero === "dots") return; // photo headers only
       const rect = hero.getBoundingClientRect();
       const p = { x: event.clientX - rect.left, y: event.clientY - rect.top };
       const now = performance.now();
