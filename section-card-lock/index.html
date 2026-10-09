@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kamino Platform</title>
+  <meta name="description" content="One platform to onboard assets, create credit markets, manage liquidity, build yield vaults, and get distribution.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main>
+    <!-- Preview only: stand-in for the section above -->
+    <div class="preview-gap" aria-hidden="true">Section above</div>
+
+    <!-- The headline, index and first card pin when the section reaches the top of the viewport.
+         Each following card slides up and locks just below the one before; once the last has
+         locked, the whole section scrolls on. Sticky positioning does the motion, js/stack.js sizes it. -->
+    <section class="platform" aria-labelledby="platform-title">
+      <div class="platform__inner">
+        <div class="platform__head">
+          <h2 class="platform__title" id="platform-title"><span class="platform__title-lead">One platform</span> to onboard assets, create credit markets, manage liquidity, build yield vaults, and get distribution.</h2>
+
+          <div class="platform__rail">
+            <nav class="platform__index" aria-label="Platform">
+              <ol role="list">
+                <li><a href="#credit" aria-current="true">Credit</a></li>
+                <li><a href="#liquidity">Liquidity</a></li>
+                <li><a href="#yield">Yield</a></li>
+                <li><a href="#curation">Curation</a></li>
+              </ol>
+            </nav>
+            <div class="platform__slot"></div>
+          </div>
+        </div>
+
+        <!-- Scroll order, first to last. data-art picks the live illustration js/card-art.js draws into .card__art -->
+        <div class="platform__stack">
+          <article class="card card--credit" id="credit" data-art="credit" aria-labelledby="credit-title">
+            <h3 class="card__title" id="credit-title">Credit</h3>
+            <div class="card__body">
+              <p class="card__lede">Offer fixed, variable, and bespoke credit</p>
+              <p class="card__text">Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <a class="card__link" href="#">Explore Credit</a>
+            </div>
+            <div class="card__art"></div>
+          </article>
+
+          <article class="card card--liquidity" id="liquidity" data-art="liquidity" aria-labelledby="liquidity-title">
+            <h3 class="card__title" id="liquidity-title">Liquidity</h3>
+            <div class="card__body">
+              <p class="card__lede">Offer fixed, variable, and bespoke credit</p>
+              <p class="card__text">Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <a class="card__link" href="#">Explore Liquidity</a>
+            </div>
+            <div class="card__art"></div>
+          </article>
+
+          <article class="card card--yield" id="yield" data-art="yield" aria-labelledby="yield-title">
+            <h3 class="card__title" id="yield-title">Yield</h3>
+            <div class="card__body">
+              <p class="card__lede">Offer fixed, variable, and bespoke credit</p>
+              <p class="card__text">Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <a class="card__link" href="#">Explore Yield</a>
+            </div>
+            <div class="card__art"></div>
+          </article>
+
+          <article class="card card--curation" id="curation" data-art="curation" aria-labelledby="curation-title">
+            <h3 class="card__title" id="curation-title">Curation</h3>
+            <div class="card__body">
+              <p class="card__lede">Offer fixed, variable, and bespoke credit</p>
+              <p class="card__text">Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <a class="card__link" href="#">Explore Curation</a>
+            </div>
+            <div class="card__art"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Preview only: stand-in for the section below -->
+    <div class="preview-gap" aria-hidden="true">Section below</div>
+  </main>
+
+  <script src="js/stack.js"></script>
+</body>
+</html>

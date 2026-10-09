@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "Aeonik";
+  src: local("Aeonik Regular"), local("Aeonik-Regular"),
+       url("../assets/fonts/aeonik-regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #f6f6f6;
   --ink: #000;

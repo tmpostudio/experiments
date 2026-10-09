@@ -1,0 +1,12 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="ic / history, back, timeline" clip-path="url(#clip0_0_1078)">
+<path id="vector" d="M6 4V6L7.5 7.5" stroke="#737373" stroke-width="1.33" stroke-linecap="square"/>
+<path id="vector_2" d="M1.5 2.5V4.5H3.5" stroke="#737373" stroke-width="1.33" stroke-linecap="square"/>
+<path id="vector_3" d="M1.75606 7.5C2.37381 9.24779 4.04067 10.5 6 10.5C8.48528 10.5 10.5 8.48528 10.5 6C10.5 3.51472 8.48528 1.5 6 1.5C4.13542 1.5 2.53571 2.63403 1.85295 4.25" stroke="#737373" stroke-width="1.33" stroke-linecap="square"/>
+</g>
+<defs>
+<clipPath id="clip0_0_1078">
+<rect width="12" height="12" fill="white"/>
+</clipPath>
+</defs>
+</svg>

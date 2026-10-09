@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kamino — Landing v1</title>
+  <meta name="description" content="The credit and liquidity layer for a new generation of financial infrastructure.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+  <!-- Coded sections, reused as-is from their experiments -->
+  <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1009">
+  <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1009">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1009h">
+  <link rel="stylesheet" href="css/landing.css?v=1009h">
+</head>
+<body class="l-page">
+
+  <!-- ============ Hero ============ -->
+  <header class="l-hero" data-hero="app">
+    <nav class="l-nav" aria-label="Main">
+      <a class="l-nav__logo" href="#" aria-label="Kamino home"><img src="assets/logos/kamino.svg" alt="Kamino" width="95" height="22"></a>
+
+      <ul class="l-nav__menu">
+        <li class="l-menu">
+          <button class="l-menu__button" aria-expanded="false">Products <img src="assets/chevron.svg" alt="" width="12" height="12"></button>
+          <div class="l-menu__panel">
+            <a href="#products"><strong>Earn</strong><span>Automated lending vaults</span></a>
+            <a href="#products"><strong>Borrow</strong><span>Credit against your assets</span></a>
+            <a href="#products"><strong>Swap</strong><span>Best-route token trades</span></a>
+            <a href="#products"><strong>Multiply</strong><span>One-click leveraged yield</span></a>
+          </div>
+        </li>
+        <li class="l-menu">
+          <button class="l-menu__button" aria-expanded="false">Enterprise <img src="assets/chevron.svg" alt="" width="12" height="12"></button>
+          <div class="l-menu__panel">
+            <a href="#platform"><strong>Credit markets</strong><span>Launch and run lending markets</span></a>
+            <a href="#platform"><strong>Vault curation</strong><span>Allocate under your mandate</span></a>
+            <a href="#build"><strong>Integrations</strong><span>APIs and SDKs</span></a>
+          </div>
+        </li>
+        <li class="l-menu">
+          <button class="l-menu__button" aria-expanded="false">Issuers <img src="assets/chevron.svg" alt="" width="12" height="12"></button>
+          <div class="l-menu__panel">
+            <a href="#commodity"><strong>Onboard an asset</strong><span>Bring RWAs onchain</span></a>
+            <a href="#record"><strong>Kamino Scope</strong><span>Oracle pricing</span></a>
+            <a href="#record"><strong>Risk</strong><span>Liquidation systems</span></a>
+          </div>
+        </li>
+        <li class="l-menu">
+          <button class="l-menu__button" aria-expanded="false">Resources <img src="assets/chevron.svg" alt="" width="12" height="12"></button>
+          <div class="l-menu__panel">
+            <a href="#build"><strong>Docs</strong><span>Build on Kamino</span></a>
+            <a href="#news"><strong>Blog</strong><span>What's new</span></a>
+            <a href="#record"><strong>Audits</strong><span>30+ reviews</span></a>
+            <!-- Mockup only: flips between the header concepts -->
+            <div class="l-menu__switch" role="group" aria-label="Header concept">
+              <span class="l-mono">Header</span>
+              <button type="button" data-hero-set="dots" aria-pressed="false">Dots</button>
+              <button type="button" data-hero-set="studio" aria-pressed="false">Studio</button>
+              <button type="button" data-hero-set="app" aria-pressed="true">App screen</button>
+            </div>
+            <div class="l-menu__switch" role="group" aria-label="Title typeface">
+              <span class="l-mono">Titles</span>
+              <button type="button" data-titles-set="sans" aria-pressed="true">Sans</button>
+              <button type="button" data-titles-set="serif" aria-pressed="false">Serif</button>
+            </div>
+            <div class="l-menu__switch" role="group" aria-label="Products layout">
+              <span class="l-mono">Products</span>
+              <button type="button" data-products-set="grid" aria-pressed="false">Grid</button>
+              <button type="button" data-products-set="row" aria-pressed="true">Row</button>
+            </div>
+          </div>
+        </li>
+        <li class="l-menu">
+          <button class="l-menu__button" aria-expanded="false">Company <img src="assets/chevron.svg" alt="" width="12" height="12"></button>
+          <div class="l-menu__panel">
+            <a href="#stories"><strong>Success stories</strong><span>Partners building on Kamino</span></a>
+            <a href="#footer"><strong>Careers</strong><span>Join the team</span></a>
+            <a href="#footer"><strong>Contact</strong><span>Talk to us</span></a>
+          </div>
+        </li>
+      </ul>
+
+      <div class="l-nav__actions">
+        <a class="l-link" href="#build">Build with us</a>
+        <a class="l-btn l-btn--dark" href="#">Open Kamino</a>
+      </div>
+    </nav>
+
+    <!-- Header A: "Dots" — live Automation line art -->
+    <div class="l-hero__art" id="hero-art" data-hero-variant="dots" aria-hidden="true" hidden></div>
+
+    <div class="l-hero__copy" data-hero-variant="dots" hidden>
+      <h1 class="l-hero__title">Connecting the dots between onchain finance and global capital.</h1>
+      <p class="l-hero__lede">The credit and liquidity layer for a new generation of financial infrastructure</p>
+      <div class="l-hero__actions">
+        <a class="l-btn l-btn--dark" href="#build">Build with us</a>
+        <a class="l-btn l-btn--outline" href="#">Open Kamino</a>
+      </div>
+    </div>
+
+    <!-- Header B: "Studio" — still life photo, serif headline, hiring tab (Figma 4718:16249) -->
+    <img class="l-hero__photo" data-hero-variant="studio" src="assets/hero-studio-coin.jpg" alt="" hidden>
+    <div class="l-hero__copy l-hero__copy--studio" data-hero-variant="studio" hidden>
+      <h1 class="l-hero__title l-hero__title--serif">Connecting onchain finance to global capital.</h1>
+      <p class="l-hero__lede">The credit and liquidity layer for a new generation of financial infrastructure</p>
+      <div class="l-hero__actions">
+        <a class="l-btn l-btn--dark" href="#build">Build with us</a>
+        <a class="l-btn l-btn--outline" href="#">Open Kamino</a>
+      </div>
+    </div>
+    <!-- Header C: "App screen" — blurred photo, sans headline, product screenshot (Figma 4854:15470) -->
+    <img class="l-hero__photo" data-hero-variant="app" src="assets/hero-app-bg.webp?v=2" alt="">
+    <div class="l-hero__app" data-hero-variant="app" aria-hidden="true">
+      <img src="assets/hero-app-screen.png" alt="" width="1536" height="1467">
+    </div>
+    <div class="l-hero__copy l-hero__copy--app" data-hero-variant="app">
+      <h1 class="l-hero__title">Connecting onchain finance and global capital.</h1>
+      <p class="l-hero__lede">The credit and liquidity layer for a new generation of financial infrastructure</p>
+      <div class="l-hero__actions">
+        <a class="l-btn l-btn--dark" href="#build">Build with us</a>
+        <a class="l-btn l-btn--outline" href="#">Open Kamino</a>
+      </div>
+    </div>
+
+    <a class="l-hiring-tab" data-hero-variant="studio" href="#footer"><span>We’re Hiring</span></a>
+    <a class="l-hiring-pill" data-hero-variant="studio" href="#footer">We are hiring. Explore open roles <img src="assets/ui/arrow-right.svg" alt="" width="12" height="12"></a>
+  </header>
+
+  <!-- ============ Partner marquee ============ -->
+  <section class="l-marquee" aria-label="Partners">
+    <div class="l-marquee__track">
+      <ul class="l-marquee__row">
+        <li><img src="assets/logos/bybit.svg" alt="Bybit" height="30"></li>
+        <li><img src="assets/logos/squads.svg" alt="Squads" height="30"></li>
+        <li><img src="assets/logos/okx.svg" alt="OKX" height="30"></li>
+        <li><img src="assets/logos/gauntlet.svg" alt="Gauntlet" height="30"></li>
+        <li><img src="assets/logos/phantom.svg" alt="Phantom" height="30"></li>
+        <li><img src="assets/logos/steakhouse.svg" alt="Steakhouse Financial" height="30"></li>
+        <li><img src="assets/logos/coinbase.svg" alt="Coinbase" height="30"></li>
+        <li><img src="assets/logos/anchorage.svg" alt="Anchorage Digital" height="30"></li>
+        <li><img src="assets/logos/falconx.svg" alt="FalconX" height="30"></li>
+        <li><img src="assets/logos/chainlink.svg" alt="Chainlink" height="30"></li>
+        <li><img src="assets/logos/figure.svg" alt="Figure" height="30"></li>
+        <li><img src="assets/logos/superstate.svg" alt="Superstate" height="30"></li>
+        <li><img src="assets/logos/backed.svg" alt="Backed" height="30"></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Product suite ============ -->
+  <section class="l-products l-wrap" id="products" data-layout="row">
+    <!-- In Row layout this pins while vertical scroll moves the cards sideways (js/landing.js) -->
+    <div class="l-products__pin">
+    <h2 class="l-headline"><span class="l-ink">Buy, sell, earn, borrow</span>—build your portfolio and grow your wealth with Kamino’s integrated product suite</h2>
+
+    <div class="l-products__grid">
+      <article class="l-product">
+        <div class="l-product__copy">
+          <h3>Swap</h3>
+          <div class="l-product__foot">
+            <p>Trade any token on the best route, with limit and recurring orders built in.</p>
+            <a class="l-btn l-btn--outline" href="#">Open Swap</a>
+          </div>
+        </div>
+        <div class="l-product__demo">
+          <div class="w" data-widget="swap">
+            <div class="w-head">
+              <div class="w-tabs" role="tablist"><button class="w-tab is-on" role="tab">Swap</button><button class="w-tab" role="tab">Limit</button><button class="w-tab" role="tab">Recurring</button></div>
+              <button class="w-icon" type="button" aria-label="Settings"><img src="assets/ui/gear.svg" alt="" width="16" height="16"></button>
+            </div>
+            <div class="w-stack">
+              <div class="w-field w-field--first">
+                <div class="w-row"><span class="w-label">Sell</span><button class="w-token" type="button"><i class="w-coin" data-coin="USDC" data-token-coin="sell"></i><span data-token="sell">USDC</span><img src="assets/ui/chevron-down.svg" alt="" width="16" height="16"></button></div>
+                <div class="w-row w-row--end"><input class="w-amount" type="number" min="0" step="any" value="250" aria-label="Sell amount" data-in><span class="w-fiat"><span data-in-usd>$250</span><img src="assets/ui/switch-v.svg" alt="" width="12" height="12"></span></div>
+                <div class="w-row"><span class="w-bal"><img src="assets/ui/wallet.svg" alt="" width="14" height="14"><span data-bal="sell">9,144.13 USDC</span></span><span class="w-xs-group"><button class="w-xs" type="button" data-half>Half</button><button class="w-xs" type="button" data-max>Max</button></span></div>
+              </div>
+              <div class="w-field">
+                <div class="w-row"><span class="w-label">Buy</span><button class="w-token" type="button"><i class="w-coin" data-coin="SOL" data-token-coin="buy"></i><span data-token="buy">SOL</span><img src="assets/ui/chevron-down.svg" alt="" width="16" height="16"></button></div>
+                <div class="w-row w-row--end"><output class="w-amount" data-out>0</output><span class="w-fiat"><span data-out-usd>$0</span><img src="assets/ui/switch-v.svg" alt="" width="12" height="12"></span></div>
+                <div class="w-row"><span class="w-bal"><img src="assets/ui/wallet.svg" alt="" width="14" height="14"><span data-bal="buy">42.50 SOL</span></span></div>
+              </div>
+              <div class="w-flipwrap"><button class="w-flip" type="button" aria-label="Switch tokens" data-flip><img src="assets/ui/arrow-down.svg" alt="" width="16" height="16"></button></div>
+            </div>
+            <div class="w-foot"><span class="w-rate"><span data-rate>1 USDC ≈ 0.007027 SOL</span><img src="assets/ui/switch-h.svg" alt="" width="12" height="12"></span><span class="w-tools"><button class="w-tool" type="button" aria-label="History"><img src="assets/ui/history.svg" alt="" width="12" height="12"></button><i class="w-divider"></i><button class="w-tool" type="button" aria-label="Chart"><img src="assets/ui/chart.svg" alt="" width="12" height="12"></button></span></div>
+            <button class="w-cta" type="button" data-go>Swap</button>
+          </div>
+        </div>
+      </article>
+      <article class="l-product">
+        <div class="l-product__copy">
+          <h3>Earn</h3>
+          <div class="l-product__foot">
+            <p>Lending Vaults deploy funds across Kamino Lend Markets, automatically rebalancing them to ensure users earn optimized lending yields.</p>
+            <a class="l-btn l-btn--outline" href="#">Open Earn</a>
+          </div>
+        </div>
+        <div class="l-product__demo">
+          <div class="w" data-widget="earn">
+            <div class="w-head">
+              <div class="w-tabs" role="tablist" aria-label="Vault"><button class="w-tab is-on" role="tab" data-apy="8.2" data-coin="USDC">USDC</button><button class="w-tab" role="tab" data-apy="6.4" data-coin="SOL">SOL</button><button class="w-tab" role="tab" data-apy="9.1" data-coin="PYUSD">PYUSD</button></div>
+              <button class="w-icon" type="button" aria-label="Settings"><img src="assets/ui/gear.svg" alt="" width="16" height="16"></button>
+            </div>
+            <div class="w-stack">
+              <div class="w-field">
+                <div class="w-row"><span class="w-label">Deposit</span><button class="w-token" type="button"><i class="w-coin" data-coin="USDC" data-token-coin="vault"></i><span data-token="vault">USDC</span><img src="assets/ui/chevron-down.svg" alt="" width="16" height="16"></button></div>
+                <div class="w-row w-row--end"><output class="w-amount" data-deposit-out>25,000</output><span class="w-fiat" data-deposit-usd>$25,000</span></div>
+                <input class="w-range" type="range" min="1000" max="250000" step="1000" value="25000" aria-label="Deposit amount" data-deposit>
+                <div class="w-row"><span class="w-bal"><img src="assets/ui/wallet.svg" alt="" width="14" height="14"><span>250,000.00 <span data-token="vault">USDC</span></span></span><span class="w-xs-group"><button class="w-xs" type="button" data-half>Half</button><button class="w-xs" type="button" data-max>Max</button></span></div>
+              </div>
+              <div class="w-field">
+                <div class="w-row"><span class="w-label">Projected earnings</span><span class="w-badge" data-apy-out>8.2% APY</span></div>
+                <div class="w-dots" data-dots aria-hidden="true"></div>
+                <div class="w-row"><span class="w-muted">Per year</span><span class="w-num" data-year>$2,050</span></div>
+                <div class="w-row"><span class="w-muted">Per month</span><span class="w-num" data-month>$171</span></div>
+              </div>
+            </div>
+            <div class="w-foot"><span class="w-rate">Rebalanced across Kamino Lend</span><span class="w-tools"><button class="w-tool" type="button" aria-label="History"><img src="assets/ui/history.svg" alt="" width="12" height="12"></button><i class="w-divider"></i><button class="w-tool" type="button" aria-label="Chart"><img src="assets/ui/chart.svg" alt="" width="12" height="12"></button></span></div>
+            <button class="w-cta" type="button" data-go>Deposit</button>
+          </div>
+        </div>
+      </article>
+      <article class="l-product">
+        <div class="l-product__copy">
+          <h3>Borrow</h3>
+          <div class="l-product__foot">
+            <p>Borrow against your assets across Kamino Lend Markets, with live health and liquidation levels as you size the loan.</p>
+            <a class="l-btn l-btn--outline" href="#">Open Borrow</a>
+          </div>
+        </div>
+        <div class="l-product__demo">
+          <div class="w" data-widget="borrow">
+            <div class="w-head">
+              <div class="w-tabs" role="tablist"><button class="w-tab is-on" role="tab">Borrow</button><button class="w-tab" role="tab">Repay</button></div>
+              <button class="w-icon" type="button" aria-label="Settings"><img src="assets/ui/gear.svg" alt="" width="16" height="16"></button>
+            </div>
+            <div class="w-stack">
+              <div class="w-field">
+                <div class="w-row"><span class="w-label">Collateral</span><button class="w-token" type="button"><i class="w-coin" data-coin="SOL"></i><span>SOL</span><img src="assets/ui/chevron-down.svg" alt="" width="16" height="16"></button></div>
+                <div class="w-row w-row--end"><output class="w-amount" data-coll-out>120</output><span class="w-fiat" data-coll-usd>$17,076</span></div>
+                <input class="w-range" type="range" min="10" max="1000" step="10" value="120" aria-label="Collateral" data-coll>
+                <div class="w-row"><span class="w-bal"><img src="assets/ui/wallet.svg" alt="" width="14" height="14"><span>1,000.00 SOL</span></span><span class="w-xs-group"><button class="w-xs" type="button" data-half>Half</button><button class="w-xs" type="button" data-max>Max</button></span></div>
+              </div>
+              <div class="w-field">
+                <div class="w-row"><span class="w-label">Borrow</span><button class="w-token" type="button"><i class="w-coin" data-coin="USDC"></i><span>USDC</span><img src="assets/ui/chevron-down.svg" alt="" width="16" height="16"></button></div>
+                <div class="w-row w-row--end"><output class="w-amount" data-borrow-out>5,764</output><span class="w-fiat" data-borrow-pct>45% of max</span></div>
+                <input class="w-range" type="range" min="0" max="100" step="1" value="45" aria-label="Borrow amount" data-borrow>
+              </div>
+            </div>
+            <div class="w-meter">
+              <div class="w-row"><span class="w-muted">Loan to value</span><span class="w-num" data-ltv>34%</span></div>
+              <div class="w-meter__bar"><span data-health></span><i title="Max LTV 75%"></i></div>
+              <div class="w-row"><span class="w-muted">Liquidation price</span><span class="w-num" data-liq>$69.10</span></div>
+            </div>
+            <button class="w-cta" type="button" data-go>Borrow</button>
+          </div>
+        </div>
+      </article>
+      <article class="l-product">
+        <div class="l-product__copy">
+          <h3>Multiply</h3>
+          <div class="l-product__foot">
+            <p>Loop a position in one click to amplify yield, with leverage you can dial up or down at any time.</p>
+            <a class="l-btn l-btn--outline" href="#">Open Multiply</a>
+          </div>
+        </div>
+        <div class="l-product__demo">
+          <div class="w" data-widget="multiply">
+            <div class="w-head">
+              <div class="w-tabs" role="tablist" aria-label="Leverage presets"><button class="w-tab" role="tab" data-preset="2">2×</button><button class="w-tab is-on" role="tab" data-preset="3">3×</button><button class="w-tab" role="tab" data-preset="5">5×</button></div>
+              <button class="w-icon" type="button" aria-label="Settings"><img src="assets/ui/gear.svg" alt="" width="16" height="16"></button>
+            </div>
+            <div class="w-stack">
+              <div class="w-field">
+                <div class="w-row"><span class="w-label">Leverage</span><button class="w-token" type="button"><i class="w-coin" data-coin="SOL"></i><span>SOL</span><img src="assets/ui/chevron-down.svg" alt="" width="16" height="16"></button></div>
+                <div class="w-row w-row--end"><output class="w-amount" data-lev-out>3.0×</output><span class="w-fiat">1.1× – 5×</span></div>
+                <input class="w-range" type="range" min="1.1" max="5" step="0.1" value="3" aria-label="Leverage" data-lev>
+              </div>
+              <div class="w-field">
+                <div class="w-row"><span class="w-label">Position</span><span class="w-badge" data-net-badge>13.1% APY</span></div>
+                <div class="w-dots" data-dots aria-hidden="true"></div>
+                <div class="w-row"><span class="w-muted">Net APY</span><span class="w-num" data-net>13.1%</span></div>
+                <div class="w-row"><span class="w-muted">Price drop to liquidation</span><span class="w-num" data-drop>−26%</span></div>
+              </div>
+            </div>
+            <div class="w-foot"><span class="w-rate">Supply 7.1% · Borrow 5.2%</span><span class="w-tools"><button class="w-tool" type="button" aria-label="History"><img src="assets/ui/history.svg" alt="" width="12" height="12"></button><i class="w-divider"></i><button class="w-tool" type="button" aria-label="Chart"><img src="assets/ui/chart.svg" alt="" width="12" height="12"></button></span></div>
+            <button class="w-cta" type="button" data-go>Open position</button>
+          </div>
+        </div>
+      </article>
+    </div>
+    </div>
+  </section>
+
+  <!-- ============ Platform card stack (section-card-lock) ============ -->
+    <section class="platform" id="platform" data-art-src="js/card-art.js" aria-labelledby="platform-title">
+      <div class="platform__inner">
+        <div class="platform__head">
+          <h2 class="platform__title" id="platform-title"><span class="platform__title-lead">One platform</span> to onboard assets, create credit markets, manage liquidity, build yield vaults, and get distribution.</h2>
+
+          <div class="platform__rail">
+            <nav class="platform__index" aria-label="Platform">
+              <ol role="list">
+                <li><a href="#credit" aria-current="true">Credit</a></li>
+                <li><a href="#liquidity">Liquidity</a></li>
+                <li><a href="#yield">Yield</a></li>
+                <li><a href="#curation">Curation</a></li>
+              </ol>
+            </nav>
+            <div class="platform__slot"></div>
+          </div>
+        </div>
+
+        <!-- Scroll order, first to last. data-art picks the live illustration js/card-art.js draws into .card__art -->
+        <div class="platform__stack">
+          <article class="card card--credit" id="credit" data-art="credit" aria-labelledby="credit-title">
+            <h3 class="card__title" id="credit-title">Credit</h3>
+            <div class="card__body">
+              <p class="card__lede">Offer fixed, variable, and bespoke credit</p>
+              <p class="card__text">Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <a class="card__link" href="#">Explore Credit</a>
+            </div>
+            <div class="card__art"></div>
+          </article>
+
+          <article class="card card--liquidity" id="liquidity" data-art="liquidity" aria-labelledby="liquidity-title">
+            <h3 class="card__title" id="liquidity-title">Liquidity</h3>
+            <div class="card__body">
+              <p class="card__lede">Offer fixed, variable, and bespoke credit</p>
+              <p class="card__text">Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <a class="card__link" href="#">Explore Liquidity</a>
+            </div>
+            <div class="card__art"></div>
+          </article>
+
+          <article class="card card--yield" id="yield" data-art="yield" aria-labelledby="yield-title">
+            <h3 class="card__title" id="yield-title">Yield</h3>
+            <div class="card__body">
+              <p class="card__lede">Offer fixed, variable, and bespoke credit</p>
+              <p class="card__text">Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <a class="card__link" href="#">Explore Yield</a>
+            </div>
+            <div class="card__art"></div>
+          </article>
+
+          <article class="card card--curation" id="curation" data-art="curation" aria-labelledby="curation-title">
+            <h3 class="card__title" id="curation-title">Curation</h3>
+            <div class="card__body">
+              <p class="card__lede">Offer fixed, variable, and bespoke credit</p>
+              <p class="card__text">Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <a class="card__link" href="#">Explore Curation</a>
+            </div>
+            <div class="card__art"></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  <!-- ============ Testimonials ============ -->
+  <section class="l-trust l-wrap" id="trust">
+    <h2 class="l-headline l-headline--center"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
+
+    <div class="l-quote">
+      <div class="l-quote__copy">
+        <blockquote data-quote>The performance of Kamino speaks for itself – the product has significantly increased our users yields and has a flawless track record for security and risk management.</blockquote>
+        <p class="l-quote__by"><strong data-quote-name>Peter Welinder</strong><span data-quote-role>VP of Product and Partnerships<br>Binance</span></p>
+      </div>
+      <div class="l-quote__media">
+        <img class="l-quote__photo" src="assets/testimonial-binance.jpg" alt="" data-quote-photo>
+        <img class="l-quote__logo" src="assets/logos/binance-overlay.svg" alt="" data-quote-logo>
+      </div>
+    </div>
+
+    <div class="l-quote__tabs" role="tablist" aria-label="Testimonials">
+      <button class="is-on" role="tab" data-quote-tab="0"><img src="assets/logos/binance-black.svg" alt="Binance" height="38"></button>
+      <button role="tab" data-quote-tab="1"><img src="assets/logos/kraken.svg" alt="Kraken" height="24"></button>
+      <button role="tab" data-quote-tab="2"><img src="assets/logos/anchorage-grey.svg" alt="Anchorage Digital" height="36"></button>
+      <button role="tab" data-quote-tab="3"><img src="assets/logos/okx.svg" alt="OKX" height="30"></button>
+    </div>
+  </section>
+
+  <!-- ============ Commodity yield ============ -->
+  <section class="l-commodity" id="commodity">
+    <!-- Looping background video; the still is the poster and the fallback -->
+    <video class="l-commodity__bg" src="assets/commodity-2.webm" poster="assets/commodity.jpg" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"></video>
+    <div class="l-commodity__inner">
+      <div class="l-commodity__copy">
+        <h2>Institutional Commodity Yield</h2>
+        <p>Generate USD returns powered by<br>real-world commodity trade financing activity</p>
+        <button class="l-btn l-btn--light" data-modal-open>Watch ‘Understanding Commodity Yield’</button>
+      </div>
+      <div class="l-commodity__stat">
+        <span class="l-mono">Current APY</span>
+        <strong><span data-count="8.0" data-decimals="1">8.0</span>%</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Record (bento) ============ -->
+  <section class="l-record" id="record">
+    <div class="l-wrap">
+      <div class="l-split">
+        <h2>A record institutions can build on.</h2>
+        <p>Live credit markets run on Kamino’s contracts, Kamino Scope prices their assets, liquidation systems resolve unhealthy positions, and Kamino Vaults allocate capital under each manager’s mandate.</p>
+      </div>
+
+      <div class="l-bento">
+        <div class="l-bento__big">
+          <span class="l-mono">Processed through<br>Kamino smart contracts</span>
+          <strong>$<span data-count="615">615</span>B</strong>
+          <img class="l-bento__dots" src="assets/dots-column-v.svg" alt="" width="35" height="308">
+        </div>
+        <div class="l-bento__tile"><span class="l-mono">Active loans</span><strong data-count="99914">99,914</strong></div>
+        <div class="l-bento__tile"><span class="l-mono">Active loans</span><strong data-count="99914">99,914</strong></div>
+        <div class="l-bento__tile"><span class="l-mono">Active loans</span><strong data-count="99914">99,914</strong></div>
+        <div class="l-bento__tile"><span class="l-mono">Active loans</span><strong data-count="99914">99,914</strong></div>
+      </div>
+
+      <h3 class="l-record__audits">30+ Audits</h3>
+      <ul class="l-audits">
+        <li><img src="assets/logos/audit-1.svg" alt="Certora" height="46"></li>
+        <li><img src="assets/logos/audit-2.svg" alt="Informal Systems" height="55"></li>
+        <li><img src="assets/logos/audit-3.svg" alt="OtterSec" height="39"></li>
+        <li><img src="assets/logos/audit-4.svg" alt="Sec3" height="40"></li>
+        <li><img src="assets/logos/audit-5.svg" alt="Ackee Blockchain Security" height="49"></li>
+        <li><img src="assets/logos/audit-4.svg" alt="Sec3" height="40"></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ APY scroll story (kamino-line art animations/apy-scroll-story) ============ -->
+  <section class="apy" id="apy" aria-label="Kamino in numbers">
+    <div class="apy__stage">
+      <canvas class="apy__canvas"></canvas>
+      <div class="apy__headline">
+        <h2>Credit and liquidity infrastructure</h2>
+        <p>that scales to your needs</p>
+      </div>
+      <div class="apy__flood"></div>
+      <div class="apy__stats">
+        <div class="apy__stat"><div class="apy__number">$21B</div><div class="apy__label">Loans Originated</div></div>
+        <div class="apy__stat"><div class="apy__number">$3.1B</div><div class="apy__label">Total Value Locked</div></div>
+        <div class="apy__stat"><div class="apy__number">1.4M</div><div class="apy__label">Positions Managed</div></div>
+      </div>
+      <div class="apy__hint">Scroll</div>
+    </div>
+  </section>
+
+  <!-- ============ Partner stories ============ -->
+  <section class="l-stories" id="stories">
+    <div class="l-wrap">
+      <div class="l-split">
+        <h2 class="l-display">The proof is in<br>the partners.</h2>
+        <p>Live credit markets run on Kamino’s contracts, Kamino Scope prices their assets, liquidation systems resolve unhealthy positions, and Kamino Vaults allocate capital under each manager’s mandate.</p>
+      </div>
+      <div class="l-stories__nav">
+        <button class="l-round" data-story-prev aria-label="Previous story"><img src="assets/arrow-left.svg" alt="" width="16" height="16"></button>
+        <button class="l-round" data-story-next aria-label="Next story"><img src="assets/arrow-right.svg" alt="" width="16" height="16"></button>
+      </div>
+    </div>
+    <ul class="l-stories__list" data-stories>
+      <li class="l-story"><a href="#"><span class="l-story__media"><img src="assets/story-binance.jpg" alt="" loading="lazy"><img class="l-story__logo" src="assets/logos/story-binance.svg" alt="Binance"></span><span class="l-story__text">Company adds significant amount of growth through Kamino’s integration.</span><span class="l-story__cta">Read Binance’s story</span></a></li>
+      <li class="l-story"><a href="#"><span class="l-story__media"><img src="assets/story-rockaway.jpg" alt="" loading="lazy"><img class="l-story__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX"></span><span class="l-story__text">Company adds significant amount of growth through Kamino’s integration.</span><span class="l-story__cta">Read RockawayX’s story</span></a></li>
+      <li class="l-story"><a href="#"><span class="l-story__media"><img src="assets/story-binance.jpg" alt="" loading="lazy"><img class="l-story__logo" src="assets/logos/story-binance.svg" alt="Binance"></span><span class="l-story__text">Company adds significant amount of growth through Kamino’s integration.</span><span class="l-story__cta">Read Binance’s story</span></a></li>
+      <li class="l-story"><a href="#"><span class="l-story__media"><img src="assets/story-rockaway.jpg" alt="" loading="lazy"><img class="l-story__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX"></span><span class="l-story__text">Company adds significant amount of growth through Kamino’s integration.</span><span class="l-story__cta">Read RockawayX’s story</span></a></li>
+      <li class="l-story"><a href="#"><span class="l-story__media"><img src="assets/story-binance.jpg" alt="" loading="lazy"><img class="l-story__logo" src="assets/logos/story-binance.svg" alt="Binance"></span><span class="l-story__text">Company adds significant amount of growth through Kamino’s integration.</span><span class="l-story__cta">Read Binance’s story</span></a></li>
+      <li class="l-story"><a href="#"><span class="l-story__media"><img src="assets/story-rockaway.jpg" alt="" loading="lazy"><img class="l-story__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX"></span><span class="l-story__text">Company adds significant amount of growth through Kamino’s integration.</span><span class="l-story__cta">Read RockawayX’s story</span></a></li>
+    </ul>
+  </section>
+
+  <!-- ============ Build ============ -->
+  <section class="l-build l-wrap" id="build">
+    <div class="l-split">
+      <h2 class="l-display">Build on Kamino</h2>
+      <p>Plug into a trusted foundation of products. Earn, lend or borrow programmatically, and use our APIs to read market data and user positions.</p>
+    </div>
+    <div class="l-build__grid">
+      <div class="l-build__media" aria-hidden="true">
+        <img class="l-build__bg" src="assets/build-bg.jpg" alt="" loading="lazy">
+        <img class="l-build__column" src="assets/build-column.jpg" alt="" loading="lazy">
+      </div>
+      <div class="l-build__panel">
+        <span class="l-mono">Kamino is for</span>
+        <ul class="l-build__list" data-cycle>
+          <li class="is-on">Fintechs</li><li>Banks</li><li>Apps</li><li>Wallets</li><li>Exchanges</li>
+        </ul>
+        <a class="l-btn l-btn--outline" href="#">Explore Kamino Docs</a>
+        <img class="l-build__dots" src="assets/dots-column.svg" alt="">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ What's new ============ -->
+  <section class="l-news" id="news">
+    <span class="l-tab l-mono">Blog</span>
+    <div class="l-wrap l-news__inner">
+      <div class="l-news__side">
+        <h2 class="l-display">What’s New</h2>
+        <div class="l-news__actions">
+          <a class="l-btn l-btn--outline" href="#">Read all articles</a>
+          <a class="l-btn l-btn--dark" href="#"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 2h7l4.8 6.4L18.2 2Zm-1.2 18h1.9L7.1 4H5.1l11.9 16Z"/></svg>@kamino</a>
+        </div>
+      </div>
+      <ul class="l-news__list">
+        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
+        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Newsletter (kamino-sign-here) ============ -->
+    <section class="newsletter" aria-labelledby="newsletter-title">
+      <div class="newsletter__inner">
+        <div class="newsletter__content">
+          <div class="copy">
+            <h2 class="title" id="newsletter-title">Sign here for alpha.</h2>
+            <p class="lede">Monthly updates on Kamino products, markets, and the onchain credit ecosystem.</p>
+          </div>
+
+          <!-- Set data-endpoint to your ESP / API URL to POST signups as JSON. Empty = demo mode. -->
+          <form class="form" id="newsletter-form" data-endpoint="" novalidate>
+            <div class="field-row">
+              <label class="visually-hidden" for="first-name">First name</label>
+              <input class="input input--name" id="first-name" name="firstName" type="text"
+                     placeholder="First Name" autocomplete="given-name" maxlength="20" required>
+
+              <label class="visually-hidden" for="email">Email</label>
+              <input class="input input--email" id="email" name="email" type="email"
+                     placeholder="you@company.com" autocomplete="email" required>
+
+              <button class="button" type="submit">
+                <span class="button__label">Sign</span>
+              </button>
+            </div>
+
+            <div class="legal">
+              <label class="consent">
+                <input class="consent__input" type="checkbox" name="consent" required>
+                <span class="consent__box" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M4 8.2 6.8 11 12 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="consent__text">Yes, send me the Kamino newsletter.</span>
+              </label>
+              <p class="fineprint">By subscribing you agree to our <a href="#">Privacy Policy</a> and consent to receive marketing emails from Kamino. Unsubscribe at any time.</p>
+            </div>
+
+            <p class="status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div class="newsletter__media">
+          <!-- Stage is laid out at the Figma frame size (650×518) and scaled to fit, so the line and signature stay locked to the paper -->
+          <div class="stage">
+            <img class="stage__image" src="../kamino-sign-here/assets/hero-v3.webp" alt="" width="2000" height="1119">
+            <div class="stage__line" aria-hidden="true"></div>
+            <p class="stage__label" aria-hidden="true">Signed by</p>
+            <div class="signature" aria-hidden="true">
+              <div class="signature__line"></div>
+            </div>
+            <!-- Appears once the consent box is ticked (kamino-sign-here/js/v2.js) -->
+            <div class="witness" aria-hidden="true">
+              <p class="witness__label">Witnessed by</p>
+              <img class="witness__logo" src="../kamino-sign-here/assets/kamino-logo.svg" alt="" width="59" height="14">
+              <p class="witness__date"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  <!-- ============ Footer ============ -->
+  <footer class="l-footer" id="footer">
+    <div class="l-wrap">
+      <div class="l-footer__cols">
+        <ul><li><a href="#products">Earn</a></li><li><a href="#products">Borrow</a></li><li><a href="#products">Swap</a></li><li><a href="#products">Multiply</a></li></ul>
+        <ul><li><a href="#">Company</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li><li><a href="#">Helpdesk</a></li></ul>
+        <ul><li><a href="#stories">Success Stories</a></li><li><a href="#news">News</a></li><li><a href="#">Contact</a></li></ul>
+        <ul><li><a href="#">X</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">Telegram</a></li></ul>
+      </div>
+      <div class="l-footer__base">
+        <img class="l-footer__logo" src="assets/logos/kamino.svg" alt="Kamino" width="195" height="45">
+        <p>© 2026 Kamino <span>All Rights Reserved.</span> <a href="#">Terms of Use</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Video modal (placeholder) -->
+  <dialog class="l-modal" data-modal>
+    <div class="l-modal__frame">
+      <span class="l-mono">Understanding Commodity Yield</span>
+      <p>Video coming soon.</p>
+      <button class="l-btn l-btn--light" data-modal-close>Close</button>
+    </div>
+  </dialog>
+
+  <!-- Newsletter (signature, validation) -->
+  <script src="../kamino-sign-here/js/glyphs.js?v=1009"></script>
+  <script src="../kamino-sign-here/js/signature.js?v=1009"></script>
+  <script src="../kamino-sign-here/js/main.js?v=1009"></script>
+  <script src="../kamino-sign-here/js/v2.js?v=1009"></script>
+  <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
+  <script src="../section-card-lock/js/stack.js"></script>
+  <!-- Page interactions + lazy three.js (hero, APY story) -->
+  <script src="js/landing.js?v=1009h"></script>
+</body>
+</html>

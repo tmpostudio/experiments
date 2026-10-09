@@ -1,0 +1,14 @@
+{
+  "name": "section-card-lock",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/card-art.js --bundle --format=esm --minify --outfile=js/card-art.js"
+  },
+  "dependencies": {
+    "three": "^0.170.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

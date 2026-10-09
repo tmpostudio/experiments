@@ -47,6 +47,21 @@
     signatureEl.style.setProperty("--offset", offset.toFixed(1) + "px");
   }
 
+  // "Witnessed by" stamp: shown with today's date while the consent box is ticked
+  const consent = document.querySelector(".consent__input");
+  const witness = stage.querySelector(".witness");
+  const witnessDate = witness.querySelector(".witness__date");
+  function syncWitness() {
+    if (consent.checked) {
+      const d = new Date();
+      const pad = (n) => String(n).padStart(2, "0");
+      witnessDate.textContent = pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "." + d.getFullYear();
+    }
+    witness.classList.toggle("is-visible", consent.checked);
+  }
+  consent.addEventListener("change", syncWitness);
+  syncWitness(); // handles a browser-restored tick
+
   document.addEventListener("signature:change", fit);
   fit();
 })();

@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/v2.css">
+  <link rel="stylesheet" href="css/styles.css?v=1009">
+  <link rel="stylesheet" href="css/v2.css?v=1009">
 </head>
 <body>
   <main>
@@ -55,10 +55,17 @@
         <div class="newsletter__media">
           <!-- Stage is laid out at the Figma frame size (650×518) and scaled to fit, so the line and signature stay locked to the paper -->
           <div class="stage">
-            <img class="stage__image" src="assets/hero-v2.jpg" alt="" width="2400" height="1343">
+            <img class="stage__image" src="assets/hero-v3.webp" alt="" width="2000" height="1119">
             <div class="stage__line" aria-hidden="true"></div>
+            <p class="stage__label" aria-hidden="true">Signed by</p>
             <div class="signature" aria-hidden="true">
               <div class="signature__line"></div>
+            </div>
+            <!-- Appears once the consent box is ticked (js/v2.js) -->
+            <div class="witness" aria-hidden="true">
+              <p class="witness__label">Witnessed by</p>
+              <img class="witness__logo" src="assets/kamino-logo.svg" alt="" width="59" height="14">
+              <p class="witness__date"></p>
             </div>
           </div>
         </div>
@@ -66,10 +73,10 @@
     </section>
   </main>
 
-  <script src="js/glyphs.js"></script>
-  <script src="js/signature.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/v2.js"></script>
-  <!-- Hover dot grid, parked for later: <script src="js/dots.js"></script> -->
+  <script src="js/glyphs.js?v=1009"></script>
+  <script src="js/signature.js?v=1009"></script>
+  <script src="js/main.js?v=1009"></script>
+  <script src="js/v2.js?v=1009"></script>
+  <!-- Hover dot grid, parked for later: <script src="js/dots.js?v=1009"></script> -->
 </body>
 </html>

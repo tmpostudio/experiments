@@ -1,0 +1,352 @@
+:root {
+  --bg: #fff;
+  --ink: #000;
+  --ink-muted: #939393;
+  --ink-faint: #c1c1c1;
+
+  --font-display: "Aeonik", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Preview gaps (stand-ins for the neighbouring sections) ---------- */
+
+/* Taller than the screen plus the card art's 400px load margin, so the lazy load and
+   the offscreen pause can both be seen */
+.preview-gap {
+  display: grid;
+  place-items: center;
+  height: calc(100vh + 480px);
+  height: calc(100svh + 480px);
+  background: #f3f3f3;
+  font: 400 10px/14px var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Section ---------- */
+
+.platform {
+  /* Figma frame is 1505 × 1086. Vertical spacing hits the Figma values on a
+     1086px-tall viewport and eases down to its minimums at 720px tall. */
+  --pad-x: clamp(20px, 5.65vw, 85px);
+  --pad-top: clamp(48px, calc(15.03svh - 60.2px), 103px);
+  --title-gap: clamp(40px, calc(16.67svh - 80px), 101px);
+  --pad-bottom: clamp(32px, calc(7.1svh - 19.1px), 58px);
+  --peek: clamp(22px, calc(1.775svh + 9.2px), 28.5px); /* strip of each locked card left showing: half the Figma step */
+  --index-col: 19.85%;  /* 265 of 1335 */
+  --card-gap: 32px;     /* between cards in the plain list */
+  --card-min: 320px;
+  --card-max: 600px;    /* Figma's 509 plus the room freed by the two-line headline */
+  --reveal: 15svh;      /* scroll after a card locks before the next one shows */
+  --hold: 24svh;        /* scroll with every card locked before the section moves on */
+  --compact-top: 24px;
+
+  /* Written by js/stack.js */
+  --stack-top: 0px;     /* lock line of the first card, from the top of the head */
+  --pin-offset: 0px;    /* compact mode: how far the head scrolls before it pins */
+  --last: 3;            /* index of the last card */
+
+  --card-h: clamp(var(--card-min), calc(100svh - var(--stack-top) + var(--pin-offset) - var(--last) * var(--peek) - var(--pad-bottom)), var(--card-max));
+
+  /* Gap between cards while stacking: each card waits --reveal below the fold when the one before it locks */
+  --travel-gap: calc(100svh - var(--stack-top) + var(--pin-offset) - var(--card-h) + var(--reveal));
+
+  padding-bottom: var(--pad-bottom);
+  background: var(--bg);
+}
+
+.platform__inner {
+  max-width: 1505px;
+  margin: 0 auto;
+  padding: 0 var(--pad-x);
+}
+
+/* Sits above the cards so the art canvas it carries draws over them; clicks pass through to the cards */
+.platform__head {
+  position: relative;
+  z-index: 1;
+  padding-top: var(--pad-top);
+  pointer-events: none;
+}
+
+.platform__title,
+.platform__index { pointer-events: auto; }
+
+/* One WebGL canvas (js/card-art.js) over the cards' art column, riding with the pinned head.
+   Each card's scene is drawn into its .card__art box; js sets left and width. */
+.platform__art {
+  position: absolute;
+  top: var(--pin-offset);
+  left: 0;
+  height: 100vh;
+  height: 100lvh;
+}
+
+/* Plain list: nothing is pinned, so the canvas follows the viewport instead */
+.platform:not([data-stack]) .platform__art {
+  position: fixed;
+  top: 0;
+}
+
+.platform__title {
+  max-width: 80%; /* two lines, breaking after "markets," */
+  margin: 0 0 var(--title-gap);
+  font-size: clamp(28px, 2.92vw, 44px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--ink-muted);
+}
+
+.platform__title-lead { color: var(--ink); }
+
+/* ---------- Index ---------- */
+
+.platform__rail { display: none; } /* plain list (no JS, or too short to stack) has no index */
+
+.platform__index ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.platform__index a {
+  font-size: clamp(18px, 1.46vw, 22px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--ink-faint);
+  text-decoration: none;
+  transition: color 0.3s var(--ease);
+}
+.platform__index a:hover { color: #8c8c8c; }
+.platform__index a[aria-current="true"] { color: var(--ink); }
+.platform__index a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 2px; }
+
+/* ---------- Cards ---------- */
+
+.platform__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  margin-left: var(--index-col);
+}
+
+.card {
+  --card-bg: #e2edf2;
+  --card-ink: #151515;
+  --card-muted: #4f5153;
+  --card-rule: #000;
+  --card-edge: rgba(0, 0, 0, 0.05);
+
+  display: grid;
+  grid-template-columns: min(411px, 44%) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "title art"
+    "body  art";
+  column-gap: 24px;
+  padding: 32px;
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--card-ink);
+  box-shadow: inset 0 0 0 1px var(--card-edge), 2px 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+/* Line art is black, except on Curation where js/card-art.js draws it white */
+.card--credit { --card-bg: #e2edf2; }
+.card--liquidity { --card-bg: #bcdeec; }
+.card--yield { --card-bg: #c6f4ff; }
+.card--curation {
+  --card-bg: #1b1b1b;
+  --card-ink: #fff;
+  --card-muted: rgba(255, 255, 255, 0.7);
+  --card-rule: #fff;
+  --card-edge: rgba(255, 255, 255, 0.05);
+}
+
+.card__title {
+  grid-area: title;
+  margin: 0;
+  border-right: 1px solid var(--card-rule);
+  font-size: clamp(32px, 2.92vw, 44px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.0307em;
+}
+
+.card__body {
+  grid-area: body;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-right: 1px solid var(--card-rule);
+}
+
+.card__lede {
+  max-width: 12.8em; /* 358px at 28px, so it breaks like Figma as the size scales */
+  margin: 0;
+  font-size: clamp(22px, 1.86vw, 28px);
+  line-height: 1.1;
+  letter-spacing: -0.048em;
+}
+
+.card__text {
+  max-width: 358px;
+  margin: 12px 0 0;
+  font-size: 15px;
+  line-height: 21px;
+  letter-spacing: -0.018em;
+  color: var(--card-muted);
+}
+
+.card__link {
+  margin-top: 26px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s;
+}
+.card__link:hover { text-decoration-color: currentColor; }
+.card__link:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; border-radius: 2px; }
+
+.card__art {
+  grid-area: art;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Plain list: cards size to content, so give the art box the Figma art's proportions */
+.platform:not([data-stack]) .card__art { aspect-ratio: 571 / 439; }
+
+/* ---------- Stacking (js/stack.js sets data-stack when the viewport fits it) ---------- */
+
+.platform[data-stack] .platform__head {
+  position: sticky;
+  top: calc(-1 * var(--pin-offset));
+}
+
+.platform[data-stack] .platform__rail {
+  display: grid;
+  grid-template-columns: var(--index-col) minmax(0, 1fr);
+}
+
+/* Reserves the locked stack's footprint; its top edge is the lock line */
+.platform[data-stack] .platform__slot {
+  height: calc(var(--last) * var(--peek) + var(--card-h));
+}
+
+/* Pulled up over the slot so the first card sits on the lock line */
+.platform[data-stack] .platform__stack {
+  gap: 0;
+  margin-top: calc(-1 * (var(--last) * var(--peek) + var(--card-h)));
+}
+
+.platform[data-stack] .platform__stack::after {
+  content: "";
+  flex: none;
+  height: var(--hold);
+}
+
+.platform[data-stack] .card {
+  position: sticky;
+  top: calc(var(--stack-top) - var(--pin-offset) + var(--i) * var(--peek));
+  flex: none;
+  height: var(--card-h);
+  /* Every card's margin box ends on the same line once locked (as does the head),
+     so they all let go together rather than the stack collapsing on release */
+  margin-bottom: calc((var(--last) - var(--i)) * var(--peek));
+}
+
+/* The matching negative margin keeps them --travel-gap apart while travelling */
+.platform[data-stack] .card + .card {
+  margin-top: calc(var(--travel-gap) - (var(--last) - var(--i) + 1) * var(--peek));
+}
+
+/* js/stack.js reads the in-flow positions to find each card's lock point */
+.platform.is-measuring .card { position: static; }
+
+/* ---------- Responsive ---------- */
+
+/* Index moves above the stack */
+@media (max-width: 1099px) {
+  .platform { --index-col: 0px; }
+
+  .platform[data-stack] .platform__rail {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 20px;
+  }
+
+  .platform__index ol {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 20px;
+  }
+
+  .platform__index a { font-size: 18px; }
+}
+
+/* Card stacks title, art, copy */
+@media (max-width: 719px) {
+  .platform {
+    --pad-top: 56px;
+    --title-gap: 28px;
+    --pad-bottom: 20px;
+    --peek: 22px;
+    --card-gap: 16px;
+    --card-min: 360px;
+    --card-max: 560px;
+    --compact-top: 16px;
+  }
+
+  .platform__title { max-width: none; }
+
+  .platform__index ol { column-gap: 16px; }
+  .platform__index a { font-size: 16px; }
+
+  .card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "title"
+      "art"
+      "body";
+    row-gap: 16px;
+    padding: 20px;
+  }
+
+  .card__title,
+  .card__body { border-right: 0; }
+
+  .card__title { font-size: 30px; }
+  .card__lede { font-size: 22px; }
+  .card__text { font-size: 14px; line-height: 20px; }
+  .card__link { margin-top: 18px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .platform__index a,
+  .card__link { transition: none; }
+}

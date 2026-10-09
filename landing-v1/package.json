@@ -1,0 +1,8 @@
+{
+  "name": "landing-v1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "NODE_PATH=../section-card-lock/node_modules ../section-card-lock/node_modules/.bin/esbuild ../section-card-lock/src/card-art.js src/hero-art.js src/apy-story.js --bundle --splitting --format=esm --minify --outdir=js --entry-names=[name] --chunk-names=chunks/[name]-[hash]"
+  }
+}

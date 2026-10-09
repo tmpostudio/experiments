@@ -1,6 +1,14 @@
 /* v2: signature is written onto the paper in the image instead of below the form.
    Loaded after styles.css and overrides its signature block. */
 
+@font-face {
+  font-family: "Serrif";
+  src: url("../assets/fonts/Serrif-TRIAL-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
 .title {
   font-family: "Serrif", Georgia, serif;
   font-weight: 300;
@@ -30,10 +38,11 @@
   transform-origin: 0 0;
 }
 
-/* Crop matches Figma: image at 1346×753 @ (-575, -108) */
+/* Crop matches Figma: image at 1346×753, placed so the paper sits where the line and
+   signature expect it (hero-v3: -568, -108; hero-v2 was -575, -108) */
 .newsletter__media .stage__image {
   position: absolute;
-  left: -575px;
+  left: -568px;
   top: -108px;
   width: 1346px;
   height: 753px;
@@ -62,6 +71,60 @@
   height: 1px;
   background: repeating-linear-gradient(90deg, #000 0 2px, transparent 2px 4px);
 }
+
+/* "Signed by" label, printed above the signature */
+.stage__label {
+  position: absolute;
+  left: 209px;
+  top: 160px;
+  margin: 0;
+  font: 400 8px/1 var(--font-mono);
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  color: #000;
+}
+
+/* ---------- Witnessed by (Figma: label, logo, date at x 209, y 311 / 328 / 349) ---------- */
+
+.witness {
+  position: absolute;
+  left: 209px;
+  top: 311px;
+  width: 82px;
+  height: 52px;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+  pointer-events: none;
+}
+.witness.is-visible {
+  opacity: 1;
+  transform: none;
+}
+.witness__label,
+.witness__date {
+  position: absolute;
+  left: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.witness__label { top: 0; font-size: 7px; color: #000; }
+/* Scoped under .newsletter__media to beat the hero-image rule in styles.css */
+.newsletter__media .witness__logo {
+  position: absolute;
+  left: 0;
+  top: 17px;
+  width: 59px;
+  height: 14px;
+  display: block;
+  object-fit: fill;
+}
+.witness__date { top: 37px; font-size: 7px; color: #900000; }
 
 /* ---------- Signature on the paper ---------- */
 
@@ -101,6 +164,10 @@
   stroke: #1b2a6b; /* dark blue ballpoint ink */
   /* keep the pen weight constant however much the signature is scaled */
   stroke-width: calc(1.8 / var(--fit));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .witness { transition: none; }
 }
 
 /* ---------- Responsive ---------- */
