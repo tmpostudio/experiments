@@ -63,6 +63,167 @@
   if (!startHero) try { startHero = localStorage.getItem("landing-v3:hero"); } catch (e) {}
   setHero(["dots", "studio"].includes(startHero) ? startHero : "app", false); // default: App screen
 
+  // ---------- Hover dot grid over the App screen header photo ----------
+  // After kamino-sign-here/js/dots.js, reworked for the header: a fine grid of invisible
+  // white dots. The pointer lights a wide soft pool around it and sends out ripples;
+  // every lit dot twinkles at its own pace, so the trail glimmers as it fades.
+  const dotCanvas = $(".l-hero__dots");
+  if (hero && dotCanvas && !reduced) {
+    const SPACING = 11;          // grid pitch
+    const DOT_MIN = 0.7;         // dot radius when barely lit…
+    const DOT_MAX = 2.1;         // …and at full brightness
+    const REACH = 150;           // pool of light around the pointer
+    const HOLD_MS = 120;         // how long the pool stays at full brightness
+    const FADE_MS = 1300;        // then how long it takes to disappear
+    const RIPPLE_SPEED = 300;    // px per second
+    const RIPPLE_LIFE = 1500;    // ms; a ripple reaches ~450px before it dies
+    const RIPPLE_WIDTH = 30;     // thickness of the wavefront
+    const RIPPLE_EVERY = 70;     // px of pointer travel between ripples
+    const MAX_ALPHA = 0.9;
+    const ctx = dotCanvas.getContext("2d");
+    let w = 0, h = 0, cols = 0, rows = 0, originX = 0, originY = 0;
+    let peak = new Float32Array(0);    // pool brightness when last lit
+    let litAt = new Float64Array(0);   // when it was last lit
+    let val = new Float32Array(0);     // this frame's brightness
+    let phase = new Float32Array(0);   // per-dot twinkle offset
+    let rate = new Float32Array(0);    // per-dot twinkle speed
+    let ripples = [];
+    let running = false;
+    let prev = null;
+    let sinceRipple = 0;
+
+    function pool(i, now) {
+      const t = (now - litAt[i] - HOLD_MS) / FADE_MS;
+      if (t <= 0) return peak[i];
+      if (t >= 1) return 0;
+      return peak[i] * (1 - t) * (1 - t);
+    }
+
+    function resize() {
+      w = hero.clientWidth;
+      h = hero.clientHeight;
+      if (!w || !h) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dotCanvas.width = Math.round(w * dpr);
+      dotCanvas.height = Math.round(h * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.floor(w / SPACING) + 1;
+      rows = Math.floor(h / SPACING) + 1;
+      originX = (w - (cols - 1) * SPACING) / 2;
+      originY = (h - (rows - 1) * SPACING) / 2;
+      const n = cols * rows;
+      peak = new Float32Array(n);
+      litAt = new Float64Array(n);
+      val = new Float32Array(n);
+      phase = new Float32Array(n);
+      rate = new Float32Array(n);
+      for (let i = 0; i < n; i++) {
+        phase[i] = Math.random() * Math.PI * 2;
+        rate[i] = 0.004 + Math.random() * 0.009;
+      }
+      ripples = [];
+    }
+    new ResizeObserver(resize).observe(hero);
+
+    // Calls fn(index, distance) for every dot within `radius` of (x, y)
+    function near(x, y, radius, fn) {
+      const c0 = Math.max(0, Math.ceil((x - radius - originX) / SPACING));
+      const c1 = Math.min(cols - 1, Math.floor((x + radius - originX) / SPACING));
+      const r0 = Math.max(0, Math.ceil((y - radius - originY) / SPACING));
+      const r1 = Math.min(rows - 1, Math.floor((y + radius - originY) / SPACING));
+      for (let r = r0; r <= r1; r++) {
+        for (let c = c0; c <= c1; c++) {
+          const d = Math.hypot(originX + c * SPACING - x, originY + r * SPACING - y);
+          if (d < radius) fn(r * cols + c, d);
+        }
+      }
+    }
+
+    // Soft pool around the pointer; brightest at the centre
+    function light(x, y, now) {
+      near(x, y, REACH, (i, d) => {
+        const t = 1 - d / REACH;
+        const v = t * t * (3 - 2 * t) * 0.8;
+        if (v >= pool(i, now)) {
+          peak[i] = v;
+          litAt[i] = now;
+        }
+      });
+    }
+
+    function draw(now) {
+      ctx.clearRect(0, 0, w, h);
+      let alive = false;
+      for (let i = 0; i < val.length; i++) {
+        val[i] = pool(i, now);
+        if (val[i] > 0.01) alive = true;
+      }
+      // Ripples: an expanding ring that fades as it grows
+      ripples = ripples.filter((rp) => now - rp.t < RIPPLE_LIFE);
+      for (const rp of ripples) {
+        const age = (now - rp.t) / RIPPLE_LIFE;
+        const radius = ((now - rp.t) / 1000) * RIPPLE_SPEED;
+        const strength = (1 - age) * (1 - age);
+        near(rp.x, rp.y, radius + RIPPLE_WIDTH * 2, (i, d) => {
+          const k = (d - radius) / RIPPLE_WIDTH;
+          const v = strength * Math.exp(-k * k);
+          if (v > val[i]) val[i] = v;
+        });
+        alive = true;
+      }
+      ctx.fillStyle = "#fff";
+      for (let i = 0; i < val.length; i++) {
+        let v = val[i];
+        if (v < 0.02) continue;
+        // Glimmer: each dot pulses on its own clock, with the odd bright spark
+        const tw = 0.5 + 0.5 * Math.sin(now * rate[i] + phase[i]);
+        v *= 0.35 + 0.65 * tw * tw;
+        ctx.globalAlpha = Math.min(1, v * MAX_ALPHA * 1.25);
+        const radius = DOT_MIN + (DOT_MAX - DOT_MIN) * v;
+        ctx.beginPath();
+        ctx.arc(originX + (i % cols) * SPACING, originY + Math.floor(i / cols) * SPACING, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      return alive;
+    }
+
+    function frame() {
+      if (draw(performance.now())) requestAnimationFrame(frame);
+      else running = false;
+    }
+
+    hero.addEventListener("pointermove", (event) => {
+      if (dotCanvas.hidden) return;
+      const rect = hero.getBoundingClientRect();
+      const p = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      const now = performance.now();
+      // Fill in between samples so fast movements leave a continuous trail
+      if (prev) {
+        const dist = Math.hypot(p.x - prev.x, p.y - prev.y);
+        const steps = Math.ceil(dist / (REACH / 2));
+        for (let s = 1; s < steps; s++) {
+          light(prev.x + ((p.x - prev.x) * s) / steps, prev.y + ((p.y - prev.y) * s) / steps, now);
+        }
+        sinceRipple += dist;
+      } else {
+        sinceRipple = RIPPLE_EVERY; // entering the header: ripple straight away
+      }
+      light(p.x, p.y, now);
+      if (sinceRipple >= RIPPLE_EVERY) {
+        sinceRipple = 0;
+        ripples.push({ x: p.x, y: p.y, t: now });
+        if (ripples.length > 14) ripples.shift();
+      }
+      prev = p;
+      if (!running) {
+        running = true;
+        requestAnimationFrame(frame);
+      }
+    });
+    hero.addEventListener("pointerleave", () => (prev = null));
+  }
+
   // ---------- Titles switch (Resources menu; also ?titles=serif) ----------
   const titleButtons = $$("[data-titles-set]");
   function setTitles(name, remember) {
