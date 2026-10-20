@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kamino — Brand Illustrations</title>
+    <script type="module" crossorigin src="./assets/index-Dfnpqo7h.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Cyn-Oyr4.css">
+  </head>
+  <body>
+    <div id="app">
+      <div id="stage"></div>
+      <aside id="panel">
+        <header>
+          <img src="./kamino-logo.webp" alt="Kamino" class="logo" />
+          <p class="sub">brand illustrations</p>
+          <p class="version">V1.1</p>
+        </header>
+        <select id="illustration-select" aria-label="Illustration"></select>
+        <div id="controls"></div>
+        <div class="section-label">Camera</div>
+        <div id="camera-controls">
+          <div class="seg">
+            <button id="cam-persp" class="active">Perspective</button>
+            <button id="cam-ortho">Orthographic</button>
+          </div>
+          <div class="control">
+            <label>
+              <span>Zoom</span>
+              <span class="value" id="zoom-value">1.00</span>
+            </label>
+            <input type="range" id="zoom" min="0.4" max="4" step="0.01" value="1" />
+          </div>
+          <div class="control">
+            <label>
+              <span>Orbit</span>
+              <span class="value" id="azimuth-value">0 °</span>
+            </label>
+            <input type="range" id="azimuth" min="-180" max="180" step="1" value="0" />
+          </div>
+          <div class="control">
+            <label>
+              <span>Elevation</span>
+              <span class="value" id="elevation-value">0 °</span>
+            </label>
+            <input type="range" id="elevation" min="-89" max="89" step="1" value="0" />
+          </div>
+          <button id="reset-camera" class="ghost">Reset camera</button>
+        </div>
+        <div class="section-label">Material</div>
+        <div class="seg" id="material-toggle">
+          <button id="mat-ink" class="active">Ink</button>
+          <button id="mat-chrome">Chrome</button>
+        </div>
+        <div class="section-label">Export</div>
+        <div id="export-controls">
+          <input type="text" id="export-name" placeholder="preset name" spellcheck="false" />
+          <button id="export" class="ghost">Export settings</button>
+          <button id="export-svg" class="ghost">Export SVG</button>
+          <button id="export-svg-anim" class="ghost">Export SVG animation</button>
+          <div class="control">
+            <label>
+              <span>Video length</span>
+              <span class="value" id="video-length-value">6 s</span>
+            </label>
+            <input type="range" id="video-length" min="2" max="20" step="1" value="6" />
+          </div>
+          <button id="export-video" class="ghost">Export video (.mov)</button>
+        </div>
+        <footer>
+          <button id="reset">Reset</button>
+          <p class="hint">drag rotates the camera &middot; tilt rotates the object</p>
+        </footer>
+      </aside>
+    </div>
+  </body>
+</html>
