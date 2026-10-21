@@ -38,14 +38,14 @@
   transform-origin: 0 0;
 }
 
-/* Crop matches Figma: image at 1346×753, placed so the paper sits where the line and
-   signature expect it (hero-v3: -568, -108; hero-v2 was -575, -108) */
+/* hero-v4 is shot at the stage's own proportions (1120×893 ≈ 650×518), with the paper exactly
+   where the line and signature expect it, so it simply fills the stage */
 .newsletter__media .stage__image {
   position: absolute;
-  left: -568px;
-  top: -108px;
-  width: 1346px;
-  height: 753px;
+  left: 0;
+  top: 0;
+  width: 650px;
+  height: 518px;
   max-width: none;
   object-fit: fill;
   pointer-events: none;

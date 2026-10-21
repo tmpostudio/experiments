@@ -22,11 +22,50 @@
   }
 
   // ---------- three.js pieces ----------
-  const load = (file) => import(new URL(file, here).href);
+  // Carries landing.js's ?v= cache-buster onto the lazy modules (their chunks are content-hashed)
+  const load = (file) => import(new URL(file + new URL(here).search, here).href);
   const heroArt = $("#hero-art");
   if (heroArt) load("hero-art.js").then((m) => m.mountHero(heroArt)).catch((e) => console.warn("[hero art]", e));
   const apy = $("#apy");
   whenNear(apy, () => load("apy-story.js").then((m) => m.mountApy(apy)).catch((e) => console.warn("[apy story]", e)), "800px 0px");
+
+  // ---------- Floating nav: hides on the way down, slides back in (on glass) on the way up ----------
+  const nav = $(".l-nav");
+  const navHero = $(".l-hero");
+  if (nav && navHero) {
+    const slot = document.createElement("div"); // keeps the header's layout while the nav is lifted out
+    let floating = false, shown = false, lastY = scrollY, ticking = false;
+    const setShown = (v) => { shown = v; nav.classList.toggle("is-shown", v); };
+    function float(on) {
+      floating = on;
+      if (on) {
+        slot.style.height = `${nav.offsetHeight}px`;
+        nav.before(slot);
+        nav.classList.add("is-floating", "no-anim"); // starts out of view, no slide
+        setShown(false);
+        requestAnimationFrame(() => requestAnimationFrame(() => nav.classList.remove("no-anim")));
+      } else {
+        nav.classList.remove("is-floating", "is-shown", "no-anim");
+        slot.remove();
+      }
+    }
+    function update() {
+      ticking = false;
+      const y = scrollY;
+      const pastHeader = y > navHero.offsetTop + navHero.offsetHeight;
+      if (!floating && pastHeader) float(true);
+      else if (floating && y <= 0) float(false); // back at the very top: home in the header
+      if (floating) {
+        const dy = y - lastY;
+        const menuOpen = !!$(".l-menu.is-open", nav);
+        if (dy > 6 && !menuOpen) setShown(false);
+        else if (dy < -6) setShown(true);
+      }
+      lastY = y;
+    }
+    window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    update();
+  }
 
   // ---------- Nav dropdowns: hover on desktop, click/keyboard everywhere ----------
   const menus = $$(".l-menu");
@@ -56,19 +95,21 @@
     hero.dataset.hero = name;
     $$("[data-hero-variant]", hero).forEach((el) => (el.hidden = el.dataset.heroVariant !== name));
     heroButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.heroSet === name)));
-    if (remember) try { localStorage.setItem("landing-v3:hero", name); } catch (e) {}
+    if (remember) try { localStorage.setItem("landing-v4:hero", name); } catch (e) {}
   }
   heroButtons.forEach((b) => b.addEventListener("click", () => setHero(b.dataset.heroSet, true)));
   let startHero = new URLSearchParams(location.search).get("hero");
-  if (!startHero) try { startHero = localStorage.getItem("landing-v3:hero"); } catch (e) {}
-  setHero(["dots", "studio"].includes(startHero) ? startHero : "app", false); // default: App screen
+  if (!startHero) try { startHero = localStorage.getItem("landing-v4:hero"); } catch (e) {}
+  setHero(["app", "half"].includes(startHero) ? startHero : "studio", false); // default: Studio (the Dots header is retired from the switch)
 
-  // ---------- Hover dot grid over the photo headers (App screen, Studio) ----------
+  // ---------- Hover dot grid: header photos (App screen, Studio) and the commodity video ----------
   // After kamino-sign-here/js/dots.js, reworked for the header: a fine grid of invisible
   // white dots. The pointer lights a wide soft pool around it and sends out ripples;
   // every lit dot twinkles at its own pace, so the trail glimmers as it fades.
-  const dotCanvas = $(".l-hero__dots");
-  if (hero && dotCanvas && !reduced) {
+  // mountDots(host, canvas, active): host takes the pointer and sets the size; active() can
+  // switch it off (e.g. headers it doesn't suit). Used by the header and the commodity section.
+  function mountDots(host, dotCanvas, active = () => true) {
+    if (!host || !dotCanvas || reduced) return;
     const SPACING = 11;          // grid pitch
     const DOT_MIN = 0.7;         // dot radius when barely lit…
     const DOT_MAX = 2.1;         // …and at full brightness
@@ -100,8 +141,8 @@
     }
 
     function resize() {
-      w = hero.clientWidth;
-      h = hero.clientHeight;
+      w = host.clientWidth;
+      h = host.clientHeight;
       if (!w || !h) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       dotCanvas.width = Math.round(w * dpr);
@@ -123,7 +164,7 @@
       }
       ripples = [];
     }
-    new ResizeObserver(resize).observe(hero);
+    new ResizeObserver(resize).observe(host);
 
     // Calls fn(index, distance) for every dot within `radius` of (x, y)
     function near(x, y, radius, fn) {
@@ -193,9 +234,9 @@
       else running = false;
     }
 
-    hero.addEventListener("pointermove", (event) => {
-      if (hero.dataset.hero === "dots") return; // photo headers only
-      const rect = hero.getBoundingClientRect();
+    host.addEventListener("pointermove", (event) => {
+      if (!active()) return;
+      const rect = host.getBoundingClientRect();
       const p = { x: event.clientX - rect.left, y: event.clientY - rect.top };
       const now = performance.now();
       // Fill in between samples so fast movements leave a continuous trail
@@ -221,8 +262,10 @@
         requestAnimationFrame(frame);
       }
     });
-    hero.addEventListener("pointerleave", () => (prev = null));
+    host.addEventListener("pointerleave", () => (prev = null));
   }
+  mountDots(hero, $(".l-hero__dots"), () => !["dots", "half"].includes(hero.dataset.hero)); // full-bleed photo headers only
+  mountDots($(".l-commodity"), $(".l-commodity__dots"));
 
   // ---------- Titles switch (Resources menu; also ?titles=serif) ----------
   const titleButtons = $$("[data-titles-set]");
@@ -235,6 +278,305 @@
   let startTitles = new URLSearchParams(location.search).get("titles");
   if (!startTitles) try { startTitles = localStorage.getItem("landing-v2:titles"); } catch (e) {}
   setTitles(startTitles === "serif" ? "serif" : "sans", false); // default: Sans
+
+  // ---------- Platform section switch (Resources menu; also ?platform=stack) ----------
+  // Stack: the pinned card stack. Row: four cards side by side with the same live line art.
+  const platformStack = $("#platform");
+  const platformRow = $("#platform-row");
+  const platformButtons = $$("[data-platform-set]");
+  let platformRowLoaded = false;
+  function setPlatform(name, remember) {
+    if (!platformStack || !platformRow) return;
+    platformStack.hidden = name === "row";
+    platformRow.hidden = name !== "row";
+    platformButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.platformSet === name)));
+    if (remember) try { localStorage.setItem("landing-v4:platform", name); } catch (e) {}
+    if (name === "row" && !platformRowLoaded) {
+      platformRowLoaded = true;
+      whenNear(platformRow, () => load("platform-row.js").then((m) => m.mountRow(platformRow)).catch((e) => console.warn("[platform row]", e)), "600px 0px");
+    }
+    window.dispatchEvent(new Event("resize")); // the stack and the pinned products row re-measure
+  }
+  platformButtons.forEach((b) => b.addEventListener("click", () => setPlatform(b.dataset.platformSet, true)));
+  let startPlatform = new URLSearchParams(location.search).get("platform");
+  if (!startPlatform) try { startPlatform = localStorage.getItem("landing-v4:platform"); } catch (e) {}
+
+  // ---------- Trusted: card carousel ----------
+  // The card in focus locks to the headline's left edge, widens and turns blue (CSS transitions);
+  // the track glides so it lands there. Drag / swipe, sideways scroll, arrow keys or click a card.
+  // Infinite: the cards are cloned into two sets either side; once a move has fully settled outside
+  // the middle set, it jumps (with every transition off) to the identical card in the middle set.
+  const tcar = $(".l-tcar");
+  function layoutTrust() {}
+  if (tcar) {
+    const track = $(".l-tcar__track", tcar);
+    const originals = $$(".l-tcard", tcar);
+    const n = originals.length;
+    const clone = (c) => {
+      const copy = c.cloneNode(true);
+      copy.setAttribute("aria-hidden", "true");
+      return copy;
+    };
+    const SETS = 5; // the middle one is the real cards
+    for (let k = 0; k < (SETS - 1) / 2; k++) {
+      track.prepend(...originals.map(clone));
+      track.append(...originals.map(clone));
+    }
+    const lo = n * (SETS - 1) / 2; // first index of the middle set
+    const tcards = $$(".l-tcard", tcar);
+    const title = $(".l-trust2__title");
+    const GAP = 24;
+    let index = lo + Math.min(1, n - 1);
+    let off = 432, left = 0;
+    let settleTimer = 0;
+    let dragging = false;
+
+    const offsetFor = (i) => left - i * (off + GAP);
+    const setX = (x) => track.style.setProperty("--x", `${x.toFixed(1)}px`);
+    function instantly(fn) {
+      tcar.classList.add("is-instant");
+      fn();
+      void track.offsetWidth; // apply without transitions
+      requestAnimationFrame(() => requestAnimationFrame(() => tcar.classList.remove("is-instant")));
+    }
+    function go(i) {
+      index = Math.max(0, Math.min(tcards.length - 1, i));
+      tcards.forEach((c, k) => {
+        c.classList.toggle("is-active", k === index);
+        if (k >= lo && k < lo + n) c.setAttribute("aria-current", String(k === index));
+      });
+      setX(offsetFor(index));
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(recentre, 800); // fallback if transitionend doesn't arrive
+    }
+    // Back into the middle set once the glide has finished
+    function recentre() {
+      clearTimeout(settleTimer);
+      if (dragging || (index >= lo && index < lo + n)) return;
+      const same = lo + (((index - lo) % n) + n) % n;
+      instantly(() => go(same));
+      clearTimeout(settleTimer);
+    }
+    track.addEventListener("transitionend", (e) => {
+      if (e.target === track && e.propertyName === "transform") recentre();
+    });
+    layoutTrust = function () {
+      if (!title.offsetParent) return; // section hidden by the switch
+      left = title.getBoundingClientRect().left;
+      off = Math.min(432, innerWidth * 0.72);
+      track.style.setProperty("--off", `${off}px`);
+      track.style.setProperty("--on", `${Math.min(880, innerWidth - left * 2)}px`);
+      instantly(() => go(index));
+    };
+    layoutTrust();
+    window.addEventListener("resize", layoutTrust);
+
+    // Drag / swipe: the track follows the pointer, then locks to the nearest card
+    let startX = 0, dx = 0, moved = false, downCard = null;
+    tcar.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      dragging = true;
+      moved = false;
+      dx = 0;
+      startX = e.clientX;
+      downCard = e.target.closest(".l-tcard");
+      clearTimeout(settleTimer);
+      tcar.setPointerCapture(e.pointerId);
+    });
+    tcar.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 4) {
+        moved = true;
+        tcar.classList.add("is-dragging");
+      }
+      if (moved) setX(offsetFor(index) + dx);
+    });
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      tcar.classList.remove("is-dragging");
+      if (moved) {
+        let steps = Math.round(-dx / (off + GAP));
+        if (!steps && Math.abs(dx) > 50) steps = dx < 0 ? 1 : -1;
+        go(index + steps);
+      } else {
+        go(downCard ? tcards.indexOf(downCard) : index);
+      }
+    };
+    tcar.addEventListener("pointerup", endDrag);
+    tcar.addEventListener("pointercancel", endDrag);
+
+    // Trackpad sideways scroll: one card per gesture
+    let wheelSum = 0, wheelLocked = false, wheelTimer = 0;
+    tcar.addEventListener("wheel", (e) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => { wheelLocked = false; wheelSum = 0; }, 180);
+      if (wheelLocked) return;
+      wheelSum += e.deltaX;
+      if (Math.abs(wheelSum) > 40) {
+        go(index + (wheelSum > 0 ? 1 : -1));
+        wheelLocked = true;
+        wheelSum = 0;
+      }
+    }, { passive: false });
+
+    tcar.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { go(index + 1); e.preventDefault(); }
+      if (e.key === "ArrowLeft") { go(index - 1); e.preventDefault(); }
+    });
+  }
+
+  // ---------- Trusted section switch (Resources menu; also ?trust=tabs) ----------
+  const trustTabs = $("#trust");
+  const trustCards = $("#trust-cards");
+  const trustButtons = $$("[data-trust-set]");
+  function setTrust(name, remember) {
+    if (!trustTabs || !trustCards) return;
+    trustTabs.hidden = name !== "tabs";
+    trustCards.hidden = name === "tabs";
+    trustButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.trustSet === name)));
+    if (remember) try { localStorage.setItem("landing-v3:trust", name); } catch (e) {}
+    layoutTrust();
+    window.dispatchEvent(new Event("resize")); // later sections (stack, pinned rows) re-measure
+  }
+  trustButtons.forEach((b) => b.addEventListener("click", () => setTrust(b.dataset.trustSet, true)));
+  let startTrust = new URLSearchParams(location.search).get("trust");
+  if (!startTrust) try { startTrust = localStorage.getItem("landing-v3:trust"); } catch (e) {}
+
+  // ---------- Partner stories: flip carousel ----------
+  // Paper-thin cards standing in a row under a near-orthographic camera. Stacked cards are turned
+  // ANGLE about their upright axis (right edge away) and tipped TIP, so they read as overlapping
+  // parallelograms receding to the right, each lying over the one before. The card in focus turns
+  // back flat and square to you; the turn is a real 3D rotation, eased with the position. The
+  // stories repeat, so it loops endlessly. pos is a float card index eased towards target.
+  const flip = $(".l-flip");
+  if (flip) {
+    const fcards = $$(".l-fcard", flip);
+    const N = fcards.length;
+    const ANGLE = 74;     // how far a stacked card is turned about its upright axis (deg; was 64)
+    const TIP = 0;        // and tipped, so its far edge rides higher (deg); 0 = head-on, eye level with the cards (was 23)
+    const LEFT = 4;       // cards kept to the left of the focus card (they sit off screen); the rest run right
+    let pos = 0, target = 0, step = 80, inner = 360, width = 380;
+    let raf = 0, lastT = 0, dragging = false, moved = false, startX = 0, startPos = 0, downCard = null;
+    let vel = 0, lastX = 0, lastMoveT = 0, dragTo = 0;
+
+    const smooth = (t) => t * t * (3 - 2 * t);
+    // Position round the loop, offset so most cards sit to the right: from -LEFT to N - LEFT
+    const wrap = (d) => ((((d + LEFT) % N) + N) % N) - LEFT;
+    const stage = $(".l-flip__stage", flip);
+    const flipTitle = $("#stories-flip-title");
+    function measure() {
+      width = fcards[0].offsetWidth || 380; // from the CSS --w
+      // The card in focus starts on the first column, in line with the section title
+      if (flipTitle.offsetParent) stage.style.left = `${flipTitle.getBoundingClientRect().left - flip.getBoundingClientRect().left + width / 2}px`;
+      step = width * (innerWidth < 720 ? 0.13 : 0.215); // spacing between stacked cards
+      // centre of the first stacked card: past the focused card's edge plus half a turned card
+      inner = width / 2 + (innerWidth < 720 ? 24 : 80) + (width * Math.cos(ANGLE * Math.PI / 180)) / 2;
+    }
+    function render() {
+      fcards.forEach((card, i) => {
+        const d = wrap(i - pos);
+        const ad = Math.abs(d);
+        const t = smooth(Math.min(ad, 1)); // 0 in focus → 1 stacked
+        const x = Math.sign(d) * (t * inner + Math.max(ad - 1, 0) * step);
+        card.style.transform = `translateX(${x.toFixed(1)}px) rotateX(${(-TIP * t).toFixed(2)}deg) rotateY(${(t * ANGLE).toFixed(2)}deg)`;
+        card.style.setProperty("--turn", t.toFixed(3));
+        // Cards wrap round at the far left (off screen); fade them there so the jump never shows
+        const fade = Math.max(0, Math.min(1, LEFT - 0.5 + d));
+        card.style.opacity = fade.toFixed(3);
+        card.style.visibility = fade > 0 ? "visible" : "hidden";
+        card.classList.toggle("is-front", ad < 0.5);
+      });
+    }
+    function tick(now) {
+      const dt = Math.min((now - lastT) / 1000, 0.05);
+      lastT = now;
+      const goal = dragging ? dragTo : target;
+      pos += (goal - pos) * (reduced ? 1 : 1 - Math.exp(-dt * (dragging ? 18 : 6.5)));
+      render();
+      if (dragging || Math.abs(goal - pos) > 0.0005) raf = requestAnimationFrame(tick);
+      else { pos = goal; render(); raf = 0; }
+    }
+    function kick() {
+      if (!raf) { lastT = performance.now(); raf = requestAnimationFrame(tick); }
+    }
+    const go = (i) => { target = Math.round(i); kick(); };
+
+    measure();
+    render();
+    window.addEventListener("resize", () => { measure(); render(); });
+
+
+    // Drag: the cards follow the pointer (lightly smoothed); on release they settle on the nearest
+    // card, carried further by the flick speed
+    const PX_PER_CARD = () => step * 2.6;
+    flip.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      dragging = true; moved = false;
+      startX = lastX = e.clientX; startPos = dragTo = pos; vel = 0; lastMoveT = performance.now();
+      downCard = e.target.closest(".l-fcard");
+      flip.setPointerCapture(e.pointerId);
+      kick();
+    });
+    flip.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 4) { moved = true; flip.classList.add("is-dragging"); }
+      if (!moved) return;
+      const now = performance.now();
+      vel = vel * 0.6 + 0.4 * ((e.clientX - lastX) / Math.max(1, now - lastMoveT)); // px per ms
+      lastX = e.clientX; lastMoveT = now;
+      dragTo = startPos - dx / PX_PER_CARD();
+    });
+    const endDrag = () => {
+      if (!dragging) return;
+      dragging = false;
+      flip.classList.remove("is-dragging");
+      if (moved) go(dragTo - vel * 220 / PX_PER_CARD());
+      else if (downCard && !downCard.classList.contains("is-front")) go(pos + wrap(fcards.indexOf(downCard) - pos));
+      else go(target);
+    };
+    flip.addEventListener("pointerup", endDrag);
+    flip.addEventListener("pointercancel", endDrag);
+    flip.addEventListener("click", (e) => { if (moved) e.preventDefault(); }, true);
+
+    // Trackpad sideways scroll moves through freely, then settles on a card
+    let wheelTimer = 0;
+    flip.addEventListener("wheel", (e) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      target += e.deltaX / 140;
+      kick();
+      clearTimeout(wheelTimer);
+      wheelTimer = setTimeout(() => go(target), 140);
+    }, { passive: false });
+
+    flip.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { go(target + 1); e.preventDefault(); }
+      if (e.key === "ArrowLeft") { go(target - 1); e.preventDefault(); }
+    });
+    $("[data-flip-prev]").addEventListener("click", () => go(target - 1));
+    $("[data-flip-next]").addEventListener("click", () => go(target + 1));
+  }
+
+  // ---------- Partner stories switch (Resources menu; also ?stories=photos) ----------
+  const storiesPhotos = $("#stories");
+  const storiesFlip = $("#stories-flip");
+  const storiesButtons = $$("[data-stories-set]");
+  function setStories(name, remember) {
+    if (!storiesPhotos || !storiesFlip) return;
+    storiesPhotos.hidden = name !== "photos";
+    storiesFlip.hidden = name === "photos";
+    storiesButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.storiesSet === name)));
+    if (remember) try { localStorage.setItem("landing-v3:stories", name); } catch (e) {}
+    window.dispatchEvent(new Event("resize"));
+  }
+  storiesButtons.forEach((b) => b.addEventListener("click", () => setStories(b.dataset.storiesSet, true)));
+  let startStories = new URLSearchParams(location.search).get("stories");
+  if (!startStories) try { startStories = localStorage.getItem("landing-v3:stories"); } catch (e) {}
 
   // ---------- Products layout switch (Resources menu; also ?products=row) ----------
   // Row: the section pins and vertical scrolling carries the cards sideways. On screens too
@@ -294,7 +636,10 @@
   }
   let startProducts = new URLSearchParams(location.search).get("products");
   if (!startProducts) try { startProducts = localStorage.getItem("landing-v2:products"); } catch (e) {}
-  setProducts(startProducts === "grid" ? "grid" : "row", false); // default: Row
+  setProducts("row", false); // Products switch retired from the menu: always the row
+  setPlatform(startPlatform === "stack" ? "stack" : "row", false); // default: Row (four cards)
+  setTrust(startTrust === "tabs" ? "tabs" : "cards", false); // default: Cards
+  setStories(startStories === "photos" ? "photos" : "flip", false); // default: Flip
 
   // ---------- Marquee: second copy of the row for a seamless loop ----------
   const row = $(".l-marquee__row");
@@ -555,22 +900,6 @@
     }, "-15% 0px");
   });
 
-  // ---------- Commodity: slow parallax on the photo ----------
-  const commodity = $(".l-commodity");
-  if (commodity && !reduced) {
-    const bg = $(".l-commodity__bg", commodity);
-    let queued = false;
-    const move = () => {
-      queued = false;
-      const r = commodity.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > innerHeight) return;
-      const p = (r.top + r.height / 2 - innerHeight / 2) / innerHeight; // -1..1 around centre
-      bg.style.transform = `translateY(${(p * 60).toFixed(1)}px) scale(1.08)`;
-    };
-    window.addEventListener("scroll", () => { if (!queued) { queued = true; requestAnimationFrame(move); } }, { passive: true });
-    move();
-  }
-
   // ---------- Commodity: background video plays only while the section is on screen ----------
   const commodityVideo = $("video.l-commodity__bg");
   if (commodityVideo && !reduced && "IntersectionObserver" in window) {
@@ -627,8 +956,7 @@
   }
 
   // ---------- Build: "Kamino is for" cycles; hovering an item holds it ----------
-  const cycle = $("[data-cycle]");
-  if (cycle) {
+  $$("[data-cycle]").forEach((cycle) => {
     const items = $$("li", cycle);
     let index = 0;
     let paused = false;
@@ -638,22 +966,38 @@
       li.addEventListener("mouseleave", () => { paused = false; });
     });
     if (!reduced) setInterval(() => { if (!paused) show((index + 1) % items.length); }, 1800);
-  }
+  });
+
+  // ---------- What's new: accordion; one story open at a time ----------
+  const newsItems = $$(".l-news__item");
+  newsItems.forEach((item) => {
+    $(".l-news__toggle", item).addEventListener("click", () => {
+      const open = !item.classList.contains("is-open");
+      newsItems.forEach((other) => {
+        const on = other === item && open;
+        other.classList.toggle("is-open", on);
+        $(".l-news__toggle", other).setAttribute("aria-expanded", String(on));
+      });
+    });
+  });
 
   // ---------- Placeholder links don't jump to the top ----------
   $$('a[href="#"]').forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
 
   // ---------- Gentle reveal for section content ----------
   if (!reduced && "IntersectionObserver" in window) {
-    const targets = $$(".l-products .l-headline, .l-product, .l-trust .l-headline, .l-quote, .l-record .l-split, .l-bento > div, .l-audits, .l-stories .l-split, .l-build .l-split, .l-build__grid > *, .l-news__inner > *");
+    const targets = $$(".l-products .l-headline, .l-product, .l-trust .l-headline, .l-quote, .l-record .l-split, .l-audits, .l-stories .l-split, .l-bfs__head, .l-news__inner > *");
     targets.forEach((el, i) => {
       el.classList.add("l-reveal");
       el.style.transitionDelay = `${(i % 4) * 70}ms`;
     });
     const io = new IntersectionObserver((entries) => entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
-      entry.target.classList.add("is-in");
-      io.unobserve(entry.target);
+      const el = entry.target;
+      el.classList.add("is-in");
+      io.unobserve(el);
+      // Drop the stagger once revealed, so later hovers on these elements aren't delayed by it
+      setTimeout(() => (el.style.transitionDelay = ""), 1100);
     }), { rootMargin: "0px 0px -10% 0px" });
     targets.forEach((el) => io.observe(el));
   }

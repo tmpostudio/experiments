@@ -21,7 +21,7 @@ const STILL_STEP = 1 / 30;
 // Zoom and target are framed on each piece's largest outline over the whole animation.
 // ink recolours the line work (it's black in every module); stillAt / stillParams shape the
 // reduced-motion frame only.
-const ART = {
+export const ART = {
   // Credit: its field rises from the floor, so it looks 1.37 up the spin axis to sit centred;
   // fills ~72% of the box height fully drawn. Held at its composed 3/4 angle for the still
   // (the auto orbit would have turned it edge-on).
@@ -38,7 +38,7 @@ const ART = {
   curation: { create: createAutomation, camera: { type: "perspective", zoom: 0.92, azimuth: 0, elevation: 0, target: [0, 0.22, 0] }, params: { firing: 3 }, ink: 0xffffff },
 };
 
-function createCamera({ type, zoom, azimuth, elevation, target = [0, 0, 0] }) {
+export function createCamera({ type, zoom, azimuth, elevation, target = [0, 0, 0] }) {
   const camera = type === "ortho"
     ? new OrthographicCamera(-1, 1, FRUSTUM_HEIGHT / 2, -FRUSTUM_HEIGHT / 2, 0.1, 100)
     : new PerspectiveCamera(40, 1, 0.1, 100);
@@ -54,13 +54,13 @@ function createCamera({ type, zoom, azimuth, elevation, target = [0, 0, 0] }) {
 // Recolours every line and dot material in the illustration, from outside the module (as the
 // brand tool's Chrome mode swaps materials). Automation builds its materials up front and shares
 // them with anything it creates later, so one pass covers it.
-function setInk(group, color) {
+export function setInk(group, color) {
   group.traverse((object) => {
     if (object.material?.color) object.material.color.set(color);
   });
 }
 
-function setAspect(camera, aspect) {
+export function setAspect(camera, aspect) {
   if (camera.isOrthographicCamera) {
     camera.left = (-FRUSTUM_HEIGHT / 2) * aspect;
     camera.right = (FRUSTUM_HEIGHT / 2) * aspect;

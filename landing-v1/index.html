@@ -9,15 +9,24 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Coded sections, reused as-is from their experiments -->
-  <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1009">
-  <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1009">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1010f">
-  <link rel="stylesheet" href="css/landing.css?v=1010f">
+  <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
+  <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1023">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1023i">
+  <link rel="stylesheet" href="css/landing.css?v=1023i">
 </head>
 <body class="l-page">
+  <!-- Hiring tab: a curved folder tab peeking in from the right edge of every screen. Hover pulls
+       it left to show the black page it belongs to; click goes to the careers page. -->
+  <a class="l-hire" href="#" aria-label="We’re hiring — see open roles"><!-- careers link to come (was ../careers/) -->
+    <span class="l-hire__page" aria-hidden="true"></span>
+    <svg class="l-hire__tab" viewBox="0 0 38 210" aria-hidden="true" preserveAspectRatio="none">
+      <path d="M38 0 L36 0 C36 15 27 20 16 25 C6 29 0 36 0 50 L0 160 C0 174 6 181 16 185 C27 190 36 195 36 210 L38 210 Z"/>
+    </svg>
+    <span class="l-hire__label">We’re hiring</span>
+  </a>
 
   <!-- ============ Hero ============ -->
-  <header class="l-hero" data-hero="app">
+  <header class="l-hero" data-hero="studio">
     <nav class="l-nav" aria-label="Main">
       <a class="l-nav__logo" href="#" aria-label="Kamino home"><img src="assets/logos/kamino.svg" alt="Kamino" width="95" height="22"></a>
 
@@ -56,19 +65,29 @@
             <!-- Mockup only: flips between the header concepts -->
             <div class="l-menu__switch" role="group" aria-label="Header concept">
               <span class="l-mono">Header</span>
-              <button type="button" data-hero-set="dots" aria-pressed="false">Dots</button>
-              <button type="button" data-hero-set="studio" aria-pressed="false">Studio</button>
-              <button type="button" data-hero-set="app" aria-pressed="true">App screen</button>
+              <button type="button" data-hero-set="studio" aria-pressed="true">Studio</button>
+              <button type="button" data-hero-set="app" aria-pressed="false">App screen</button>
+              <button type="button" data-hero-set="half" aria-pressed="false">Half</button>
             </div>
             <div class="l-menu__switch" role="group" aria-label="Title typeface">
               <span class="l-mono">Titles</span>
               <button type="button" data-titles-set="sans" aria-pressed="true">Sans</button>
               <button type="button" data-titles-set="serif" aria-pressed="false">Serif</button>
             </div>
-            <div class="l-menu__switch" role="group" aria-label="Products layout">
-              <span class="l-mono">Products</span>
-              <button type="button" data-products-set="grid" aria-pressed="false">Grid</button>
-              <button type="button" data-products-set="row" aria-pressed="true">Row</button>
+            <div class="l-menu__switch" role="group" aria-label="Platform section">
+              <span class="l-mono">Platform</span>
+              <button type="button" data-platform-set="stack" aria-pressed="false">Stack</button>
+              <button type="button" data-platform-set="row" aria-pressed="true">Row</button>
+            </div>
+            <div class="l-menu__switch" role="group" aria-label="Trusted section">
+              <span class="l-mono">Trusted</span>
+              <button type="button" data-trust-set="tabs" aria-pressed="false">Tabs</button>
+              <button type="button" data-trust-set="cards" aria-pressed="true">Cards</button>
+            </div>
+            <div class="l-menu__switch" role="group" aria-label="Partner stories">
+              <span class="l-mono">Partners</span>
+              <button type="button" data-stories-set="photos" aria-pressed="false">Photos</button>
+              <button type="button" data-stories-set="flip" aria-pressed="true">Flip</button>
             </div>
           </div>
         </li>
@@ -101,8 +120,8 @@
     </div>
 
     <!-- Header B: "Studio" — still life photo, serif headline, hiring tab (Figma 4718:16249) -->
-    <img class="l-hero__photo" data-hero-variant="studio" src="assets/hero-studio-api.webp?v=2" alt="" hidden>
-    <div class="l-hero__copy l-hero__copy--studio" data-hero-variant="studio" hidden>
+    <img class="l-hero__photo" data-hero-variant="studio" src="assets/hero-studio-api.webp?v=2" alt="">
+    <div class="l-hero__copy l-hero__copy--studio" data-hero-variant="studio">
       <h1 class="l-hero__title l-hero__title--serif">Connecting onchain finance to global capital.</h1>
       <p class="l-hero__lede">The credit and liquidity layer for a new generation of financial infrastructure</p>
       <div class="l-hero__actions">
@@ -111,12 +130,12 @@
       </div>
     </div>
     <!-- Header C: "App screen" — blurred photo, sans headline, product screenshot (Figma 4854:15470) -->
-    <img class="l-hero__photo" data-hero-variant="app" src="assets/hero-app-bg.webp?v=2" alt="">
+    <img class="l-hero__photo" data-hero-variant="app" src="assets/hero-app-bg.webp?v=2" alt="" hidden>
     <canvas class="l-hero__dots" aria-hidden="true"></canvas>
-    <div class="l-hero__app" data-hero-variant="app" aria-hidden="true">
+    <div class="l-hero__app" data-hero-variant="app" aria-hidden="true" hidden>
       <img src="assets/hero-app-screen.png" alt="" width="1536" height="1467">
     </div>
-    <div class="l-hero__copy l-hero__copy--app" data-hero-variant="app">
+    <div class="l-hero__copy l-hero__copy--app" data-hero-variant="app" hidden>
       <h1 class="l-hero__title">Connecting onchain finance and global capital.</h1>
       <p class="l-hero__lede">The credit and liquidity layer for a new generation of financial infrastructure</p>
       <div class="l-hero__actions">
@@ -125,6 +144,16 @@
       </div>
     </div>
 
+    <!-- Header D: "Half" — light page, copy left, the API still life filling the right half below the nav -->
+    <img class="l-hero__photo l-hero__half-photo" data-hero-variant="half" src="assets/build-api.webp" alt="" hidden>
+    <div class="l-hero__copy l-hero__copy--half" data-hero-variant="half" hidden>
+      <h1 class="l-hero__title">Connecting onchain finance to global capital.</h1>
+      <p class="l-hero__lede">The credit and liquidity layer for a new generation of financial infrastructure</p>
+      <div class="l-hero__actions">
+        <a class="l-btn l-btn--dark" href="#build">Build with us</a>
+        <a class="l-btn l-btn--outline" href="#">Open Kamino</a>
+      </div>
+    </div>
     <a class="l-hiring-tab" data-hero-variant="studio" href="#footer"><span>We’re Hiring</span></a>
     <a class="l-hiring-pill" data-hero-variant="studio" href="#footer">We are hiring. Explore open roles <img src="assets/ui/arrow-right.svg" alt="" width="12" height="12"></a>
   </header>
@@ -295,7 +324,7 @@
   </section>
 
   <!-- ============ Platform card stack (section-card-lock) ============ -->
-    <section class="platform" id="platform" data-art-src="js/card-art.js" aria-labelledby="platform-title">
+    <section class="platform" id="platform" data-art-src="js/card-art.js" aria-labelledby="platform-title" hidden>
       <div class="platform__inner">
         <div class="platform__head">
           <h2 class="platform__title" id="platform-title"><span class="platform__title-lead">One platform</span> to onboard assets, create credit markets, manage liquidity, build yield vaults, and get distribution.</h2>
@@ -358,8 +387,58 @@
       </div>
     </section>
 
+  <!-- ============ Platform, row concept (Figma 4895:29650) — swapped in by the Platform switch ============ -->
+  <section class="l-prow l-wrap" id="platform-row" aria-labelledby="platform-row-title">
+    <h2 class="l-headline" id="platform-row-title"><span class="l-ink">One platform</span> to onboard assets, create credit markets, manage liquidity, build yield vaults, and get distribution.</h2>
+    <div class="l-prow__scroller">
+      <!-- data-art picks the live illustration js/platform-row.js draws into .l-pcard__art -->
+      <div class="l-prow__track">
+        <article class="l-pcard" data-art="credit">
+          <div class="l-pcard__face">
+            <h3>Credit</h3>
+            <div class="l-pcard__art"></div>
+            <div class="l-pcard__foot">
+              <p>Offer fixed, variable, and bespoke credit Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <div class="l-pcard__cta"><div><a class="l-btn l-btn--outline" href="#">Explore Credit <span aria-hidden="true">→</span></a></div></div>
+            </div>
+          </div>
+        </article>
+        <article class="l-pcard" data-art="yield">
+          <div class="l-pcard__face">
+            <h3>Yield</h3>
+            <div class="l-pcard__art"></div>
+            <div class="l-pcard__foot">
+              <p>Offer fixed, variable, and bespoke credit Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <div class="l-pcard__cta"><div><a class="l-btn l-btn--outline" href="#">Explore Yield <span aria-hidden="true">→</span></a></div></div>
+            </div>
+          </div>
+        </article>
+        <article class="l-pcard" data-art="liquidity">
+          <div class="l-pcard__face">
+            <h3>Liquidity</h3>
+            <div class="l-pcard__art"></div>
+            <div class="l-pcard__foot">
+              <p>Offer fixed, variable, and bespoke credit Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <div class="l-pcard__cta"><div><a class="l-btn l-btn--outline" href="#">Explore Liquidity <span aria-hidden="true">→</span></a></div></div>
+            </div>
+          </div>
+        </article>
+        <article class="l-pcard l-pcard--dark" data-art="curation">
+          <div class="l-pcard__face">
+            <h3>Curation</h3>
+            <div class="l-pcard__art"></div>
+            <div class="l-pcard__foot">
+              <p>Offer fixed, variable, and bespoke credit Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p>
+              <div class="l-pcard__cta"><div><a class="l-btn l-btn--outline" href="#">Explore Curation <span aria-hidden="true">→</span></a></div></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ Testimonials ============ -->
-  <section class="l-trust l-wrap" id="trust">
+  <section class="l-trust l-wrap" id="trust" hidden>
     <h2 class="l-headline l-headline--center"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
 
     <div class="l-quote">
@@ -381,10 +460,52 @@
     </div>
   </section>
 
+  <!-- ============ Testimonials, card carousel (Figma 4956:32553) — swapped in by the Trusted switch ============ -->
+  <!-- The card in focus widens and turns blue; drag, swipe, scroll sideways, arrow keys or click a card (js/landing.js) -->
+  <section class="l-trust2" id="trust-cards" aria-labelledby="trust-cards-title">
+    <div class="l-wrap">
+      <h2 class="l-headline l-trust2__title" id="trust-cards-title"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
+    </div>
+    <div class="l-tcar" tabindex="0" aria-roledescription="carousel" aria-label="Testimonials">
+      <div class="l-tcar__track">
+        <figure class="l-tcard">
+          <img class="l-tcard__logo" src="assets/logos/binance-black.svg" alt="" style="--logo-h: 38px">
+          <div class="l-tcard__foot">
+            <blockquote>“Kamino turned idle balances into productive capital, with every risk in plain view.”</blockquote>
+            <figcaption class="l-tcard__by"><strong>Name Surname</strong><span>Title, Binance</span></figcaption>
+          </div>
+        </figure>
+        <figure class="l-tcard">
+          <img class="l-tcard__mark" src="assets/trust/kraken-mark-large.svg" alt="" aria-hidden="true">
+          <img class="l-tcard__logo" src="assets/logos/kraken-black.svg" alt="" style="--logo-h: 26px">
+          <div class="l-tcard__foot">
+            <blockquote>“The cleanest way we’ve found to put onchain credit to work for our users.”</blockquote>
+            <figcaption class="l-tcard__by"><strong>Name Surname</strong><span>Title, Kraken</span></figcaption>
+          </div>
+        </figure>
+        <figure class="l-tcard">
+          <img class="l-tcard__logo" src="assets/logos/anchorage-black.svg" alt="" style="--logo-h: 36px">
+          <div class="l-tcard__foot">
+            <blockquote>“Institutional-grade risk controls, with the transparency only onchain can offer.”</blockquote>
+            <figcaption class="l-tcard__by"><strong>Name Surname</strong><span>Title, Anchorage Digital</span></figcaption>
+          </div>
+        </figure>
+        <figure class="l-tcard">
+          <img class="l-tcard__logo" src="assets/logos/okx.svg" alt="" style="--logo-h: 24px">
+          <div class="l-tcard__foot">
+            <blockquote>“Kamino is the liquidity layer we build on, not around.”</blockquote>
+            <figcaption class="l-tcard__by"><strong>Name Surname</strong><span>Title, OKX</span></figcaption>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ Commodity yield ============ -->
   <section class="l-commodity" id="commodity">
     <!-- Looping background video; the still is the poster and the fallback -->
     <video class="l-commodity__bg" src="assets/commodity-2.webm" poster="assets/commodity.jpg" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"></video>
+    <canvas class="l-commodity__dots" aria-hidden="true"></canvas>
     <div class="l-commodity__inner">
       <div class="l-commodity__copy">
         <h2>Institutional Commodity Yield</h2>
@@ -440,16 +561,19 @@
       </div>
       <div class="apy__flood"></div>
       <div class="apy__stats">
-        <div class="apy__stat"><div class="apy__number">$21B</div><div class="apy__label">Loans Originated</div></div>
-        <div class="apy__stat"><div class="apy__number">$3.1B</div><div class="apy__label">Total Value Locked</div></div>
-        <div class="apy__stat"><div class="apy__number">1.4M</div><div class="apy__label">Positions Managed</div></div>
+        <!-- The stats roll in one by one and stack; the label rides as a superscript (src/apy-story.js) -->
+        <div class="apy__stack">
+          <div class="apy__stat"><div class="apy__number">$21B</div><div class="apy__label">Loans Originated</div></div>
+          <div class="apy__stat"><div class="apy__number">$3.1B</div><div class="apy__label">Total Value Locked</div></div>
+          <div class="apy__stat"><div class="apy__number">1.4M</div><div class="apy__label">Positions Managed</div></div>
+        </div>
       </div>
       <div class="apy__hint">Scroll</div>
     </div>
   </section>
 
   <!-- ============ Partner stories ============ -->
-  <section class="l-stories" id="stories">
+  <section class="l-stories" id="stories" hidden>
     <div class="l-wrap">
       <div class="l-split">
         <h2 class="l-display">The proof is in<br>the partners.</h2>
@@ -470,31 +594,380 @@
     </ul>
   </section>
 
-  <!-- ============ Build ============ -->
-  <section class="l-build l-wrap" id="build">
-    <div class="l-split">
-      <h2 class="l-display">Build on Kamino</h2>
-      <p>Plug into a trusted foundation of products. Earn, lend or borrow programmatically, and use our APIs to read market data and user positions.</p>
-    </div>
-    <div class="l-build__grid">
-      <div class="l-build__media" aria-hidden="true">
-        <img class="l-build__bg" src="assets/build-bg.jpg" alt="" loading="lazy">
-        <img class="l-build__column" src="assets/build-column.jpg" alt="" loading="lazy">
+  <!-- ============ Partner stories, flip carousel — swapped in by the Partners switch ============ -->
+  <!-- Paper-thin cards fanned in two stacks; the one in focus turns to face you (js/landing.js) -->
+  <section class="l-stories2" id="stories-flip" aria-labelledby="stories-flip-title">
+    <div class="l-wrap">
+      <div class="l-split">
+        <h2 class="l-display" id="stories-flip-title">The proof is in<br>the partners.</h2>
+        <p>Live credit markets run on Kamino’s contracts, Kamino Scope prices their assets, liquidation systems resolve unhealthy positions, and Kamino Vaults allocate capital under each manager’s mandate.</p>
       </div>
-      <div class="l-build__panel">
+      <div class="l-stories__nav">
+        <button class="l-round" data-flip-prev aria-label="Previous story"><img src="assets/arrow-left.svg" alt="" width="16" height="16"></button>
+        <button class="l-round" data-flip-next aria-label="Next story"><img src="assets/arrow-right.svg" alt="" width="16" height="16"></button>
+      </div>
+    </div>
+    <div class="l-flip" tabindex="0" aria-roledescription="carousel" aria-label="Partner stories">
+      <div class="l-flip__stage">
+        <!-- 6 stories, repeated so the row loops endlessly and fills out to the right edge -->
+        <article class="l-fcard" data-i="0">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" data-i="1">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" data-i="2">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" data-i="3">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" data-i="4">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" data-i="5">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="6">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="7">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="8">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="9">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="10">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="11">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="12">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="13">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="14">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="15">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="16">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="17">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="18">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="19">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="20">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="21">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="22">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="23">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="24">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="25">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="26">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="27">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="28">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-binance.svg" alt="Binance" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read Binance’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+        <article class="l-fcard" aria-hidden="true" data-i="29">
+          <span class="l-fcard__side l-fcard__side--l" aria-hidden="true"></span>
+          <span class="l-fcard__side l-fcard__side--r" aria-hidden="true"></span>
+          <div class="l-fcard__face">
+            <img class="l-fcard__logo" src="assets/logos/story-rockaway.svg" alt="RockawayX" width="160" height="32">
+            <div class="l-fcard__body">
+              <p>Company adds significant amount of growth through Kamino’s integration.</p>
+              <a class="l-fcard__cta" href="#">Read RockawayX’s story <span aria-hidden="true">→</span></a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Build: full-screen still life, copy top left, audiences along the foot ============ -->
+  <section class="l-bfs" id="build" aria-labelledby="build-title">
+    <img class="l-bfs__photo" src="assets/build-machine.webp" alt="" width="2000" height="792" loading="lazy">
+    <div class="l-wrap l-bfs__inner">
+      <div class="l-bfs__head">
+        <h2 class="l-display" id="build-title">Build on Kamino</h2>
+        <p>Plug into a trusted foundation of products. Earn, lend or borrow programmatically, and use our APIs to read market data and user positions.</p>
+        <a class="l-btn l-bfs__cta" href="#">Explore Kamino Docs <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="l-bfs__foot">
         <span class="l-mono">Kamino is for</span>
-        <ul class="l-build__list" data-cycle>
-          <li class="is-on">Fintechs</li><li>Banks</li><li>Apps</li><li>Wallets</li><li>Exchanges</li>
+        <ul class="l-bfs__list" data-cycle>
+          <li class="is-on">Fintechs</li>
+          <li>Banks</li>
+          <li>Apps</li>
+          <li>Wallets</li>
+          <li>Exchanges</li>
         </ul>
-        <a class="l-btn l-btn--outline" href="#">Explore Kamino Docs</a>
-        <img class="l-build__dots" src="assets/dots-column.svg" alt="">
       </div>
     </div>
   </section>
 
   <!-- ============ What's new ============ -->
   <section class="l-news" id="news">
-    <span class="l-tab l-mono">Blog</span>
     <div class="l-wrap l-news__inner">
       <div class="l-news__side">
         <h2 class="l-display">What’s New</h2>
@@ -503,13 +976,86 @@
           <a class="l-btn l-btn--dark" href="#"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 2h7l4.8 6.4L18.2 2Zm-1.2 18h1.9L7.1 4H5.1l11.9 16Z"/></svg>@kamino</a>
         </div>
       </div>
+      <!-- Accordion: a title opens its preview, which carries the link to the full article (js/landing.js) -->
       <ul class="l-news__list">
-        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
-        <li><a href="#"><span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span><span class="l-news__arrow" aria-hidden="true">↗</span></a></li>
+        <li class="l-news__item is-open">
+          <button class="l-news__toggle" type="button" aria-expanded="true" aria-controls="news-0">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-0" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+        <li class="l-news__item">
+          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-1">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-1" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+        <li class="l-news__item">
+          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-2">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-2" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+        <li class="l-news__item">
+          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-3">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-3" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+        <li class="l-news__item">
+          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-4">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-4" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+        <li class="l-news__item">
+          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-5">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-5" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
       </ul>
     </div>
   </section>
@@ -557,7 +1103,7 @@
         <div class="newsletter__media">
           <!-- Stage is laid out at the Figma frame size (650×518) and scaled to fit, so the line and signature stay locked to the paper -->
           <div class="stage">
-            <img class="stage__image" src="../kamino-sign-here/assets/hero-v3.webp" alt="" width="2000" height="1119">
+            <img class="stage__image" src="../kamino-sign-here/assets/hero-v4.webp" alt="" width="1120" height="893">
             <div class="stage__line" aria-hidden="true"></div>
             <p class="stage__label" aria-hidden="true">Signed by</p>
             <div class="signature" aria-hidden="true">
@@ -600,13 +1146,13 @@
   </dialog>
 
   <!-- Newsletter (signature, validation) -->
-  <script src="../kamino-sign-here/js/glyphs.js?v=1009"></script>
-  <script src="../kamino-sign-here/js/signature.js?v=1009"></script>
-  <script src="../kamino-sign-here/js/main.js?v=1009"></script>
-  <script src="../kamino-sign-here/js/v2.js?v=1009"></script>
+  <script src="../kamino-sign-here/js/glyphs.js?v=1023"></script>
+  <script src="../kamino-sign-here/js/signature.js?v=1023"></script>
+  <script src="../kamino-sign-here/js/main.js?v=1023"></script>
+  <script src="../kamino-sign-here/js/v2.js?v=1023"></script>
   <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
   <script src="../section-card-lock/js/stack.js"></script>
   <!-- Page interactions + lazy three.js (hero, APY story) -->
-  <script src="js/landing.js?v=1010f"></script>
+  <script src="js/landing.js?v=1023i"></script>
 </body>
 </html>

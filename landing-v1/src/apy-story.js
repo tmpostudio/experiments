@@ -17,7 +17,15 @@ const VIEW_SIDE = { x: MathUtils.degToRad(10), z: 0.15 };
 const TEXT_LOCK = 0.3;
 
 // dive 0–0.5 · headline 0.04–0.44 · flood 0.44–0.60 · stats 0.60–1
-const STAT_WINDOWS = [[0.62, 0.75], [0.75, 0.88], [0.88, 1.01]];
+// Each stat rolls in over ROLL of progress from its start, and stays; they stack as they arrive.
+const STAT_STARTS = [0.6, 0.71, 0.82];
+const ROLL = 0.085;
+// Stack scale by how many stats have arrived (1, 2, 3): a lone stat reads bigger
+const STACK_SCALE = [1.45, 1.18, 1];
+// Radius of the drum the stats sit on (px, in stack units); smaller = more curved
+const DRUM_RADIUS = 1120;
+// Angle (radians) at which a row has turned far enough away to fade out
+const DRUM_FADE = 1.25;
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const seg = (p, a, b) => clamp01((p - a) / (b - a));
@@ -32,6 +40,7 @@ export function mountApy(section) {
   const flood = section.querySelector(".apy__flood");
   const stats = section.querySelector(".apy__stats");
   const statEls = [...section.querySelectorAll(".apy__stat")];
+  const stack = section.querySelector(".apy__stack");
   const hint = section.querySelector(".apy__hint");
 
   let renderer;
@@ -115,14 +124,36 @@ export function mountApy(section) {
     const slideX = (1 - easeOut(floodF)) * -offscreen;
     flood.style.transform = `translateX(${slideX.toFixed(1)}px) scale(${floodScale.toFixed(3)})`;
     flood.style.visibility = floodF > 0 ? "visible" : "hidden";
+    flood.style.setProperty("--white", easeInOut(seg(P, 0.42, 0.55)).toFixed(3)); // blue dot → page white as it fills
 
     stats.style.opacity = seg(P, 0.545, 0.58).toFixed(3);
+    // Drum: the stats are printed round a cylinder that turns as they arrive. Each row sits at an
+    // angle on it (one row-pitch of arc apart); the drum's rotation keeps the arrived rows centred,
+    // so the earlier ones roll up and over the top while the newest rolls up from underneath.
+    const enters = statEls.map((el, i) => easeOut(seg(P, STAT_STARTS[i], STAT_STARTS[i] + ROLL)));
+    const k = enters.reduce((sum, e) => sum + e, 0);
+    const rowH = statEls[0].offsetHeight;
+    const pitch = statEls[1] ? statEls[1].offsetTop - statEls[0].offsetTop : rowH; // row + gap
+    const step = pitch / DRUM_RADIUS; // radians between rows
+    const turn = (Math.max(k, 1) - 1) / 2; // which row sits at the front, continuously
+    const kk = Math.min(Math.max(k, 1), 3);
+    const scale = kk <= 2
+      ? MathUtils.lerp(STACK_SCALE[0], STACK_SCALE[1], kk - 1)
+      : MathUtils.lerp(STACK_SCALE[1], STACK_SCALE[2], kk - 2);
+    stack.style.setProperty("--stack-y", "0px");
+    stack.style.setProperty("--stack-s", scale.toFixed(4));
     statEls.forEach((el, i) => {
-      const [a, b] = STAT_WINDOWS[i];
-      const enter = easeOut(seg(P, a, a + 0.035));
-      const exit = i === statEls.length - 1 ? 0 : easeIn(seg(P, b - 0.02, b));
-      el.style.opacity = (enter * (1 - exit)).toFixed(3);
-      el.style.transform = `translateY(${((1 - enter) * 40 - exit * 40).toFixed(1)}px) scale(${(0.92 + 0.08 * enter).toFixed(3)})`;
+      const e = enters[i];
+      // Not yet arrived: still further round underneath, turning up into view as it lands
+      const angle = (i - turn) * step + (1 - e) * step * 0.9;
+      const y = DRUM_RADIUS * Math.sin(angle);
+      const z = -DRUM_RADIUS * (1 - Math.cos(angle));
+      const layoutY = (i - (statEls.length - 1) / 2) * pitch; // where the grid put the row
+      // Faces turned away from you dim, as on a real drum
+      const facing = clamp01((Math.cos(angle) - Math.cos(DRUM_FADE)) / (1 - Math.cos(DRUM_FADE)));
+      el.style.opacity = (e * facing).toFixed(3);
+      el.style.transform =
+        `translateY(${(y - layoutY).toFixed(1)}px) translateZ(${z.toFixed(1)}px) rotateX(${(-angle * 180 / Math.PI).toFixed(2)}deg)`;
     });
 
     hint.style.opacity = String(1 - seg(P, 0.02, 0.06));

@@ -105,6 +105,46 @@ html { overflow-x: clip; }
   margin: 0 auto;
   padding: 34px var(--l-pad) 0;
 }
+/* Floating nav (js/landing.js): once you've scrolled past the header the nav pins to the top,
+   hidden while you scroll down and sliding back in, on frosted glass, when you scroll up. It goes
+   back to its place in the header when you return to the very top. */
+.l-nav.is-floating {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  transform: translateY(-110%);
+  transition: transform 0.38s var(--l-ease);
+}
+.l-nav.is-floating.is-shown { transform: none; }
+.l-nav.is-floating.no-anim { transition: none; }
+/* The glass spans the full screen width, behind the centred nav */
+.l-nav.is-floating::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: -1;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+  background: rgba(250, 250, 250, 0.72);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+}
+/* On glass it's always the dark nav, whichever header it came from */
+.l-hero .l-nav.is-floating .l-nav__logo img,
+.l-hero .l-nav.is-floating .l-menu__button img { filter: none; }
+.l-hero .l-nav.is-floating .l-menu__button,
+.l-hero .l-nav.is-floating .l-nav__actions .l-link { color: #000; }
+.l-hero .l-nav.is-floating .l-menu__button:hover,
+.l-hero .l-nav.is-floating .l-menu.is-open .l-menu__button { background: rgba(0, 0, 0, 0.06); }
+.l-hero .l-nav.is-floating .l-btn--dark { background: #000; color: #f2f2f2 !important; }
+@media (prefers-reduced-motion: reduce) { .l-nav.is-floating { transition: none; } }
 .l-nav__logo img { display: block; }
 .l-nav__menu { display: flex; gap: 2px; margin: 0; padding: 0; list-style: none; }
 .l-nav__actions { display: flex; align-items: center; gap: 10px; }
@@ -220,14 +260,72 @@ html { overflow-x: clip; }
 .l-hero[data-hero="studio"] .l-hero__copy--studio .l-hero__lede { max-width: 21.5em; margin-top: 44px; color: rgba(0, 0, 0, 0.82); }
 .l-hero[data-hero="studio"] .l-hero__copy--studio .l-hero__actions { margin-top: 40px; }
 /* Hiring tab + pill aren't in the photo mockups */
-.l-hero:is([data-hero="studio"], [data-hero="app"]) :is(.l-hiring-tab, .l-hiring-pill) { display: none; }
+.l-hero:is([data-hero="studio"], [data-hero="app"], [data-hero="half"]) :is(.l-hiring-tab, .l-hiring-pill) { display: none; }
 /* Marquee rides up over the bottom of the photo */
-.l-hero:is([data-hero="studio"], [data-hero="app"]) + .l-marquee { position: relative; z-index: 2; margin-top: -102px; padding: 0 0 46px; }
+.l-hero:is([data-hero="studio"], [data-hero="app"], [data-hero="half"]) + .l-marquee { position: relative; z-index: 2; margin-top: -102px; padding: 0 0 46px; }
 /* Studio: every logo solid black over the pale photo */
-.l-hero[data-hero="studio"] + .l-marquee .l-marquee__row img { filter: brightness(0); opacity: 1; }
+.l-hero:is([data-hero="studio"], [data-hero="half"]) + .l-marquee .l-marquee__row img { filter: brightness(0); opacity: 1; }
 .l-hero[data-hero="app"] + .l-marquee .l-marquee__row img { filter: brightness(0) invert(1); opacity: 0.95; }
 
 /* Black side tab poking in from the right edge */
+/* ---------- Header D: "Half" — light page, copy on the left, photo filling the right half from
+   under the nav to the bottom; the logo marquee runs across both in black ---------- */
+
+.l-hero[data-hero="half"] { height: max(720px, 100svh); background: var(--bg, #fafafa); }
+.l-hero__half-photo { inset: 92px auto auto 44.4%; width: 55.6%; height: calc(100% - 92px); object-fit: cover; object-position: 30% 50%; }
+.l-hero__copy--half { top: 50%; bottom: auto; transform: translateY(-46%); }
+.l-hero__copy--half .l-hero__title { max-width: 7.2em; font-size: clamp(44px, 4.3vw, 66px); line-height: 1; }
+.l-hero__copy--half .l-hero__lede { max-width: 22.5em; margin-top: 40px; font-size: 18px; line-height: 1.25; color: #000; }
+.l-hero__copy--half .l-hero__actions { margin-top: 40px; }
+@media (max-width: 720px) {
+  .l-hero[data-hero="half"] { height: 100svh; }
+  .l-hero__copy--half { position: absolute; top: 104px; transform: none; }
+  .l-hero__half-photo { inset: auto 0 0 0; width: 100%; height: 42%; }
+}
+
+/* ---------- Hiring tab (overlay on every screen) ---------- */
+
+.l-hire {
+  --pull: 0px;
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 70;
+  width: 36px;
+  height: 210px;
+  margin-top: -105px;
+  color: #fff;
+  text-decoration: none;
+  transform: translateX(calc(-1 * var(--pull)));
+  transition: transform 0.45s var(--l-ease);
+}
+/* The black page the tab belongs to: a full-height strip just off the right edge */
+.l-hire__page { position: absolute; top: calc(-50vh + 105px); left: 100%; width: 120px; height: 100vh; background: #151515; }
+/* The tab runs 2px past its box, over the page's edge, so no antialiased hairline shows where
+   they join (the extra sits off screen until the tab is pulled out) */
+.l-hire__tab { position: absolute; top: 0; left: 0; width: calc(100% + 2px); height: 100%; fill: #151515; }
+.l-hire__label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+.l-hire:hover, .l-hire:focus-visible { --pull: 26px; }
+.l-hire:focus-visible { outline: none; }
+.l-hire:focus-visible .l-hire__label { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 720px) {
+  .l-hire { width: 28px; height: 160px; margin-top: -80px; }
+  .l-hire__page { top: calc(-50vh + 80px); }
+  .l-hire__label { font-size: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .l-hire { transition: none; } }
+
 .l-hiring-tab {
   position: absolute;
   top: 76px;
@@ -289,7 +387,7 @@ html { overflow-x: clip; }
 .l-hero[data-hero="app"] .l-hero__photo { object-position: 50% 50%; }
 /* Hover dot grid (js/landing.js): over the photo, under the screenshot, copy and nav */
 .l-hero__dots { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.l-hero[data-hero="dots"] .l-hero__dots { display: none; }
+.l-hero:is([data-hero="dots"], [data-hero="half"]) .l-hero__dots { display: none; }
 .l-hero__copy, .l-hero__app { z-index: 1; }
 /* Logo strip sits lower than on Studio: 46px off the bottom edge instead of 72px */
 .l-hero[data-hero="app"] + .l-marquee { margin-top: -76px; padding-bottom: 20px; }
@@ -621,6 +719,95 @@ html { overflow-x: clip; }
 /* ---------- Testimonials ---------- */
 
 .l-trust { padding-top: 170px; padding-bottom: 150px; }
+
+/* ---------- Testimonials, card carousel (Figma 4956:32553) ---------- */
+
+.l-trust[hidden], .l-trust2[hidden] { display: none !important; }
+.l-trust2 { padding: 150px 0 150px; overflow: hidden; }
+.l-trust2__title { max-width: 14.9em; }
+/* Full-bleed strip; js/landing.js sets --off / --on (card widths) and --x (track offset) */
+.l-tcar { margin-top: 78px; padding: 12px 0 32px; outline: none; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.l-tcar:focus-visible .l-tcard.is-active { outline: 2px solid #000; outline-offset: 3px; }
+.l-tcar.is-dragging { cursor: grabbing; }
+/* One quick ease-out drives everything: the glide, both widths, the blue crossfade and the mark,
+   so a move starts immediately and settles softly, and a new move picks up mid-flight */
+.l-tcar { --t-ease: cubic-bezier(0.22, 1, 0.36, 1); --t-dur: 0.6s; }
+.l-tcar__track { display: flex; gap: 24px; transform: translateX(var(--x, 0px)); transition: transform var(--t-dur) var(--t-ease); }
+.l-tcar.is-dragging .l-tcar__track, .l-tcar.is-instant .l-tcar__track, .l-tcar.is-instant .l-tcard, .l-tcar.is-instant .l-tcard::before, .l-tcar.is-instant .l-tcard__mark, .l-tcar.is-instant .l-tcard__logo { transition: none; }
+.l-tcard {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: var(--off, 432px);
+  height: 480px;
+  margin: 0;
+  padding: 24px 32px;
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07); /* same edge shadow as the One platform cards */
+  color: #08090a;
+  transition: width var(--t-dur) var(--t-ease);
+}
+.l-tcard.is-active { width: var(--on, 880px); }
+/* The blue is its own layer that crossfades (opacity only, so no repaint while it fades) */
+.l-tcard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--l-mist); /* the lighter blue, #e2edf2 (was #bcdeec) */
+  opacity: 0;
+  transition: opacity var(--t-dur) var(--t-ease);
+  will-change: opacity;
+}
+.l-tcard.is-active::before { opacity: 1; }
+/* Big faint company mark riding the right edge of the card in focus */
+.l-tcard__mark {
+  position: absolute;
+  top: -360px;
+  right: -600px;
+  width: 1200px;
+  height: 1200px;
+  max-width: none;
+  opacity: 0;
+  transition: opacity var(--t-dur) var(--t-ease);
+  will-change: opacity, transform; /* own layer: moving with the card's edge doesn't repaint the big mask */
+  pointer-events: none;
+}
+/* Marks with no large asset: the small logo as a mask (its url is set inline, so it resolves from the page) */
+span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.l-tcard.is-active .l-tcard__mark { opacity: 0.2; }
+/* Logo at the top; quote with the name + title under it at the bottom */
+/* Heights are set per logo (inline --logo-h) to balance them optically against Binance at 38px.
+   Solid black files (kraken-black / anchorage-black drop the 25% opacity baked into the originals);
+   full strength on the card in focus, 35% (grey) on the rest. */
+.l-tcard__logo {
+  position: relative;
+  display: block;
+  width: auto;
+  height: var(--logo-h, 32px);
+  align-self: flex-start; /* don't stretch across the card */
+  opacity: 0.35;
+  transition: opacity var(--t-dur) var(--t-ease);
+  pointer-events: none;
+}
+.l-tcard.is-active .l-tcard__logo { opacity: 1; }
+.l-tcard__foot { position: relative; display: grid; gap: 20px; }
+.l-tcard__by { display: grid; font-size: 14px; line-height: 21px; letter-spacing: -0.013em; }
+.l-tcard__by strong { font-weight: 400; }
+.l-tcard__by > span { opacity: 0.6; }
+/* Same measure small or wide, so the quote never re-wraps as the card expands */
+.l-tcard blockquote { position: relative; width: min(381px, calc(var(--off, 432px) - 64px)); margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
+@media (max-width: 720px) {
+  .l-tcard { height: 420px; padding: 22px 24px; }
+  .l-tcard blockquote { width: calc(var(--off, 432px) - 48px); font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-tcar__track, .l-tcard, .l-tcard::before, .l-tcard__mark, .l-tcard__logo { transition: none; }
+}
 .l-quote {
   display: grid;
   grid-template-columns: 471fr 594fr;
@@ -651,7 +838,9 @@ html { overflow-x: clip; }
 /* ---------- Commodity ---------- */
 
 .l-commodity { position: relative; height: 890px; max-height: 100svh; min-height: 640px; overflow: hidden; background: #000; color: #fff; }
-.l-commodity__bg { pointer-events: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.08); will-change: transform; }
+.l-commodity__bg { pointer-events: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* Same hover dot grid as the header, over the video (js/landing.js mountDots) */
+.l-commodity__dots { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .l-commodity::after { content: ""; position: absolute; inset: auto 0 0; height: 38%; background: linear-gradient(transparent, #000); pointer-events: none; }
 .l-commodity__inner {
   position: relative;
@@ -660,7 +849,7 @@ html { overflow-x: clip; }
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  max-width: 1245px;
+  max-width: var(--l-max); /* same columns as every other section (was 1245px, which indented the copy) */
   margin: 0 auto;
   padding: 101px var(--l-pad) 110px;
 }
@@ -681,7 +870,7 @@ html { overflow-x: clip; }
 .l-record .l-split h2 { max-width: 8.5em; font-size: 44px; font-weight: 400; line-height: 1.1; letter-spacing: -0.03em; }
 .l-record .l-split p { max-width: 545px; font-size: 16px; line-height: 1.45; }
 .l-bento { display: grid; grid-template-columns: 640fr 328fr 328fr; grid-template-rows: 206px 203px; gap: 16px; margin-top: 55px; }
-.l-bento > div { position: relative; padding: 26px 24px; border-radius: 4px; background: var(--l-sky); color: #000; overflow: hidden; transition: transform 0.35s var(--l-ease); }
+.l-bento > div { position: relative; padding: 26px 24px; border-radius: 4px; background: var(--l-sky); color: #000; overflow: hidden; transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1); will-change: transform; }
 .l-bento > div:hover { transform: translateY(-3px); }
 .l-bento__big { grid-row: span 2; display: flex; flex-direction: column; justify-content: space-between; }
 .l-bento__big strong { font-weight: 400; font-size: clamp(90px, 11vw, 176px); line-height: 0.85; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
@@ -693,6 +882,77 @@ html { overflow-x: clip; }
 .l-audits { display: flex; justify-content: space-between; align-items: center; gap: 30px; margin: 0; padding: 0; list-style: none; }
 .l-audits img { display: block; width: auto; opacity: 0.75; transition: opacity 0.2s; }
 .l-audits img:hover { opacity: 1; }
+
+/* ---------- Platform, row concept (Figma 4895:29650) ---------- */
+
+.platform[hidden], .l-prow[hidden] { display: none !important; }
+.l-prow { padding-top: 90px; padding-bottom: 90px; }
+.l-prow .l-headline { max-width: 22.6em; }
+/* Scrolls sideways once four cards no longer fit; bleeds to the screen edges. The padding
+   leaves room for the hover lift above and the ground shadow's blur below (overflow clips both). */
+.l-prow__scroller { margin: 52px calc(-1 * var(--l-pad)) -26px; padding: 12px var(--l-pad) 32px; overflow-x: auto; scrollbar-width: none; }
+.l-prow__scroller::-webkit-scrollbar { display: none; }
+.l-prow__track { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.l-prow__art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+/* The article stays put and carries the ground shadow (a soft card-shaped drop shadow);
+   the face lifts off it on hover */
+.l-pcard { position: relative; height: 514px; }
+.l-pcard::before {
+  content: "";
+  position: absolute;
+  inset: 14px 4px -2px;
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.16);
+  filter: blur(6px);
+  opacity: 0;
+  transform: scale(0.97);
+  transition: opacity 0.35s var(--l-ease), transform 0.35s var(--l-ease);
+  pointer-events: none;
+}
+.l-pcard__face {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  height: 100%;
+  padding: 24px 16px;
+  border: 0.5px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07);
+  transition: transform 0.35s var(--l-ease);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .l-pcard:hover .l-pcard__face { transform: translateY(-5px); }
+  .l-pcard:hover::before { opacity: 1; transform: none; }
+}
+.l-pcard h3 { margin: 0; font-size: 28px; font-weight: 400; line-height: 0.95; letter-spacing: -0.04em; }
+/* The art box runs the card's full width so wide pieces aren't clipped at the padding */
+.l-pcard__art { flex: 1 0 0; min-height: 0; margin: 0 -16px; }
+.l-pcard p { max-width: 282px; margin: 0; font-size: 15px; line-height: 1.1; color: #4f5153; }
+/* Copy + CTA pinned to the bottom of the card. On hover the button slides up from below and
+   pushes the copy up with it (over the empty foot of the art box, which keeps its size so the
+   line art never rescales). */
+.l-pcard__art { margin-bottom: 64px; }
+.l-pcard__foot { position: absolute; left: 16px; right: 16px; bottom: 24px; }
+.l-pcard__cta { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s var(--l-ease); }
+.l-pcard__cta > div { min-height: 0; overflow: hidden; }
+.l-pcard__cta .l-btn { margin-top: 18px; opacity: 0; transform: translateY(14px); transition: opacity 0.3s, transform 0.45s var(--l-ease); }
+.l-pcard:is(:hover, :focus-within) .l-pcard__cta { grid-template-rows: 1fr; }
+.l-pcard:is(:hover, :focus-within) .l-pcard__cta .l-btn { opacity: 1; transform: none; transition: opacity 0.35s 0.08s, transform 0.45s var(--l-ease); }
+.l-pcard--dark .l-pcard__cta .l-btn { border-color: rgba(255, 255, 255, 0.85); color: #fff; }
+.l-pcard--dark .l-pcard__cta .l-btn:hover { background: #fff; color: #000 !important; }
+/* Touch screens have no hover: show the button all the time */
+@media (hover: none) {
+  .l-pcard__cta { grid-template-rows: 1fr; }
+  .l-pcard__cta .l-btn { opacity: 1; transform: none; }
+}
+.l-pcard--dark .l-pcard__face { background: #0f0f0f; color: #fff; }
+.l-pcard--dark p { color: #d0d0d0; }
+@media (max-width: 1180px) {
+  .l-prow__track { grid-template-columns: repeat(4, min(316px, 78vw)); width: max-content; gap: 16px; }
+}
 
 /* ---------- APY story (sticky stage) ---------- */
 
@@ -725,15 +985,122 @@ html { overflow-x: clip; }
   transform: scale(0);
   pointer-events: none;
 }
-.apy__stats { position: absolute; inset: 0; background: radial-gradient(circle farthest-corner at center, #c2edfb 45%, #73a6c1 100%); color: #000; opacity: 0; pointer-events: none; }
-.apy__stat { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; }
-.apy__number { font-size: clamp(90px, 18vw, 320px); letter-spacing: -0.05em; line-height: 1; }
-.apy__label { margin-top: 1.2em; font-size: clamp(13px, 1.4vw, 22px); letter-spacing: 0.02em; }
+/* As the blue dot swells to fill the screen it fades to the page colour (js sets --white),
+   so the stats land on the site's own off-white rather than the blue radial gradient */
+.apy__flood::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #fafafa; opacity: var(--white, 0); }
+.apy__stats { position: absolute; inset: 0; background: #fafafa; color: #000; opacity: 0; pointer-events: none; } /* was radial-gradient(circle farthest-corner at center, #c2edfb 45%, #73a6c1 100%) */
+/* Stacked stats: three rows sized so all of them fit on screen together. js moves the whole
+   stack (--stack-y, --stack-s) so whatever has arrived so far sits centred, and rolls each row in. */
+.apy__stack {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  justify-items: start;
+  row-gap: clamp(20px, 4.5vh, 52px);
+  perspective: 1100px; /* the rows sit round a turning drum (src/apy-story.js) */
+  transform: translate(-50%, -50%) scale(var(--stack-s, 1)) translateY(var(--stack-y, 0px));
+  will-change: transform;
+}
+.apy__stat { display: flex; align-items: flex-start; opacity: 0; will-change: transform, opacity; }
+.apy__number { font-size: clamp(60px, min(19vh, 14vw), 215px); letter-spacing: -0.05em; line-height: 0.98; font-variant-numeric: tabular-nums; }
+/* Label as a superscript, hung off the top right of the number */
+.apy__label { margin: 0.95em 0 0 0.7em; font-family: "Roboto Mono", ui-monospace, monospace; font-size: clamp(10px, 0.95vw, 15px); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
 .apy__hint { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); }
 
 /* ---------- Stories ---------- */
 
 .l-stories { padding: 100px 0 90px; overflow: hidden; }
+
+/* ---------- Partner stories, flip carousel ---------- */
+
+.l-stories[hidden], .l-stories2[hidden] { display: none !important; }
+.l-stories2 { padding: 200px 0 180px; overflow: hidden; }
+.l-stories2 .l-display { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; } /* same size as the other section titles */
+/* js/landing.js sets --w / --h (card size) and each card's transform from the carousel position */
+.l-flip {
+  --w: 360px;
+  --h: 460px;
+  --d: 2px; /* paper-thin */
+  position: relative;
+  height: calc(var(--h) + 140px);
+  margin-top: 28px;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+.l-flip.is-dragging { cursor: grabbing; }
+/* Near-orthographic camera. Stacked cards are turned and tipped (js), so they read as sloping
+   parallelograms receding to the right; the card in focus turns back flat and square to you.
+   js puts the stage's left at the focus card's centre, in line with the title. */
+.l-flip { perspective: 4200px; }
+.l-flip__stage { position: absolute; left: 50%; top: 70px; width: 0; height: 0; transform-style: preserve-3d; }
+.l-fcard {
+  position: absolute;
+  transition: opacity 0.2s;
+  left: calc(var(--w) / -2);
+  top: 0;
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.l-fcard__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px 28px 30px;
+  border: 0.5px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: var(--l-mist); /* light blue, #e2edf2 */
+  /* Punch-card holes down the top right edge, cut right through the card (whatever is behind
+     shows through): the stats card's dot strip, cropped to ~35% of the card, knocked out */
+  -webkit-mask-image: url("../assets/dots-punch.svg"), linear-gradient(#000 0 0);
+  -webkit-mask-position: right 16px top 16px, 0 0;
+  -webkit-mask-size: 36px auto, 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: xor;
+  mask-image: url("../assets/dots-punch.svg"), linear-gradient(#000 0 0);
+  mask-position: right 16px top 16px, 0 0;
+  mask-size: 36px auto, 100% 100%;
+  mask-repeat: no-repeat;
+  mask-composite: exclude;
+}
+/* Stacked: shade towards the edge tucked under the next card, as if lit from the open side */
+.l-fcard__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(4, 18, 30, 0) 25%, rgba(4, 18, 30, 0.14));
+  opacity: var(--turn, 0);
+  pointer-events: none;
+}
+.l-fcard__side {
+  display: none; /* paper-thin now: no visible edge (kept for a thicker card) */
+  position: absolute;
+  top: 0;
+  width: var(--d);
+  height: 100%;
+  background: #e6e7e9;
+}
+/* Both edges fold back from the face: a hairline of paper thickness */
+.l-fcard__side--l { left: 0; transform-origin: left center; transform: rotateY(90deg); }
+.l-fcard__side--r { right: 0; transform-origin: right center; transform: rotateY(-90deg); }
+.l-fcard__logo { width: auto; height: 30px; filter: brightness(0); align-self: flex-start; pointer-events: none; }
+
+.l-fcard__body { display: grid; gap: 22px; }
+.l-fcard__body p { margin: 0; font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; color: #000; }
+.l-fcard__cta { justify-self: start; font-weight: 500; font-size: 15px; text-decoration: none; }
+.l-fcard__cta:hover { text-decoration: underline; text-underline-offset: 3px; }
+.l-fcard:not(.is-front) .l-fcard__cta { pointer-events: none; }
+@media (max-width: 720px) {
+  .l-flip { --w: min(300px, 76vw); --h: 400px; }
+}
 .l-stories__nav { display: flex; justify-content: flex-end; gap: 8px; margin-top: 36px; }
 .l-round { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid #000; border-radius: 50%; background: #fff; cursor: pointer; transition: background-color 0.2s, opacity 0.2s; }
 .l-round:hover { background: var(--l-sky); }
@@ -764,14 +1131,56 @@ html { overflow-x: clip; }
 
 /* ---------- Build ---------- */
 
+/* ---------- Build: full-screen still life (the pale Studio photo, objects to the right). Copy in
+   black top left on the open wall (title, intro, outline CTA); a hairline and the audiences across
+   the foot ---------- */
+
+/* The machine still life (2000×792, very wide) fills the height above the audience row, anchored
+   right; its plain left wall runs under the copy. The backdrop is the photo's own wall colour
+   (sampled from its edges), so the area below it and any trimmed edge read as one surface. */
+.l-bfs {
+  --h: max(720px, 100svh);
+  --foot: 170px;
+  position: relative;
+  height: var(--h);
+  overflow: hidden;
+  background: linear-gradient(180deg, #b9bdc2 0%, #bec4c6 calc(100% - var(--foot)), #bec4c6 100%);
+  color: #000;
+}
+.l-bfs__photo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: auto;
+  max-width: none;
+  height: calc(100% - var(--foot));
+  transform: translateX(6%); /* into its empty right margin, giving the copy more air */
+  -webkit-mask-image: linear-gradient(180deg, #000 94%, transparent);
+  mask-image: linear-gradient(180deg, #000 94%, transparent);
+}
+.l-bfs__inner { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding-top: 100px; /* same top inset as the partner stories section */ padding-bottom: 48px; }
+.l-bfs__head { max-width: 440px; }
+.l-bfs__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; } /* same size as the other section titles */
+.l-bfs__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
+.l-bfs__cta { margin-top: 36px; gap: 34px; border-color: #000; background: transparent; }
+.l-bfs__cta:hover { background: #000; color: #fff !important; }
+.l-bfs__foot { padding-top: 26px; border-top: 1px solid rgba(0, 0, 0, 0.2); }
+.l-bfs__foot > .l-mono { font-size: 12px; color: rgba(0, 0, 0, 0.6); }
+.l-bfs__list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: 24px; margin: 22px 0 0; padding: 0; list-style: none; font-size: clamp(24px, 2.3vw, 34px); line-height: 1; letter-spacing: -0.03em; }
+.l-bfs__list li { color: rgba(0, 0, 0, 0.3); cursor: default; transition: color 0.4s; }
+.l-bfs__list li.is-on { color: #000; }
+
+@media (max-width: 720px) {
+  .l-bfs__list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+  .l-bfs { --foot: 230px; }
+  .l-bfs__photo { right: -30%; height: 55%; top: auto; bottom: var(--foot); }
+}
+
 .l-build { padding-top: 110px; padding-bottom: 150px; }
 .l-build .l-split { padding-bottom: 48px; }
 .l-build__grid { display: grid; grid-template-columns: 763fr 543fr; gap: 29px; height: 563px; }
-.l-build__media { position: relative; border-radius: 4px; overflow: hidden; background: var(--l-blue); }
-.l-build__media img { position: absolute; transform: scaleX(-1); object-fit: cover; }
-.l-build__bg { inset: 0; width: 132%; height: 100%; left: auto !important; right: 0; }
-.l-build__column { width: 123%; height: 114%; top: -14%; right: -18%; transition: transform 1.2s var(--l-ease); }
-.l-build__media:hover .l-build__column { transform: scaleX(-1) translateY(-8px); }
+.l-build__media { position: relative; border-radius: 4px; overflow: hidden; background: #d9d9db; }
+.l-build__photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
 .l-build__panel { position: relative; display: flex; flex-direction: column; align-items: flex-start; padding: 28px 30px 24px; border-radius: 4px; background: var(--l-blue); }
 .l-build__list { margin: 26px 0 auto; padding: 0; list-style: none; font-size: 44px; line-height: 1.2; letter-spacing: -0.04em; }
 .l-build__list li { color: rgba(0, 0, 0, 0.3); cursor: default; transition: color 0.4s, transform 0.4s var(--l-ease); }
@@ -781,19 +1190,32 @@ html { overflow-x: clip; }
 
 /* ---------- What's new ---------- */
 
-.l-news { position: relative; margin-top: 30px; background: var(--l-pale); }
-.l-tab { position: absolute; top: -32px; left: max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad))); padding: 11px 90px 9px 20px; background: var(--l-pale); clip-path: polygon(0 0, 88% 0, 100% 100%, 0 100%); font-size: 10px; }
-.l-news__inner { display: grid; grid-template-columns: 500fr 838fr; padding-top: 96px; padding-bottom: 96px; }
+/* One full screen tall, content centred in it (grows if the list ever needs more) */
+.l-news { position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; min-height: 100svh; background: var(--l-pale); }
+.l-news__inner { display: grid; grid-template-columns: 500fr 838fr; width: 100%; padding-top: 96px; padding-bottom: 96px; }
 .l-news__side { display: flex; flex-direction: column; justify-content: space-between; }
 .l-news__actions { display: flex; gap: 14px; }
 .l-news__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid #000; }
-.l-news__list a { position: relative; display: grid; gap: 14px; padding: 22px 50px 22px 0; border-bottom: 1px solid #000; text-decoration: none; transition: padding-left 0.35s var(--l-ease), background-color 0.3s; }
-.l-news__list a:hover { padding-left: 14px; background: rgba(255, 255, 255, 0.6); }
+.l-news__item { border-bottom: 1px solid #000; }
+.l-news__toggle { position: relative; display: grid; gap: 14px; width: 100%; padding: 22px 56px 22px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: padding-left 0.35s var(--l-ease); }
+.l-news__toggle:hover, .l-news__item.is-open .l-news__toggle { padding-left: 14px; }
 .l-news__title { font-size: 24px; letter-spacing: -0.02em; }
 .l-news__meta { display: flex; gap: 24px; font-size: 11px; }
 .l-news__meta time { color: #939393; }
-.l-news__arrow { position: absolute; right: 8px; top: 22px; font-size: 22px; transition: transform 0.3s var(--l-ease); }
-.l-news__list a:hover .l-news__arrow { transform: translate(3px, -3px); }
+/* Plus that turns into a cross when open */
+.l-news__icon { position: absolute; right: 12px; top: 28px; width: 16px; height: 16px; transition: transform 0.4s var(--l-ease); }
+.l-news__icon::before, .l-news__icon::after { content: ""; position: absolute; left: 0; top: 7.5px; width: 16px; height: 1px; background: #000; }
+.l-news__icon::after { transform: rotate(90deg); }
+.l-news__item.is-open .l-news__icon { transform: rotate(45deg); }
+/* The preview opens by animating its row from 0 to its natural height */
+.l-news__panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s var(--l-ease); }
+.l-news__item.is-open .l-news__panel { grid-template-rows: 1fr; }
+.l-news__preview { min-height: 0; overflow: hidden; padding-left: 14px; opacity: 0; transition: opacity 0.3s; }
+.l-news__item.is-open .l-news__preview { opacity: 1; transition: opacity 0.4s 0.1s; }
+.l-news__preview p { max-width: 34em; margin: 2px 0 0; font-size: 16px; line-height: 1.4; color: #333; }
+.l-news__more { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 12px 26px 0; }
+.l-news__more .l-mono { font-size: 11px; color: #939393; }
+@media (prefers-reduced-motion: reduce) { .l-news__panel, .l-news__preview, .l-news__icon, .l-news__toggle { transition: none; } }
 
 /* ---------- Newsletter: page-level adjustments only ---------- */
 
@@ -866,5 +1288,4 @@ html { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) {
   .l-marquee__track { animation: none; }
   .l-reveal { opacity: 1; transform: none; transition: none; }
-  .l-commodity__bg { transform: none; }
 }
