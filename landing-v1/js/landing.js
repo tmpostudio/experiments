@@ -372,13 +372,15 @@
     window.addEventListener("resize", layoutTrust);
 
     // Drag / swipe: the track follows the pointer, then locks to the nearest card
-    let startX = 0, dx = 0, moved = false, downCard = null;
+    let startX = 0, dx = 0, moved = false, downCard = null, vel = 0, lastX = 0, lastT = 0;
     tcar.addEventListener("pointerdown", (e) => {
       if (e.button !== 0) return;
       dragging = true;
       moved = false;
       dx = 0;
-      startX = e.clientX;
+      vel = 0;
+      startX = lastX = e.clientX;
+      lastT = performance.now();
       downCard = e.target.closest(".l-tcard");
       clearTimeout(settleTimer);
       tcar.setPointerCapture(e.pointerId);
@@ -386,6 +388,10 @@
     tcar.addEventListener("pointermove", (e) => {
       if (!dragging) return;
       dx = e.clientX - startX;
+      const now = performance.now();
+      vel = vel * 0.5 + 0.5 * ((e.clientX - lastX) / Math.max(1, now - lastT)); // px/ms, smoothed
+      lastX = e.clientX;
+      lastT = now;
       if (!moved && Math.abs(dx) > 4) {
         moved = true;
         tcar.classList.add("is-dragging");
@@ -397,8 +403,11 @@
       dragging = false;
       tcar.classList.remove("is-dragging");
       if (moved) {
+        // One card per swipe (a long drag across several cards can still move several);
+        // a short quick flick still counts as one
         let steps = Math.round(-dx / (off + GAP));
-        if (!steps && Math.abs(dx) > 50) steps = dx < 0 ? 1 : -1;
+        const fresh = performance.now() - lastT < 80; // finger still moving at release
+        if (!steps && (Math.abs(dx) > 30 || (fresh && Math.abs(vel) > 0.25))) steps = dx < 0 ? 1 : -1;
         go(index + steps);
       } else {
         go(downCard ? tcards.indexOf(downCard) : index);
@@ -407,19 +416,33 @@
     tcar.addEventListener("pointerup", endDrag);
     tcar.addEventListener("pointercancel", endDrag);
 
-    // Trackpad sideways scroll: one card per gesture
-    let wheelSum = 0, wheelLocked = false, wheelTimer = 0;
+    // Trackpad sideways scroll: one card per swipe. After a step it ignores the rest of that swipe
+    // and its momentum. A fresh swipe is only recognised once the momentum has been dying away (the
+    // deltas were shrinking) and then jumps back up, or the direction reverses, and never within
+    // 220ms of a step: a swipe's own ramp-up must not count as a second swipe.
+    let wheelSum = 0, wheelLocked = false, wheelTimer = 0, lastDelta = 0, decaying = false, steppedAt = 0;
     tcar.addEventListener("wheel", (e) => {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      const ax = Math.abs(e.deltaX);
+      if (ax <= Math.abs(e.deltaY) * 0.8) return;
       e.preventDefault();
       clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => { wheelLocked = false; wheelSum = 0; }, 180);
+      wheelTimer = setTimeout(() => { wheelLocked = false; wheelSum = 0; lastDelta = 0; decaying = false; }, 160);
+      if (wheelLocked) {
+        const prev = Math.abs(lastDelta);
+        if (ax < prev) decaying = true;
+        const reversed = lastDelta && Math.sign(e.deltaX) !== Math.sign(lastDelta) && ax > 4;
+        const reaccelerated = decaying && ax > 8 && ax > prev * 2;
+        if (performance.now() - steppedAt > 220 && (reversed || reaccelerated)) { wheelLocked = false; wheelSum = 0; decaying = false; }
+      }
+      lastDelta = e.deltaX;
       if (wheelLocked) return;
       wheelSum += e.deltaX;
-      if (Math.abs(wheelSum) > 40) {
+      if (Math.abs(wheelSum) > 28) {
         go(index + (wheelSum > 0 ? 1 : -1));
         wheelLocked = true;
         wheelSum = 0;
+        decaying = false;
+        steppedAt = performance.now();
       }
     }, { passive: false });
 
@@ -970,6 +993,7 @@
 
   // ---------- What's new: accordion; one story open at a time ----------
   const newsItems = $$(".l-news__item");
+  const newsImages = $$(".l-news__media img");
   newsItems.forEach((item) => {
     $(".l-news__toggle", item).addEventListener("click", () => {
       const open = !item.classList.contains("is-open");
@@ -978,15 +1002,172 @@
         other.classList.toggle("is-open", on);
         $(".l-news__toggle", other).setAttribute("aria-expanded", String(on));
       });
+      // Show this article's image (stays on the last one if everything is closed)
+      if (open) newsImages.forEach((img, k) => img.classList.toggle("is-on", k === Number(item.dataset.image)));
     });
   });
+
+  // ---------- Build screen: code types out line by line on the photo's screen ----------
+  // Placeholder snippets for each way to build; the tab picks which one runs. It moves on to the
+  // next tab by itself every so often until someone picks one.
+  const codeLines = $("[data-code-lines]");
+  if (codeLines) {
+    const k = (t) => `<span class="k">${t}</span>`;
+    const st = (t) => `<span class="s">${t}</span>`;
+    const cm = (t) => `<span class="c">${t}</span>`;
+    const SNIPPETS = {
+      api: { label: "API · REST", lines: [
+        cm("GET /v2/markets/main/reserves/metrics"),
+        "[",
+        "  {",
+        `    ${k('"symbol"')}: ${st('"USDC"')},`,
+        `    ${k('"supplyApy"')}: 0.0712,`,
+        `    ${k('"borrowApy"')}: 0.0894,`,
+        `    ${k('"totalSupply"')}: ${st('"412,880,190.42"')},`,
+        `    ${k('"totalBorrow"')}: ${st('"301,557,004.10"')},`,
+        `    ${k('"utilization"')}: 0.7304,`,
+        `    ${k('"maxLtv"')}: 0.80`,
+        "  },",
+        "  {",
+        `    ${k('"symbol"')}: ${st('"SOL"')},`,
+        `    ${k('"supplyApy"')}: 0.0418,`,
+        `    ${k('"borrowApy"')}: 0.0663,`,
+        `    ${k('"totalSupply"')}: ${st('"5,120,774.88"')},`,
+        `    ${k('"utilization"')}: 0.6129`,
+        "  }",
+        "]",
+        "",
+      ] },
+      sdk: { label: "SDK · TYPESCRIPT", lines: [
+        `${k("import")} { KaminoMarket }`,
+        `  ${k("from")} ${st('"@kamino-finance/klend-sdk"')};`,
+        "",
+        `${k("const")} market = ${k("await")} KaminoMarket.load(`,
+        `  connection, MAIN_MARKET`,
+        `);`,
+        `${k("const")} usdc = market.getReserveBySymbol(${st('"USDC"')});`,
+        "",
+        cm("// Live rates"),
+        `console.log(usdc.totalSupplyAPY());`,
+        `console.log(usdc.totalBorrowAPY());`,
+        "",
+        cm("// Deposit 1,000 USDC"),
+        `${k("const")} tx = ${k("await")} market.deposit({`,
+        `  owner: wallet.publicKey,`,
+        `  reserve: usdc,`,
+        `  amount: 1_000_000_000n,`,
+        `});`,
+        `${k("await")} sendAndConfirm(tx);`,
+        "",
+      ] },
+      cli: { label: "CLI", lines: [
+        `${cm("$")} kamino markets list`,
+        `MARKET        RESERVES   TVL`,
+        `main          28         $2.94B`,
+        `jlp           6          $214.6M`,
+        `altcoins      11         $88.2M`,
+        "",
+        `${cm("$")} kamino reserve show USDC --market main`,
+        `supply apy    7.12%`,
+        `borrow apy    8.94%`,
+        `utilization   73.0%`,
+        "",
+        `${cm("$")} kamino deposit 1000 USDC --market main`,
+        `${k("✓")} deposited 1,000.00 USDC`,
+        `  tx 4mQe…9Rz2`,
+        "",
+      ] },
+      custom: { label: "CUSTOM · ON-CHAIN", lines: [
+        cm("// Compose Kamino Lend into your own program"),
+        `${k("use")} kamino_lending::cpi::{`,
+        `    accounts::DepositReserveLiquidity, deposit,`,
+        `};`,
+        "",
+        `${k("pub fn")} sweep_to_kamino(`,
+        `    ctx: Context&lt;Sweep&gt;, amount: ${k("u64")},`,
+        `) -&gt; Result&lt;()&gt; {`,
+        `  ${k("let")} accounts = DepositReserveLiquidity {`,
+        `    owner: ctx.accounts.vault.to_account_info(),`,
+        `    reserve: ctx.accounts.reserve.to_account_info(),`,
+        `    lending_market: ctx.accounts.market(),`,
+        `    ..ctx.accounts.kamino()`,
+        `  };`,
+        `  ${k("let")} program = ctx.accounts.klend();`,
+        `  deposit(CpiContext::new(program, accounts), amount)`,
+        `}`,
+        "",
+      ] },
+    };
+    const label = $("[data-code-label]");
+    const tabs = $$("[data-code-tab]");
+    const MAX_LINES = 120;
+    let current = "api", cursor = 0, timer = 0, rotate = 0, userPicked = false;
+
+    function addLine() {
+      const snippet = SNIPPETS[current].lines;
+      const row = document.createElement("div");
+      row.innerHTML = snippet[cursor % snippet.length] || "&nbsp;";
+      row.className = "is-new";
+      codeLines.appendChild(row);
+      cursor++;
+      // Every so often drop a batch of lines long gone off the top (without animating that jump)
+      if (codeLines.children.length > MAX_LINES) {
+        for (let n = MAX_LINES / 2; n > 0; n--) codeLines.firstElementChild.remove();
+        codeLines.style.transition = "none";
+        slide();
+        void codeLines.offsetHeight;
+        codeLines.style.transition = "";
+        return;
+      }
+      slide();
+    }
+    function slide() {
+      const overflow = codeLines.scrollHeight - codeLines.parentElement.clientHeight;
+      codeLines.style.transform = `translateY(${-Math.max(0, overflow)}px)`;
+    }
+    function play(name) {
+      current = name;
+      cursor = 0;
+      label.textContent = SNIPPETS[name].label;
+      tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.codeTab === name)));
+      codeLines.innerHTML = "";
+      codeLines.style.transition = "none";
+      codeLines.style.transform = "translateY(0)";
+      void codeLines.offsetHeight;
+      codeLines.style.transition = "";
+      clearInterval(timer);
+      if (reduced) { SNIPPETS[name].lines.forEach(addLine); return; }
+      addLine();
+      timer = setInterval(addLine, 320);
+    }
+    tabs.forEach((t) => t.addEventListener("click", () => {
+      userPicked = true;
+      clearInterval(rotate);
+      play(t.dataset.codeTab);
+    }));
+    // Only type while the section is on screen
+    let started = false;
+    const order = tabs.map((t) => t.dataset.codeTab);
+    new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        if (!started) {
+          started = true;
+          play(current);
+          if (!reduced) rotate = setInterval(() => { if (!userPicked) play(order[(order.indexOf(current) + 1) % order.length]); }, 9000);
+        } else if (!timer && !reduced) timer = setInterval(addLine, 320);
+      } else {
+        clearInterval(timer);
+        timer = 0;
+      }
+    }).observe(codeLines.closest(".l-bsq"));
+  }
 
   // ---------- Placeholder links don't jump to the top ----------
   $$('a[href="#"]').forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
 
   // ---------- Gentle reveal for section content ----------
   if (!reduced && "IntersectionObserver" in window) {
-    const targets = $$(".l-products .l-headline, .l-product, .l-trust .l-headline, .l-quote, .l-record .l-split, .l-audits, .l-stories .l-split, .l-bfs__head, .l-news__inner > *");
+    const targets = $$(".l-products .l-headline, .l-product, .l-trust .l-headline, .l-quote, .l-record .l-split, .l-audits, .l-stories .l-split, .l-bsq__head, .l-news__inner > *");
     targets.forEach((el, i) => {
       el.classList.add("l-reveal");
       el.style.transitionDelay = `${(i % 4) * 70}ms`;

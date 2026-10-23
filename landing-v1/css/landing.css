@@ -1131,50 +1131,90 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 
 /* ---------- Build ---------- */
 
-/* ---------- Build: full-screen still life (the pale Studio photo, objects to the right). Copy in
-   black top left on the open wall (title, intro, outline CTA); a hairline and the audiences across
-   the foot ---------- */
+/* ---------- Build: the square still life fills the left half (so the section is half the screen
+   width tall); its blue screen is masked black and runs live code. The right half is the photo's
+   own wall colour (sampled down its right edge), and the photo's edge fades into it. ---------- */
 
-/* The machine still life (2000×792, very wide) fills the height above the audience row, anchored
-   right; its plain left wall runs under the copy. The backdrop is the photo's own wall colour
-   (sampled from its edges), so the area below it and any trimmed edge read as one surface. */
-.l-bfs {
-  --h: max(720px, 100svh);
-  --foot: 170px;
-  position: relative;
-  height: var(--h);
-  overflow: hidden;
-  background: linear-gradient(180deg, #b9bdc2 0%, #bec4c6 calc(100% - var(--foot)), #bec4c6 100%);
+.l-bsq {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  background: linear-gradient(180deg, #cad1d5 0%, #ccd2d6 10%, #d1d8dc 20%, #d7dee0 30%, #dae0e2 40%, #dce2e5 50%, #dde4e6 60%, #dbe1e4 70%, #d7dee0 80%, #d5dbde 90%, #d6dce1 100%); /* build-screen-3, sampled down its left edge */
   color: #000;
 }
-.l-bfs__photo {
+.l-bsq__media { position: relative; order: 2; aspect-ratio: 1; } /* image on the right, copy on the left */
+.l-bsq__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -webkit-mask-image: linear-gradient(270deg, #000 93%, transparent); /* left edge fades into the wall */
+  mask-image: linear-gradient(270deg, #000 93%, transparent);
+}
+/* build-screen-2/3: the blue screen is x 546–1470, y 516–1170 of 2000px; nudged a hair outward so no
+   blue fringe shows, still inside the black frame (520–1494, 492–1194) */
+.l-bsq__screen {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: auto;
-  max-width: none;
-  height: calc(100% - var(--foot));
-  transform: translateX(6%); /* into its empty right margin, giving the copy more air */
-  -webkit-mask-image: linear-gradient(180deg, #000 94%, transparent);
-  mask-image: linear-gradient(180deg, #000 94%, transparent);
+  left: 27.15%;
+  top: 25.65%;
+  width: 46.5%;
+  height: 33%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9em;
+  padding: 1.2em 1.4em 0;
+  background: #000;
+  color: #d8f3ff;
+  overflow: hidden;
+  container-type: inline-size;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: clamp(8px, 0.7vw, 12px);
 }
-.l-bfs__inner { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding-top: 100px; /* same top inset as the partner stories section */ padding-bottom: 48px; }
-.l-bfs__head { max-width: 440px; }
-.l-bfs__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; } /* same size as the other section titles */
-.l-bfs__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
-.l-bfs__cta { margin-top: 36px; gap: 34px; border-color: #000; background: transparent; }
-.l-bfs__cta:hover { background: #000; color: #fff !important; }
-.l-bfs__foot { padding-top: 26px; border-top: 1px solid rgba(0, 0, 0, 0.2); }
-.l-bfs__foot > .l-mono { font-size: 12px; color: rgba(0, 0, 0, 0.6); }
-.l-bfs__list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: 24px; margin: 22px 0 0; padding: 0; list-style: none; font-size: clamp(24px, 2.3vw, 34px); line-height: 1; letter-spacing: -0.03em; }
-.l-bfs__list li { color: rgba(0, 0, 0, 0.3); cursor: default; transition: color 0.4s; }
-.l-bfs__list li.is-on { color: #000; }
+.l-bsq__label { flex: none; font-size: 0.85em; letter-spacing: 0.08em; color: rgba(216, 243, 255, 0.55); }
+.l-bsq__code { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%); mask-image: linear-gradient(180deg, transparent, #000 18%); }
+/* js appends a line at a time from the top; once the screen is full the block slides up so the
+   newest line always sits at the bottom */
+.l-bsq__lines { position: absolute; left: 0; right: 0; top: 0; transition: transform 0.28s var(--l-ease); }
+/* Sized off the screen's own width (it's a size container) so the longest line, ~54 characters,
+   always fits across without truncating */
+.l-bsq__lines { font-size: 2.7cqw; }
+.l-bsq__lines div { min-height: 1.55em; line-height: 1.55em; white-space: pre; overflow: hidden; text-overflow: clip; }
+.l-bsq__lines div.is-new { animation: l-code-in 0.28s var(--l-ease); }
+@keyframes l-code-in { from { opacity: 0; } to { opacity: 1; } }
+.l-bsq__lines .c { color: rgba(216, 243, 255, 0.45); }  /* comments, prompts */
+.l-bsq__lines .k { color: #8fd6ff; }                     /* keys, keywords */
+.l-bsq__lines .s { color: #c6f4ff; }                     /* strings */
 
-@media (max-width: 720px) {
-  .l-bfs__list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
-  .l-bfs { --foot: 230px; }
-  .l-bfs__photo { right: -30%; height: 55%; top: auto; bottom: var(--foot); }
+.l-bsq__panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 100px 48px 48px max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad))); /* starts on the page's first column */
 }
+.l-bsq__head { max-width: 460px; }
+.l-bsq__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; }
+.l-bsq__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
+.l-bsq__cta { margin-top: 32px; gap: 34px; border-color: #000; background: transparent; }
+.l-bsq__cta:hover { background: #000; color: #fff !important; }
+/* Under the image: on the floor below the plinth, lined up with the panel's bottom inset and the
+   page's right edge. Label above the rule, tabs below it. */
+.l-bsq__foot { position: absolute; left: 48px; right: max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad))); bottom: 48px; display: grid; gap: 14px; }
+.l-bsq__foot > .l-mono { font-size: 12px; color: rgba(0, 0, 0, 0.6); }
+.l-bsq__tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 16px; margin: 0; padding: 22px 0 0; border-top: 1px solid rgba(0, 0, 0, 0.2); list-style: none; }
+.l-bsq__tabs button { padding: 0; border: 0; background: none; font: inherit; font-size: clamp(24px, 2.3vw, 34px); line-height: 1; letter-spacing: -0.03em; color: rgba(0, 0, 0, 0.3); text-align: left; cursor: pointer; transition: color 0.3s; }
+.l-bsq__tabs button:hover { color: rgba(0, 0, 0, 0.6); }
+.l-bsq__tabs button[aria-selected="true"] { color: #000; }
+
+@media (max-width: 960px) {
+  .l-bsq { grid-template-columns: 1fr; }
+  .l-bsq__media { order: 0; }
+  .l-bsq__media img { -webkit-mask-image: none; mask-image: none; }
+  .l-bsq__screen { font-size: clamp(7px, 1.4vw, 12px); }
+  .l-bsq__panel { gap: 56px; padding: 48px var(--l-pad) 56px; }
+  .l-bsq__media { aspect-ratio: auto; display: flex; flex-direction: column; }
+  .l-bsq__media img { aspect-ratio: 1; height: auto; }
+  .l-bsq__foot { position: static; padding: 24px var(--l-pad) 0; }
+}
+@media (max-width: 560px) { .l-bsq__tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; } }
+@media (prefers-reduced-motion: reduce) { .l-bsq__lines { transition: none; } .l-bsq__lines div.is-new { animation: none; } }
 
 .l-build { padding-top: 110px; padding-bottom: 150px; }
 .l-build .l-split { padding-bottom: 48px; }
@@ -1192,10 +1232,22 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 
 /* One full screen tall, content centred in it (grows if the list ever needs more) */
 .l-news { position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; min-height: 100svh; background: var(--l-pale); }
-.l-news__inner { display: grid; grid-template-columns: 500fr 838fr; width: 100%; padding-top: 96px; padding-bottom: 96px; }
-.l-news__side { display: flex; flex-direction: column; justify-content: space-between; }
+/* Title row across the top; below it the list (left) beside the open article's image (right).
+   The image fills the full height of the list and crops from the centre (the blog art keeps its
+   logos central for exactly this). */
+.l-news__inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "head head" "list media"; column-gap: 32px; row-gap: 56px; width: 100%; padding-top: 96px; padding-bottom: 96px; }
+.l-news__side { grid-area: head; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.l-news__media { grid-area: media; position: relative; min-height: 420px; border-radius: 4px; overflow: hidden; background: #d9dde2; }
+.l-news__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; opacity: 0; transition: opacity 0.6s var(--l-ease); }
+.l-news__media img.is-on { opacity: 1; }
+.l-news__list { grid-area: list; }
+@media (max-width: 960px) {
+  .l-news__inner { grid-template-columns: 1fr; grid-template-areas: "head" "media" "list"; row-gap: 32px; }
+  .l-news__side { flex-direction: column; align-items: flex-start; }
+  .l-news__media { min-height: 0; aspect-ratio: 16 / 10; }
+}
 .l-news__actions { display: flex; gap: 14px; }
-.l-news__list { margin: 0; padding: 0; list-style: none; border-top: 1px solid #000; }
+.l-news__list { margin: 0; padding: 0; list-style: none; }
 .l-news__item { border-bottom: 1px solid #000; }
 .l-news__toggle { position: relative; display: grid; gap: 14px; width: 100%; padding: 22px 56px 22px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: padding-left 0.35s var(--l-ease); }
 .l-news__toggle:hover, .l-news__item.is-open .l-news__toggle { padding-left: 14px; }
@@ -1220,6 +1272,7 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 /* ---------- Newsletter: page-level adjustments only ---------- */
 
 .newsletter { min-height: 0; }
+.l-page .newsletter__media { border-radius: 4px; } /* the landing's 4px corners (the standalone sign-up keeps 16px) */
 .newsletter__inner { padding-top: 120px; padding-bottom: 120px; }
 
 /* ---------- Footer ---------- */

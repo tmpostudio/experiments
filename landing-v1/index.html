@@ -11,8 +11,8 @@
   <!-- Coded sections, reused as-is from their experiments -->
   <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
   <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1023">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1023i">
-  <link rel="stylesheet" href="css/landing.css?v=1023i">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1024h">
+  <link rel="stylesheet" href="css/landing.css?v=1024h">
 </head>
 <body class="l-page">
   <!-- Hiring tab: a curved folder tab peeking in from the right edge of every screen. Hover pulls
@@ -944,24 +944,32 @@
     </div>
   </section>
 
-  <!-- ============ Build: full-screen still life, copy top left, audiences along the foot ============ -->
-  <section class="l-bfs" id="build" aria-labelledby="build-title">
-    <img class="l-bfs__photo" src="assets/build-machine.webp" alt="" width="2000" height="792" loading="lazy">
-    <div class="l-wrap l-bfs__inner">
-      <div class="l-bfs__head">
+  <!-- ============ Build: square still life on the left with live code on its screen; copy and
+       the API / SDK / CLI / Custom tabs on the right (js/landing.js "Build screen") ============ -->
+  <section class="l-bsq" id="build" aria-labelledby="build-title">
+    <div class="l-bsq__media">
+      <img src="assets/build-screen-3.webp" alt="" width="2000" height="2000" loading="lazy">
+      <!-- Black screen laid over the blue panel in the photo (its exact bounds, in % of the square) -->
+      <div class="l-bsq__screen" aria-hidden="true">
+        <span class="l-bsq__label l-mono" data-code-label>API · REST</span>
+        <div class="l-bsq__code"><div class="l-bsq__lines" data-code-lines></div></div>
+      </div>
+      <!-- Tabs sit on the empty floor under the plinth, so they read as the screen's controls -->
+      <div class="l-bsq__foot">
+        <span class="l-mono">Build with</span>
+        <ul class="l-bsq__tabs" role="tablist" aria-label="Ways to build">
+          <li><button type="button" role="tab" aria-selected="true" data-code-tab="api">API</button></li>
+          <li><button type="button" role="tab" aria-selected="false" data-code-tab="sdk">SDK</button></li>
+          <li><button type="button" role="tab" aria-selected="false" data-code-tab="cli">CLI</button></li>
+          <li><button type="button" role="tab" aria-selected="false" data-code-tab="custom">Custom</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="l-bsq__panel">
+      <div class="l-bsq__head">
         <h2 class="l-display" id="build-title">Build on Kamino</h2>
         <p>Plug into a trusted foundation of products. Earn, lend or borrow programmatically, and use our APIs to read market data and user positions.</p>
-        <a class="l-btn l-bfs__cta" href="#">Explore Kamino Docs <span aria-hidden="true">↗</span></a>
-      </div>
-      <div class="l-bfs__foot">
-        <span class="l-mono">Kamino is for</span>
-        <ul class="l-bfs__list" data-cycle>
-          <li class="is-on">Fintechs</li>
-          <li>Banks</li>
-          <li>Apps</li>
-          <li>Wallets</li>
-          <li>Exchanges</li>
-        </ul>
+        <a class="l-btn l-btn--outline l-bsq__cta" href="#">Explore Kamino Docs <span aria-hidden="true">↗</span></a>
       </div>
     </div>
   </section>
@@ -976,9 +984,15 @@
           <a class="l-btn l-btn--dark" href="#"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 2h7l4.8 6.4L18.2 2Zm-1.2 18h1.9L7.1 4H5.1l11.9 16Z"/></svg>@kamino</a>
         </div>
       </div>
+      <!-- The open article's image, crossfading as you open another (js/landing.js) -->
+      <div class="l-news__media" aria-hidden="true">
+        <img class="is-on" src="assets/news/onre-dark.jpg" alt="" loading="lazy">
+        <img src="assets/news/onre-blue.jpg" alt="" loading="lazy">
+        <img src="assets/news/onre-sky.jpg" alt="" loading="lazy">
+      </div>
       <!-- Accordion: a title opens its preview, which carries the link to the full article (js/landing.js) -->
       <ul class="l-news__list">
-        <li class="l-news__item is-open">
+        <li class="l-news__item is-open" data-image="0">
           <button class="l-news__toggle" type="button" aria-expanded="true" aria-controls="news-0">
             <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
             <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
@@ -991,7 +1005,7 @@
             </div>
           </div>
         </li>
-        <li class="l-news__item">
+        <li class="l-news__item" data-image="1">
           <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-1">
             <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
             <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
@@ -1004,7 +1018,7 @@
             </div>
           </div>
         </li>
-        <li class="l-news__item">
+        <li class="l-news__item" data-image="2">
           <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-2">
             <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
             <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
@@ -1017,39 +1031,13 @@
             </div>
           </div>
         </li>
-        <li class="l-news__item">
+        <li class="l-news__item" data-image="0">
           <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-3">
             <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
             <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
             <span class="l-news__icon" aria-hidden="true"></span>
           </button>
           <div class="l-news__panel" id="news-3" role="region">
-            <div class="l-news__preview">
-              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
-              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
-            </div>
-          </div>
-        </li>
-        <li class="l-news__item">
-          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-4">
-            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
-            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
-            <span class="l-news__icon" aria-hidden="true"></span>
-          </button>
-          <div class="l-news__panel" id="news-4" role="region">
-            <div class="l-news__preview">
-              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
-              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
-            </div>
-          </div>
-        </li>
-        <li class="l-news__item">
-          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-5">
-            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
-            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
-            <span class="l-news__icon" aria-hidden="true"></span>
-          </button>
-          <div class="l-news__panel" id="news-5" role="region">
             <div class="l-news__preview">
               <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
               <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
@@ -1153,6 +1141,6 @@
   <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
   <script src="../section-card-lock/js/stack.js"></script>
   <!-- Page interactions + lazy three.js (hero, APY story) -->
-  <script src="js/landing.js?v=1023i"></script>
+  <script src="js/landing.js?v=1024h"></script>
 </body>
 </html>
