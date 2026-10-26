@@ -970,10 +970,13 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .l-pcard:hover .l-pcard__face { transform: translateY(-5px); }
   .l-pcard:hover::before { opacity: 1; transform: none; }
+  /* The art rises with the button so the copy has room under it (the WebGL viewport follows
+     the box's on-screen rect, so moving the box moves the drawing) */
+  .l-pcard:hover .l-pcard__art { transform: translateY(-26px); }
 }
 .l-pcard h3 { margin: 0; font-size: 28px; font-weight: 400; line-height: 0.95; letter-spacing: -0.04em; }
 /* The art box runs the card's full width so wide pieces aren't clipped at the padding */
-.l-pcard__art { flex: 1 0 0; min-height: 0; margin: 0 -16px; }
+.l-pcard__art { flex: 1 0 0; min-height: 0; margin: 0 -16px; transition: transform 0.45s var(--l-ease); }
 .l-pcard p { max-width: 282px; margin: 0; font-size: 15px; line-height: 1.1; color: #4f5153; }
 /* Copy + CTA pinned to the bottom of the card. On hover the button slides up from below and
    pushes the copy up with it (over the empty foot of the art box, which keeps its size so the
@@ -1233,12 +1236,12 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 .l-bsq__code { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%); mask-image: linear-gradient(180deg, transparent, #000 18%); }
 /* js appends a line at a time from the top; once the screen is full the block slides up so the
    newest line always sits at the bottom */
-.l-bsq__lines { position: absolute; left: 0; right: 0; top: 0; transition: transform 0.28s var(--l-ease); }
+.l-bsq__lines { position: absolute; left: 0; right: 0; top: 0; transition: transform 0.12s linear; }
 /* Sized off the screen's own width (it's a size container) so the longest line, ~54 characters,
    always fits across without truncating */
 .l-bsq__lines { font-size: 2.7cqw; }
 .l-bsq__lines div { min-height: 1.55em; line-height: 1.55em; white-space: pre; overflow: hidden; text-overflow: clip; }
-.l-bsq__lines div.is-new { animation: l-code-in 0.28s var(--l-ease); }
+.l-bsq__lines div.is-new { animation: l-code-in 0.14s var(--l-ease); }
 @keyframes l-code-in { from { opacity: 0; } to { opacity: 1; } }
 .l-bsq__lines .c { color: rgba(216, 243, 255, 0.45); }  /* comments, prompts */
 .l-bsq__lines .k { color: #8fd6ff; }                     /* keys, keywords */

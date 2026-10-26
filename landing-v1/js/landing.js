@@ -1111,6 +1111,7 @@
     const label = $("[data-code-label]");
     const tabs = $$("[data-code-tab]");
     const MAX_LINES = 120;
+    const LINE_MS = 140; // a new line every this many ms
     let current = "api", cursor = 0, timer = 0, rotate = 0, userPicked = false;
 
     function addLine() {
@@ -1148,7 +1149,7 @@
       clearInterval(timer);
       if (reduced) { SNIPPETS[name].lines.forEach(addLine); return; }
       addLine();
-      timer = setInterval(addLine, 320);
+      timer = setInterval(addLine, LINE_MS);
     }
     tabs.forEach((t) => t.addEventListener("click", () => {
       userPicked = true;
@@ -1164,7 +1165,7 @@
           started = true;
           play(current);
           if (!reduced) rotate = setInterval(() => { if (!userPicked) play(order[(order.indexOf(current) + 1) % order.length]); }, 9000);
-        } else if (!timer && !reduced) timer = setInterval(addLine, 320);
+        } else if (!timer && !reduced) timer = setInterval(addLine, LINE_MS);
       } else {
         clearInterval(timer);
         timer = 0;
