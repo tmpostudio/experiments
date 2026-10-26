@@ -11,8 +11,8 @@
   <!-- Coded sections, reused as-is from their experiments -->
   <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
   <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1023">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1024h">
-  <link rel="stylesheet" href="css/landing.css?v=1024h">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1026t">
+  <link rel="stylesheet" href="css/landing.css?v=1026t">
 </head>
 <body class="l-page">
   <!-- Hiring tab: a curved folder tab peeking in from the right edge of every screen. Hover pulls
@@ -191,7 +191,7 @@
           <h3>Swap</h3>
           <div class="l-product__foot">
             <p>Trade any token on the best route, with limit and recurring orders built in.</p>
-            <a class="l-btn l-btn--outline" href="#">Open Swap</a>
+            <a class="l-btn l-btn--outline" href="#">Open Swap<span class="l-ring" aria-hidden="true"><span></span></span></a>
           </div>
         </div>
         <div class="l-product__demo">
@@ -223,7 +223,7 @@
           <h3>Earn</h3>
           <div class="l-product__foot">
             <p>Lending Vaults deploy funds across Kamino Lend Markets, automatically rebalancing them to ensure users earn optimized lending yields.</p>
-            <a class="l-btn l-btn--outline" href="#">Open Earn</a>
+            <a class="l-btn l-btn--outline" href="#">Open Earn<span class="l-ring" aria-hidden="true"><span></span></span></a>
           </div>
         </div>
         <div class="l-product__demo">
@@ -256,7 +256,7 @@
           <h3>Borrow</h3>
           <div class="l-product__foot">
             <p>Borrow against your assets across Kamino Lend Markets, with live health and liquidation levels as you size the loan.</p>
-            <a class="l-btn l-btn--outline" href="#">Open Borrow</a>
+            <a class="l-btn l-btn--outline" href="#">Open Borrow<span class="l-ring" aria-hidden="true"><span></span></span></a>
           </div>
         </div>
         <div class="l-product__demo">
@@ -292,7 +292,7 @@
           <h3>Multiply</h3>
           <div class="l-product__foot">
             <p>Loop a position in one click to amplify yield, with leverage you can dial up or down at any time.</p>
-            <a class="l-btn l-btn--outline" href="#">Open Multiply</a>
+            <a class="l-btn l-btn--outline" href="#">Open Multiply<span class="l-ring" aria-hidden="true"><span></span></span></a>
           </div>
         </div>
         <div class="l-product__demo">
@@ -465,6 +465,13 @@
   <section class="l-trust2" id="trust-cards" aria-labelledby="trust-cards-title">
     <div class="l-wrap">
       <h2 class="l-headline l-trust2__title" id="trust-cards-title"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
+      <!-- The brands in the carousel; each jumps to its card, the one in focus is darker (js/landing.js) -->
+      <nav class="l-trust2__brands" aria-label="Testimonials">
+        <button type="button" data-brand="0">Binance</button>
+        <button type="button" data-brand="1">Kraken</button>
+        <button type="button" data-brand="2">Anchorage Digital</button>
+        <button type="button" data-brand="3">OKX</button>
+      </nav>
     </div>
     <div class="l-tcar" tabindex="0" aria-roledescription="carousel" aria-label="Testimonials">
       <div class="l-tcar__track">
@@ -561,7 +568,7 @@
       </div>
       <div class="apy__flood"></div>
       <div class="apy__stats">
-        <!-- The stats roll in one by one and stack; the label rides as a superscript (src/apy-story.js) -->
+        <!-- The stats scroll through the centre, growing as they reach it; the label rides as a superscript (src/apy-story.js) -->
         <div class="apy__stack">
           <div class="apy__stat"><div class="apy__number">$21B</div><div class="apy__label">Loans Originated</div></div>
           <div class="apy__stat"><div class="apy__number">$3.1B</div><div class="apy__label">Total Value Locked</div></div>
@@ -979,8 +986,7 @@
     <div class="l-wrap l-news__inner">
       <div class="l-news__side">
         <h2 class="l-display">What’s New</h2>
-        <div class="l-news__actions">
-          <a class="l-btn l-btn--outline" href="#">Read all articles</a>
+        <div class="l-news__actions" hidden><!-- X link hidden for now -->
           <a class="l-btn l-btn--dark" href="#"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 2h7l4.8 6.4L18.2 2Zm-1.2 18h1.9L7.1 4H5.1l11.9 16Z"/></svg>@kamino</a>
         </div>
       </div>
@@ -991,6 +997,7 @@
         <img src="assets/news/onre-sky.jpg" alt="" loading="lazy">
       </div>
       <!-- Accordion: a title opens its preview, which carries the link to the full article (js/landing.js) -->
+      <div class="l-news__body">
       <ul class="l-news__list">
         <li class="l-news__item is-open" data-image="0">
           <button class="l-news__toggle" type="button" aria-expanded="true" aria-controls="news-0">
@@ -1045,6 +1052,9 @@
           </div>
         </li>
       </ul>
+      <!-- Sits on the bottom of the column, level with the bottom of the image -->
+      <a class="l-news__all" href="#">Read all articles <span aria-hidden="true">↗</span></a>
+      </div>
     </div>
   </section>
 
@@ -1141,6 +1151,6 @@
   <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
   <script src="../section-card-lock/js/stack.js"></script>
   <!-- Page interactions + lazy three.js (hero, APY story) -->
-  <script src="js/landing.js?v=1024h"></script>
+  <script src="js/landing.js?v=1026t"></script>
 </body>
 </html>

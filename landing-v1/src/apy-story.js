@@ -16,16 +16,14 @@ const VIEW_TOP = { x: Math.PI / 2, z: 0 };
 const VIEW_SIDE = { x: MathUtils.degToRad(10), z: 0.15 };
 const TEXT_LOCK = 0.3;
 
-// dive 0–0.5 · headline 0.04–0.44 · flood 0.44–0.60 · stats 0.60–1
-// Each stat rolls in over ROLL of progress from its start, and stays; they stack as they arrive.
-const STAT_STARTS = [0.6, 0.71, 0.82];
-const ROLL = 0.085;
-// Stack scale by how many stats have arrived (1, 2, 3): a lone stat reads bigger
-const STACK_SCALE = [1.45, 1.18, 1];
-// Radius of the drum the stats sit on (px, in stack units); smaller = more curved
-const DRUM_RADIUS = 1120;
-// Angle (radians) at which a row has turned far enough away to fade out
-const DRUM_FADE = 1.25;
+// dive 0–0.5 · headline 0.04–0.44 · flood 0.44–0.60 · stats 0.55–1
+// The stats are a column that scrolls through the middle of the screen: the one at the centre is
+// full size, the ones before and after it half size, growing as they move into the centre.
+// Each stat's move into the centre runs over [start, end] of progress, with holds in between.
+const STAT_MOVES = [[0.68, 0.79], [0.83, 0.94]];
+const STAT_LEAD = 0.6; // the first stat rises this many rows into the centre as the stats appear
+const FOCUS_SCALE = 1.4; // centre stat, relative to its CSS size
+const SIDE_SCALE = 0.5; // neighbours, relative to the centre stat
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const seg = (p, a, b) => clamp01((p - a) / (b - a));
@@ -127,33 +125,26 @@ export function mountApy(section) {
     flood.style.setProperty("--white", easeInOut(seg(P, 0.42, 0.55)).toFixed(3)); // blue dot → page white as it fills
 
     stats.style.opacity = seg(P, 0.545, 0.58).toFixed(3);
-    // Drum: the stats are printed round a cylinder that turns as they arrive. Each row sits at an
-    // angle on it (one row-pitch of arc apart); the drum's rotation keeps the arrived rows centred,
-    // so the earlier ones roll up and over the top while the newest rolls up from underneath.
-    const enters = statEls.map((el, i) => easeOut(seg(P, STAT_STARTS[i], STAT_STARTS[i] + ROLL)));
-    const k = enters.reduce((sum, e) => sum + e, 0);
-    const rowH = statEls[0].offsetHeight;
-    const pitch = statEls[1] ? statEls[1].offsetTop - statEls[0].offsetTop : rowH; // row + gap
-    const step = pitch / DRUM_RADIUS; // radians between rows
-    const turn = (Math.max(k, 1) - 1) / 2; // which row sits at the front, continuously
-    const kk = Math.min(Math.max(k, 1), 3);
-    const scale = kk <= 2
-      ? MathUtils.lerp(STACK_SCALE[0], STACK_SCALE[1], kk - 1)
-      : MathUtils.lerp(STACK_SCALE[1], STACK_SCALE[2], kk - 2);
-    stack.style.setProperty("--stack-y", "0px");
-    stack.style.setProperty("--stack-s", scale.toFixed(4));
+    // Which stat sits at the centre, continuously (0 = first)
+    const focus = -STAT_LEAD * (1 - easeOut(seg(P, 0.55, 0.64)))
+      + STAT_MOVES.reduce((sum, [a, b]) => sum + easeInOut(seg(P, a, b)), 0);
+    const rowH = statEls[0].offsetHeight * FOCUS_SCALE;
+    const gap = Math.min(52, Math.max(20, h * 0.045));
     statEls.forEach((el, i) => {
-      const e = enters[i];
-      // Not yet arrived: still further round underneath, turning up into view as it lands
-      const angle = (i - turn) * step + (1 - e) * step * 0.9;
-      const y = DRUM_RADIUS * Math.sin(angle);
-      const z = -DRUM_RADIUS * (1 - Math.cos(angle));
-      const layoutY = (i - (statEls.length - 1) / 2) * pitch; // where the grid put the row
-      // Faces turned away from you dim, as on a real drum
-      const facing = clamp01((Math.cos(angle) - Math.cos(DRUM_FADE)) / (1 - Math.cos(DRUM_FADE)));
-      el.style.opacity = (e * facing).toFixed(3);
+      const d = i - focus;
+      const near = Math.min(Math.abs(d), 1);
+      const s = 1 - (1 - SIDE_SCALE) * near;
+      // Distance from the centre adds up the (shrinking) row heights passed on the way out,
+      // so neighbours never overlap however far between sizes they are
+      const y = Math.sign(d) * (
+        rowH * (near - (1 - SIDE_SCALE) * near * near / 2) + gap * near
+        + Math.max(Math.abs(d) - 1, 0) * (rowH * SIDE_SCALE + gap)
+      );
+      // Out of focus reads grey (the page's muted #939393), darkening to black as it reaches the centre
+      el.style.color = `rgb(${Array(3).fill(Math.round(0x93 * near)).join(",")})`;
+      el.style.opacity = (1 - seg(Math.abs(d), 1.3, 1.9)).toFixed(3);
       el.style.transform =
-        `translateY(${(y - layoutY).toFixed(1)}px) translateZ(${z.toFixed(1)}px) rotateX(${(-angle * 180 / Math.PI).toFixed(2)}deg)`;
+        `translate(-50%, -50%) translateY(${y.toFixed(1)}px) scale(${(FOCUS_SCALE * s).toFixed(4)})`;
     });
 
     hint.style.opacity = String(1 - seg(P, 0.02, 0.06));

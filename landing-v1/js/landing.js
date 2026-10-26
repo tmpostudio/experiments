@@ -330,6 +330,8 @@
     let off = 432, left = 0;
     let settleTimer = 0;
     let dragging = false;
+    // Brand names under the title jump the carousel to that brand's card
+    const brandLinks = $$("[data-brand]");
 
     const offsetFor = (i) => left - i * (off + GAP);
     const setX = (x) => track.style.setProperty("--x", `${x.toFixed(1)}px`);
@@ -345,6 +347,8 @@
         c.classList.toggle("is-active", k === index);
         if (k >= lo && k < lo + n) c.setAttribute("aria-current", String(k === index));
       });
+      const brand = (((index - lo) % n) + n) % n; // which original card is in focus
+      brandLinks.forEach((b) => b.classList.toggle("is-on", Number(b.dataset.brand) === brand));
       setX(offsetFor(index));
       clearTimeout(settleTimer);
       settleTimer = setTimeout(recentre, 800); // fallback if transitionend doesn't arrive
@@ -370,6 +374,12 @@
     };
     layoutTrust();
     window.addEventListener("resize", layoutTrust);
+    brandLinks.forEach((b) => b.addEventListener("click", () => {
+      // nearest copy of that card, so it glides the short way round
+      const target = lo + Number(b.dataset.brand);
+      const d = ((((target - index) % n) + n + n / 2) % n) - n / 2;
+      go(index + d);
+    }));
 
     // Drag / swipe: the track follows the pointer, then locks to the nearest card
     let startX = 0, dx = 0, moved = false, downCard = null, vel = 0, lastX = 0, lastT = 0;

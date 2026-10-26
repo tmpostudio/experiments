@@ -264,8 +264,6 @@ html { overflow-x: clip; }
 /* Marquee rides up over the bottom of the photo */
 .l-hero:is([data-hero="studio"], [data-hero="app"], [data-hero="half"]) + .l-marquee { position: relative; z-index: 2; margin-top: -102px; padding: 0 0 46px; }
 /* Studio: every logo solid black over the pale photo */
-.l-hero:is([data-hero="studio"], [data-hero="half"]) + .l-marquee .l-marquee__row img { filter: brightness(0); opacity: 1; }
-.l-hero[data-hero="app"] + .l-marquee .l-marquee__row img { filter: brightness(0) invert(1); opacity: 0.95; }
 
 /* Black side tab poking in from the right edge */
 /* ---------- Header D: "Half" — light page, copy on the left, photo filling the right half from
@@ -439,10 +437,12 @@ html { overflow-x: clip; }
 
 /* ---------- Marquee ---------- */
 
-.l-marquee { padding: 54px 0 0; overflow: hidden; }
+/* Logos are drawn white and the strip is blended with "difference": over the light page they come
+   out black, and where they cross a photo they invert whatever is behind them */
+.l-marquee { padding: 54px 0 0; overflow: hidden; mix-blend-mode: difference; }
 .l-marquee__track { display: flex; width: max-content; animation: l-marquee 30s linear infinite; }
 .l-marquee__row { display: flex; align-items: center; gap: 74px; margin: 0; padding: 0 37px; list-style: none; }
-.l-marquee__row img { display: block; height: 30px; width: auto; max-width: 146px; opacity: 0.9; }
+.l-marquee__row img { display: block; height: 30px; width: auto; max-width: 146px; filter: brightness(0) invert(1); }
 @keyframes l-marquee { to { transform: translateX(-50%); } }
 
 /* ---------- Product suite ---------- */
@@ -512,6 +512,46 @@ html { overflow-x: clip; }
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.04);
+}
+/* Hover lift: the card rises a little and its shadow deepens beneath it. Its transition outranks
+   the scroll reveal's (which only makes the reveal itself a touch quicker). */
+.l-products .l-product { transition: transform 0.35s var(--l-ease), box-shadow 0.35s var(--l-ease), opacity 0.8s var(--l-ease); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .l-products .l-product:hover { transform: translateY(-6px); box-shadow: 0 20px 32px -20px rgba(0, 0, 0, 0.22), 2px 2px 8px rgba(0, 0, 0, 0.04); }
+}
+/* Card hover: a light blue comet runs round the button's hairline at an even speed. The ring is
+   masked down to the 1px border; the comet inside it travels a rounded-rect path (offset-path),
+   so it moves at the same pace along the sides as round the ends. */
+.l-products .l-product .l-btn--outline { position: relative; }
+.l-ring {
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+.l-ring span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 64px;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(143, 214, 255, 0), #8fd6ff 80%, #d8f6ff);
+  offset-path: inset(0.5px round 4px);
+  offset-anchor: 100% 50%;
+  offset-rotate: auto;
+}
+@keyframes l-ring { to { offset-distance: 100%; } }
+@supports (offset-path: inset(0 round 4px)) {
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .l-products .l-product:hover .l-ring { opacity: 1; }
+    .l-products .l-product:hover .l-ring span { animation: l-ring 3.6s linear infinite; }
+  }
 }
 .l-product__copy { display: flex; flex-direction: column; justify-content: space-between; padding: 30px 24px; background: #fff; }
 .l-product__copy h3 { margin: 0; font-size: 32px; font-weight: 400; letter-spacing: -0.03em; }
@@ -725,6 +765,10 @@ html { overflow-x: clip; }
 .l-trust[hidden], .l-trust2[hidden] { display: none !important; }
 .l-trust2 { padding: 150px 0 150px; overflow: hidden; }
 .l-trust2__title { max-width: 14.9em; }
+.l-trust2__brands { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 40px; }
+.l-trust2__brands button { padding: 0; border: 0; background: none; font: inherit; font-size: 15px; letter-spacing: -0.01em; color: var(--l-muted); cursor: pointer; transition: color 0.3s; }
+.l-trust2__brands button:hover { color: #555; }
+.l-trust2__brands button.is-on { color: #000; }
 /* Full-bleed strip; js/landing.js sets --off / --on (card widths) and --x (track offset) */
 .l-tcar { margin-top: 78px; padding: 12px 0 32px; outline: none; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .l-tcar:focus-visible .l-tcard.is-active { outline: 2px solid #000; outline-offset: 3px; }
@@ -989,20 +1033,19 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
    so the stats land on the site's own off-white rather than the blue radial gradient */
 .apy__flood::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #fafafa; opacity: var(--white, 0); }
 .apy__stats { position: absolute; inset: 0; background: #fafafa; color: #000; opacity: 0; pointer-events: none; } /* was radial-gradient(circle farthest-corner at center, #c2edfb 45%, #73a6c1 100%) */
-/* Stacked stats: three rows sized so all of them fit on screen together. js moves the whole
-   stack (--stack-y, --stack-s) so whatever has arrived so far sits centred, and rolls each row in. */
-.apy__stack {
+/* The stats scroll through the middle of the screen as a column: js (src/apy-story.js) places
+   each one from the centre and sizes it — full at the centre, half before and after. */
+.apy__stack { position: absolute; inset: 0; }
+.apy__stat {
   position: absolute;
   left: 50%;
   top: 50%;
-  display: grid;
-  justify-items: start;
-  row-gap: clamp(20px, 4.5vh, 52px);
-  perspective: 1100px; /* the rows sit round a turning drum (src/apy-story.js) */
-  transform: translate(-50%, -50%) scale(var(--stack-s, 1)) translateY(var(--stack-y, 0px));
-  will-change: transform;
+  display: flex;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
 }
-.apy__stat { display: flex; align-items: flex-start; opacity: 0; will-change: transform, opacity; }
 .apy__number { font-size: clamp(60px, min(19vh, 14vw), 215px); letter-spacing: -0.05em; line-height: 0.98; font-variant-numeric: tabular-nums; }
 /* Label as a superscript, hung off the top right of the number */
 .apy__label { margin: 0.95em 0 0 0.7em; font-family: "Roboto Mono", ui-monospace, monospace; font-size: clamp(10px, 0.95vw, 15px); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
@@ -1138,16 +1181,34 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 .l-bsq {
   display: grid;
   grid-template-columns: 50% 50%;
+  min-height: 100vh;
+  min-height: 100svh;
   background: linear-gradient(180deg, #cad1d5 0%, #ccd2d6 10%, #d1d8dc 20%, #d7dee0 30%, #dae0e2 40%, #dce2e5 50%, #dde4e6 60%, #dbe1e4 70%, #d7dee0 80%, #d5dbde 90%, #d6dce1 100%); /* build-screen-3, sampled down its left edge */
   color: #000;
 }
-.l-bsq__media { position: relative; order: 2; aspect-ratio: 1; } /* image on the right, copy on the left */
+/* Image on the right, copy on the left. The image stops at the page's right margin rather than
+   bleeding off, so the device and the tabs under it sit inside the page column. The margin below
+   gives the tabs room under the plinth now the image is smaller. */
+.l-bsq__media {
+  --edge: max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad)));
+  position: relative;
+  order: 2;
+  align-self: center;
+  justify-self: end;
+  /* fills its column, but never so tall that it and the tabs overflow the screen-high section */
+  width: min(calc(100% - var(--edge)), calc(100svh - 200px));
+  aspect-ratio: 1;
+  margin: 0 var(--edge) 64px 0;
+}
 .l-bsq__media img {
   display: block;
   width: 100%;
   height: 100%;
-  -webkit-mask-image: linear-gradient(270deg, #000 93%, transparent); /* left edge fades into the wall */
-  mask-image: linear-gradient(270deg, #000 93%, transparent);
+  /* every edge fades into the wall */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent), linear-gradient(180deg, transparent 4%, #000 26%, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent), linear-gradient(180deg, transparent 4%, #000 26%, #000 88%, transparent);
+  mask-composite: intersect;
 }
 /* build-screen-2/3: the blue screen is x 546–1470, y 516–1170 of 2000px; nudged a hair outward so no
    blue fringe shows, still inside the black frame (520–1494, 492–1194) */
@@ -1196,16 +1257,18 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 .l-bsq__cta:hover { background: #000; color: #fff !important; }
 /* Under the image: on the floor below the plinth, lined up with the panel's bottom inset and the
    page's right edge. Label above the rule, tabs below it. */
-.l-bsq__foot { position: absolute; left: 48px; right: max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad))); bottom: 48px; display: grid; gap: 14px; }
+/* Spans the image, so the tabs sit centred under the device and end on the right page margin */
+.l-bsq__foot { position: absolute; left: 0; right: 0; bottom: -16px; display: grid; gap: 14px; }
 .l-bsq__foot > .l-mono { font-size: 12px; color: rgba(0, 0, 0, 0.6); }
-.l-bsq__tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: 16px; margin: 0; padding: 22px 0 0; border-top: 1px solid rgba(0, 0, 0, 0.2); list-style: none; }
+/* Spread edge to edge so the first word starts and the last ends on the rule's ends */
+.l-bsq__tabs { display: flex; justify-content: space-between; column-gap: 16px; margin: 0; padding: 22px 0 0; border-top: 1px solid rgba(0, 0, 0, 0.2); list-style: none; }
 .l-bsq__tabs button { padding: 0; border: 0; background: none; font: inherit; font-size: clamp(24px, 2.3vw, 34px); line-height: 1; letter-spacing: -0.03em; color: rgba(0, 0, 0, 0.3); text-align: left; cursor: pointer; transition: color 0.3s; }
 .l-bsq__tabs button:hover { color: rgba(0, 0, 0, 0.6); }
 .l-bsq__tabs button[aria-selected="true"] { color: #000; }
 
 @media (max-width: 960px) {
-  .l-bsq { grid-template-columns: 1fr; }
-  .l-bsq__media { order: 0; }
+  .l-bsq { grid-template-columns: 1fr; min-height: 0; }
+  .l-bsq__media { order: 0; width: auto; margin: 0; }
   .l-bsq__media img { -webkit-mask-image: none; mask-image: none; }
   .l-bsq__screen { font-size: clamp(7px, 1.4vw, 12px); }
   .l-bsq__panel { gap: 56px; padding: 48px var(--l-pad) 56px; }
@@ -1213,7 +1276,7 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
   .l-bsq__media img { aspect-ratio: 1; height: auto; }
   .l-bsq__foot { position: static; padding: 24px var(--l-pad) 0; }
 }
-@media (max-width: 560px) { .l-bsq__tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; } }
+@media (max-width: 560px) { .l-bsq__tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; } }
 @media (prefers-reduced-motion: reduce) { .l-bsq__lines { transition: none; } .l-bsq__lines div.is-new { animation: none; } }
 
 .l-build { padding-top: 110px; padding-bottom: 150px; }
@@ -1240,13 +1303,18 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 .l-news__media { grid-area: media; position: relative; min-height: 420px; border-radius: 4px; overflow: hidden; background: #d9dde2; }
 .l-news__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; opacity: 0; transition: opacity 0.6s var(--l-ease); }
 .l-news__media img.is-on { opacity: 1; }
-.l-news__list { grid-area: list; }
+.l-news__body { grid-area: list; display: flex; flex-direction: column; gap: 48px; }
+.l-news__all { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: baseline; gap: 0.35em; font-size: clamp(22px, 2vw, 28px); line-height: 1; letter-spacing: -0.03em; color: var(--l-muted); text-decoration: none; transition: color 0.3s; }
+.l-news__all:hover { color: #000; }
+.l-news__all span { font-size: 0.7em; transition: transform 0.35s var(--l-ease); }
+.l-news__all:hover span { transform: translate(3px, -3px); }
 @media (max-width: 960px) {
   .l-news__inner { grid-template-columns: 1fr; grid-template-areas: "head" "media" "list"; row-gap: 32px; }
   .l-news__side { flex-direction: column; align-items: flex-start; }
   .l-news__media { min-height: 0; aspect-ratio: 16 / 10; }
 }
 .l-news__actions { display: flex; gap: 14px; }
+.l-news__actions[hidden] { display: none; }
 .l-news__list { margin: 0; padding: 0; list-style: none; }
 .l-news__item { border-bottom: 1px solid #000; }
 .l-news__toggle { position: relative; display: grid; gap: 14px; width: 100%; padding: 22px 56px 22px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: padding-left 0.35s var(--l-ease); }
