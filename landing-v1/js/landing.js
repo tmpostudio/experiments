@@ -112,12 +112,12 @@
     hero.dataset.hero = name;
     $$("[data-hero-variant]", hero).forEach((el) => (el.hidden = el.dataset.heroVariant !== name));
     heroButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.heroSet === name)));
-    if (remember) try { localStorage.setItem("landing-v4:hero", name); } catch (e) {}
+    if (remember) try { localStorage.setItem("landing-v5:hero", name); } catch (e) {}
   }
   heroButtons.forEach((b) => b.addEventListener("click", () => setHero(b.dataset.heroSet, true)));
   let startHero = new URLSearchParams(location.search).get("hero");
-  if (!startHero) try { startHero = localStorage.getItem("landing-v4:hero"); } catch (e) {}
-  setHero(["app", "half", "dash"].includes(startHero) ? startHero : "studio", false); // default: Studio (the Dots header is retired from the switch)
+  if (!startHero) try { startHero = localStorage.getItem("landing-v5:hero"); } catch (e) {}
+  setHero(["studio", "app", "half", "dash"].includes(startHero) ? startHero : "dash", false); // default: Dash (a new storage key, so an older saved pick does not override it)
 
   // ---------- Dash header: the pinned copy eases up a little as the page scrolls ----------
   // A third of the scroll, up to 90px, followed through a soft lerp so it glides rather than tracks

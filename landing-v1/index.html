@@ -11,8 +11,8 @@
   <!-- Coded sections, reused as-is from their experiments -->
   <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
   <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1023">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1029e">
-  <link rel="stylesheet" href="css/landing.css?v=1029e">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1029f">
+  <link rel="stylesheet" href="css/landing.css?v=1029f">
 </head>
 <body class="l-page">
   <!-- Hiring tab: a curved folder tab peeking in from the right edge of every screen. Hover pulls
@@ -26,7 +26,7 @@
   </a>
 
   <!-- ============ Hero ============ -->
-  <header class="l-hero" data-hero="studio">
+  <header class="l-hero" data-hero="dash">
     <nav class="l-nav" aria-label="Main">
       <a class="l-nav__logo" href="#" aria-label="Kamino home"><img src="assets/logos/kamino.svg" alt="Kamino" width="95" height="22"></a>
 
@@ -65,10 +65,10 @@
             <!-- Mockup only: flips between the header concepts -->
             <div class="l-menu__switch" role="group" aria-label="Header concept">
               <span class="l-mono">Header</span>
-              <button type="button" data-hero-set="studio" aria-pressed="true">Studio</button>
+              <button type="button" data-hero-set="studio" aria-pressed="false">Studio</button>
               <button type="button" data-hero-set="app" aria-pressed="false">App screen</button>
               <button type="button" data-hero-set="half" aria-pressed="false">Half</button>
-              <button type="button" data-hero-set="dash" aria-pressed="false">Dash</button>
+              <button type="button" data-hero-set="dash" aria-pressed="true">Dash</button>
             </div>
             <div class="l-menu__switch" role="group" aria-label="Title typeface">
               <span class="l-mono">Titles</span>
@@ -116,8 +116,8 @@
     </div>
 
     <!-- Header B: "Studio" — still life photo, serif headline, hiring tab (Figma 4718:16249) -->
-    <img class="l-hero__photo" data-hero-variant="studio" src="assets/hero-studio-api.webp?v=2" alt="">
-    <div class="l-hero__copy l-hero__copy--studio" data-hero-variant="studio">
+    <img class="l-hero__photo" data-hero-variant="studio" src="assets/hero-studio-api.webp?v=2" alt="" hidden>
+    <div class="l-hero__copy l-hero__copy--studio" data-hero-variant="studio" hidden>
       <h1 class="l-hero__title l-hero__title--serif">Connecting onchain finance to global capital.</h1>
       <p class="l-hero__lede">The credit and liquidity layer for a new generation of financial infrastructure</p>
       <div class="l-hero__actions">
@@ -152,7 +152,7 @@
     </div>
     <!-- Header E: "Dash" — light page, centred copy, the app home screen below it masked to a desktop
          screen (Figma 5027:38366). The copy stays put; the screen and the page scroll up over it -->
-    <div class="l-hero__dash" data-hero-variant="dash" hidden>
+    <div class="l-hero__dash" data-hero-variant="dash">
       <div class="l-hero__copy l-hero__copy--dash">
         <h1 class="l-hero__title">Connecting the dots between onchain finance and global capital.</h1>
         <p class="l-hero__lede">The credit and liquidity layer for a new generation of financial infrastructure</p>
@@ -167,8 +167,8 @@
         </div>
       </div>
     </div>
-    <a class="l-hiring-tab" data-hero-variant="studio" href="#footer"><span>We’re Hiring</span></a>
-    <a class="l-hiring-pill" data-hero-variant="studio" href="#footer">We are hiring. Explore open roles <img src="assets/ui/arrow-right.svg" alt="" width="12" height="12"></a>
+    <a class="l-hiring-tab" data-hero-variant="studio" href="#footer" hidden><span>We’re Hiring</span></a>
+    <a class="l-hiring-pill" data-hero-variant="studio" href="#footer" hidden>We are hiring. Explore open roles <img src="assets/ui/arrow-right.svg" alt="" width="12" height="12"></a>
   </header>
 
   <!-- ============ Partner marquee ============ -->
@@ -1142,6 +1142,6 @@
   <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
   <script src="../section-card-lock/js/stack.js"></script>
   <!-- Page interactions + lazy three.js (hero, APY story) -->
-  <script src="js/landing.js?v=1029e"></script>
+  <script src="js/landing.js?v=1029f"></script>
 </body>
 </html>
