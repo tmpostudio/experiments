@@ -305,44 +305,6 @@
   }
   }
 
-  { // own scope: the two accordions share names
-  // ---------- Partners accordion, swing-logo version (set aside 27 Oct 2026) ----------
-  // Click a panel to open it and the others close (CSS transitions do the glide). The open width
-  // is the row minus the closed strips, set in px (--on) so it transitions, re-measured on resize.
-  const acc = $(".pb-swing");
-  if (acc) {
-    const items = $$(".pb-swing__item", acc);
-    const hits = items.map((it) => $(".pb-swing__hit", it));
-    const size = () => {
-      const cs = getComputedStyle(acc);
-      const off = parseFloat(cs.getPropertyValue("--off")) || 132;
-      const gap = parseFloat(cs.getPropertyValue("--gap")) || 12;
-      acc.classList.add("is-instant"); // re-measuring snaps the open panel to its new width
-      acc.style.setProperty("--on", `${acc.clientWidth - (items.length - 1) * (off + gap)}px`);
-      void acc.offsetWidth;
-      setTimeout(() => acc.classList.remove("is-instant"), 50);
-    };
-    size();
-    window.addEventListener("resize", size);
-    const open = (item) => items.forEach((it, i) => {
-      const on = it === item;
-      it.classList.toggle("is-open", on);
-      hits[i].setAttribute("aria-expanded", String(on));
-    });
-    hits.forEach((hit, i) => hit.addEventListener("click", () => open(items[i])));
-    acc.addEventListener("keydown", (e) => {
-      const i = hits.indexOf(document.activeElement);
-      if (i < 0) return;
-      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-      if (!step) return;
-      const next = (i + step + items.length) % items.length;
-      open(items[next]);
-      hits[next].focus();
-      e.preventDefault();
-    });
-  }
-  }
-
   // ---------- Build screen: code types out line by line on the photo's screen ----------
   // Placeholder snippets for each way to build; the tab picks which one runs. It moves on to the
   // next tab by itself every so often until someone picks one.

@@ -813,59 +813,54 @@ html { overflow-x: clip; }
 .platform { padding-top: 20px; }
 
 /* ---------- Partners accordion (Figma 5000:3884) ---------- */
-/* Four slots in a row, one open. Each slot holds a card laid out the open way: logo lying at the
-   top-left, quote at the foot. Closed, the whole card is turned a quarter anticlockwise about its
-   centre and sized to stand in the thin slot, so the logo reads up the strip from its foot. Opening
-   turns the card upright while it grows to the open size; only the quote fades in. Nothing on the
-   card moves relative to the card. js/landing.js drives the slot widths, the turn and the card's
-   size frame by frame, with the rule that a turning card never leaves its slot (it scales down
-   just enough mid-turn), so cards never overlap at any row width. The CSS below holds the two
-   rest states; the blue and the quote fade here. */
+/* Four panels in a row: thin grey strips with the logo standing along them, and one open panel
+   (blue) with the logo lying at the top and the story at the foot. Both widths are px (js/landing.js
+   sets --on from the row width), so a click glides every panel at once. */
 
 .l-partners { padding-top: 150px; padding-bottom: 150px; }
 .l-partners .l-headline { max-width: 14.9em; }
-/* --off is the closed strip's width and, because the card turns, also the band the logo is centred
-   in at the top of the open card: a narrower strip is what brings the logo nearer the top edge */
-.l-acc { --off: 100px; --gap: 12px; --h: 520px; --pad: 32px; --a-dur: 0.65s; display: flex; gap: var(--gap); margin-top: 64px; }
-.l-acc__item { position: relative; z-index: 1; flex: none; width: var(--off); height: var(--h); }
-.l-acc__item.is-open { z-index: 2; width: var(--on, 60%); }
-/* The card sits on the slot's centre: closed it is --h wide and --off tall, turned a quarter to
-   stand in the slot; open it is the slot's size, upright */
-.l-acc__card {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--h);
-  height: var(--off);
+.l-acc { --off: 132px; --gap: 12px; --h: 520px; --pad: 32px; --a-dur: 0.65s; display: flex; gap: var(--gap); margin-top: 64px; }
+.l-acc__item {
+  position: relative;
+  flex: none;
+  width: var(--off);
+  height: var(--h);
   overflow: hidden;
   border: 0.5px solid rgba(0, 0, 0, 0.05);
   border-radius: 8px;
   background: var(--l-pale);
   box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07); /* same edge as the One platform cards */
-  transform: translate(-50%, -50%) rotate(-90deg);
+  transition: width var(--a-dur) var(--l-ease);
 }
-.l-acc__item.is-open .l-acc__card { width: var(--on, 100%); height: var(--h); transform: translate(-50%, -50%); }
+.l-acc__item.is-open { width: var(--on, 60%); }
+.l-acc.is-instant .l-acc__item, .l-acc.is-instant .l-acc__story { transition: none; }
 /* The blue is its own layer that crossfades (opacity only, so no repaint while it fades) */
-.l-acc__card::before { content: ""; position: absolute; inset: 0; background: var(--l-mist); opacity: 0; transition: opacity var(--a-dur) var(--l-ease); }
-.l-acc__item.is-open .l-acc__card::before { opacity: 1; }
-/* The whole card is the button */
+.l-acc__item::before { content: ""; position: absolute; inset: 0; background: var(--l-mist); opacity: 0; transition: opacity var(--a-dur) var(--l-ease); }
+.l-acc__item.is-open::before { opacity: 1; }
+/* The whole panel is the button; the story's link sits above it once open */
 .l-acc__hit { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; border-radius: inherit; background: none; cursor: pointer; text-align: left; }
 .l-acc__item.is-open .l-acc__hit { cursor: default; }
 .l-acc__hit:focus-visible { outline-offset: -3px; }
-/* Logo lying at the top-left, centred in a band as tall as a closed strip so it is centred across
-   the strip when the card is turned; --pad from the left is its distance from the strip's foot */
+.l-acc__index { position: absolute; left: 14px; top: 14px; font-size: 10px; color: var(--l-muted); transition: opacity 0.3s var(--l-ease); }
+.l-acc__item.is-open .l-acc__index { opacity: 0; }
+/* The logo is one element in both states: standing along the strip with its foot at the bottom
+   (turned about its top-left corner), or lying at the top-left. Moving the corner and turning it
+   at the same time is what swings it between the two. */
 .l-acc__logo {
   position: absolute;
   display: block;
   width: auto;
   height: var(--logo-h, 28px);
-  left: var(--pad);
-  top: calc((var(--off) - var(--logo-h, 28px)) / 2);
+  left: calc((var(--off) - var(--logo-h, 28px)) / 2);
+  top: calc(var(--h) - var(--pad));
+  transform-origin: 0 0;
+  transform: rotate(-90deg);
+  transition: left var(--a-dur) var(--l-ease), top var(--a-dur) var(--l-ease), transform var(--a-dur) var(--l-ease);
   pointer-events: none;
 }
-/* Quote at the foot: a fixed measure so it never re-wraps while the card is still growing.
-   It rises and fades in slowly once the card is well into its turn, and drops out quickly the
-   moment the card starts closing */
+.l-acc__item.is-open .l-acc__logo { left: var(--pad); top: var(--pad); transform: none; }
+/* Story at the foot: a fixed measure so it never re-wraps while the panel is still widening;
+   it fades in a beat after the panel starts opening and out as soon as it starts closing */
 .l-acc__story {
   position: absolute;
   left: var(--pad);
@@ -875,28 +870,30 @@ html { overflow-x: clip; }
   gap: 20px;
   margin: 0;
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(10px);
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.25s var(--l-ease), transform 0.25s var(--l-ease), visibility 0s 0.25s;
+  transition: opacity 0.3s var(--l-ease), transform var(--a-dur) var(--l-ease), visibility 0s 0.3s;
 }
-.l-acc__item.is-open .l-acc__story { opacity: 1; transform: none; visibility: visible; transition: opacity 1.1s var(--l-ease) 0.3s, transform 1.1s var(--l-ease) 0.3s, visibility 0s; }
+.l-acc__item.is-open .l-acc__story { opacity: 1; transform: none; visibility: visible; transition: opacity 0.45s var(--l-ease) 0.2s, transform var(--a-dur) var(--l-ease), visibility 0s; }
 /* Quote and name, same as the card carousel this replaced */
 .l-acc__story blockquote { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -0.025em; color: #08090a; text-wrap: balance; }
 .l-acc__by { display: grid; font-size: 14px; line-height: 21px; letter-spacing: -0.013em; color: #08090a; }
 .l-acc__by strong { font-weight: 400; }
 .l-acc__by > span { opacity: 0.6; }
 @media (max-width: 720px) {
-  /* Stacked: thin bars with the logo lying in them; the open one grows downwards, no turning */
+  /* Stacked: thin bars with the logo lying in them; the open one grows downwards */
   .l-acc { flex-direction: column; --off: 72px; --h: 400px; --pad: 20px; }
   .l-acc__item { width: 100%; height: var(--off); transition: height var(--a-dur) var(--l-ease); }
   .l-acc__item.is-open { width: 100%; height: var(--h); }
-  .l-acc__card, .l-acc__item.is-open .l-acc__card { left: 0; top: 0; width: 100%; height: 100%; transform: none; transition: none; }
+  .l-acc__index { display: none; }
+  .l-acc__logo { left: var(--pad); top: calc((var(--off) - var(--logo-h, 28px)) / 2); transform: none; }
+  .l-acc__item.is-open .l-acc__logo { top: var(--pad); }
   .l-acc__story { width: auto; right: var(--pad); }
   .l-acc__story blockquote { font-size: 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .l-acc__item, .l-acc__card, .l-acc__card::before, .l-acc__story { transition: none; }
+  .l-acc__item, .l-acc__item::before, .l-acc__logo, .l-acc__story { transition: none; }
 }
 
 /* ---------- Commodity ---------- */

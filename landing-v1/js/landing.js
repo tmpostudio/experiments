@@ -334,82 +334,29 @@
   let startPlatform = new URLSearchParams(location.search).get("platform");
   if (!startPlatform) try { startPlatform = localStorage.getItem("landing-v4:platform"); } catch (e) {}
 
-  // ---------- Partners accordion ----------
-  // Click a slot to open it and the open one closes. Each slot has a progress p (0 closed, 1 open)
-  // that runs through the page's ease; from p come the slot's width, the card's unturned size and
-  // its turn (a quarter anticlockwise when closed). The rule: a turning card never leaves its slot.
-  // Each frame the card is scaled to the largest size whose turned bounding box still fits the slot
-  // at that instant, so nothing ever overlaps a neighbour, whatever the row width. The blue and the
-  // quote fade in CSS off the is-open class; on phones (stacked bars) CSS does the whole move.
+  // ---------- Partners accordion (swinging logo, fading quote) ----------
+  // Click a panel to open it and the others close (CSS transitions do the glide). The open width
+  // is the row minus the closed strips, set in px (--on) so it transitions, re-measured on resize.
   const acc = $(".l-acc");
   if (acc) {
     const items = $$(".l-acc__item", acc);
-    const cards = items.map((it) => $(".l-acc__card", it));
     const hits = items.map((it) => $(".l-acc__hit", it));
-    const stacked = window.matchMedia("(max-width: 720px)");
-    const ease = cubicBezier(0.22, 1, 0.36, 1); // --l-ease
-    const dims = { off: 132, gap: 12, h: 520, on: 600, dur: 650 };
-    const state = items.map((it) => ({ p: it.classList.contains("is-open") ? 1 : 0, from: 0, to: 0, t0: 0 }));
-    const measure = () => {
+    const size = () => {
       const cs = getComputedStyle(acc);
-      const v = (name, fallback) => parseFloat(cs.getPropertyValue(name)) || fallback;
-      dims.off = v("--off", 132);
-      dims.gap = v("--gap", 12);
-      dims.h = v("--h", 520);
-      dims.dur = v("--a-dur", 0.65) * 1000;
-      dims.on = acc.clientWidth - (items.length - 1) * (dims.off + dims.gap);
-      acc.style.setProperty("--on", `${dims.on}px`); // the quote's measure reads it
+      const off = parseFloat(cs.getPropertyValue("--off")) || 132;
+      const gap = parseFloat(cs.getPropertyValue("--gap")) || 12;
+      acc.classList.add("is-instant"); // re-measuring snaps the open panel to its new width
+      acc.style.setProperty("--on", `${acc.clientWidth - (items.length - 1) * (off + gap)}px`);
+      void acc.offsetWidth;
+      setTimeout(() => acc.classList.remove("is-instant"), 50);
     };
-    const render = (i) => {
-      const it = items[i], card = cards[i], p = state[i].p;
-      if (stacked.matches) { // bars: leave it to the CSS
-        it.style.width = "";
-        card.style.width = card.style.height = card.style.transform = "";
-        return;
-      }
-      const { off, h, on } = dims;
-      const sw = off + (on - off) * p; // the slot now
-      const w = h + (on - h) * p; // the card before its turn
-      const ch = off + (h - off) * p;
-      const a = (-Math.PI / 2) * (1 - p);
-      const c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
-      const fit = Math.min(1, sw / (w * c + ch * s), h / (w * s + ch * c)); // turned box inside the slot
-      it.style.width = `${sw.toFixed(2)}px`;
-      card.style.width = `${w.toFixed(2)}px`;
-      card.style.height = `${ch.toFixed(2)}px`;
-      card.style.transform = `translate(-50%, -50%) rotate(${((a * 180) / Math.PI).toFixed(3)}deg) scale(${fit.toFixed(4)})`;
-    };
-    const renderAll = () => items.forEach((_, i) => render(i));
-    measure();
-    renderAll();
-    window.addEventListener("resize", () => { measure(); renderAll(); });
-    let raf = 0;
-    const tick = (now) => {
-      let busy = false;
-      state.forEach((st, i) => {
-        if (!st.t0) return;
-        const t = Math.min(1, (now - st.t0) / dims.dur);
-        st.p = st.from + (st.to - st.from) * ease(t);
-        if (t < 1) busy = true; else st.t0 = 0;
-        render(i);
-      });
-      raf = busy ? requestAnimationFrame(tick) : 0;
-    };
-    const open = (item) => {
-      const now = performance.now();
-      items.forEach((it, i) => {
-        const on = it === item;
-        it.classList.toggle("is-open", on);
-        hits[i].setAttribute("aria-expanded", String(on));
-        const st = state[i], to = on ? 1 : 0;
-        if (st.p === to && !st.t0) return;
-        if (reduced || stacked.matches) { st.p = to; st.t0 = 0; render(i); return; }
-        st.from = st.p; // picks up mid-move
-        st.to = to;
-        st.t0 = now;
-      });
-      if (!raf) raf = requestAnimationFrame(tick);
-    };
+    size();
+    window.addEventListener("resize", size);
+    const open = (item) => items.forEach((it, i) => {
+      const on = it === item;
+      it.classList.toggle("is-open", on);
+      hits[i].setAttribute("aria-expanded", String(on));
+    });
     hits.forEach((hit, i) => hit.addEventListener("click", () => open(items[i])));
     acc.addEventListener("keydown", (e) => {
       const i = hits.indexOf(document.activeElement);

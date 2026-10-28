@@ -11,8 +11,8 @@
   <!-- Coded sections, reused as-is from their experiments -->
   <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
   <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1023">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1029f">
-  <link rel="stylesheet" href="css/landing.css?v=1029f">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1029g">
+  <link rel="stylesheet" href="css/landing.css?v=1029g">
 </head>
 <body class="l-page">
   <!-- Hiring tab: a curved folder tab peeking in from the right edge of every screen. Hover pulls
@@ -451,47 +451,39 @@
   </section>
 
   <!-- ============ Partners accordion (Figma 5000:3884, four logos) ============ -->
-  <!-- Click a panel to open it: the whole card turns upright and grows into the open panel while the
-       others turn back into thin strips; only the quote fades (js/landing.js). Only Binance
+  <!-- Click a panel to open it: it widens and turns blue while the others close to thin strips, and
+       the logo swings from standing along the strip to lying at the top (js/pasteboard.js). Only Binance
        has approved copy; the other quotes and names are placeholders. -->
   <section class="l-partners l-wrap" id="partners" aria-labelledby="partners-title">
     <h2 class="l-headline" id="partners-title"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
     <div class="l-acc">
       <article class="l-acc__item is-open">
-        <div class="l-acc__card">
-          <button class="l-acc__hit" type="button" aria-expanded="true" aria-controls="acc-binance"><img class="l-acc__logo" src="assets/logos/binance-black.svg" alt="Binance" style="--logo-h: 32px"></button>
-          <figure class="l-acc__story" id="acc-binance">
-            <blockquote>“The performance of Kamino speaks for itself – the product has significantly increased our users yields and has a flawless track record for security and risk management.”</blockquote>
-            <figcaption class="l-acc__by"><strong>Peter Welinder</strong><span>VP of Product and Partnerships, Binance</span></figcaption>
-          </figure>
-        </div>
+        <button class="l-acc__hit" type="button" aria-expanded="true" aria-controls="acc-binance"><span class="l-acc__index l-mono" aria-hidden="true">01</span><img class="l-acc__logo" src="assets/logos/binance-black.svg" alt="Binance" style="--logo-h: 30px"></button>
+        <figure class="l-acc__story" id="acc-binance">
+          <blockquote>“The performance of Kamino speaks for itself – the product has significantly increased our users yields and has a flawless track record for security and risk management.”</blockquote>
+          <figcaption class="l-acc__by"><strong>Peter Welinder</strong><span>VP of Product and Partnerships, Binance</span></figcaption>
+        </figure>
       </article>
       <article class="l-acc__item">
-        <div class="l-acc__card">
-          <button class="l-acc__hit" type="button" aria-expanded="false" aria-controls="acc-kraken"><img class="l-acc__logo" src="assets/logos/kraken-black.svg" alt="Kraken" style="--logo-h: 24px"></button>
-          <figure class="l-acc__story" id="acc-kraken">
-            <blockquote>“The cleanest way we’ve found to put onchain credit to work for our users.”</blockquote>
-            <figcaption class="l-acc__by"><strong>Name Surname</strong><span>Title, Kraken</span></figcaption>
-          </figure>
-        </div>
+        <button class="l-acc__hit" type="button" aria-expanded="false" aria-controls="acc-kraken"><span class="l-acc__index l-mono" aria-hidden="true">02</span><img class="l-acc__logo" src="assets/logos/kraken-black.svg" alt="Kraken" style="--logo-h: 22px"></button>
+        <figure class="l-acc__story" id="acc-kraken">
+          <blockquote>“The cleanest way we’ve found to put onchain credit to work for our users.”</blockquote>
+          <figcaption class="l-acc__by"><strong>Name Surname</strong><span>Title, Kraken</span></figcaption>
+        </figure>
       </article>
       <article class="l-acc__item">
-        <div class="l-acc__card">
-          <button class="l-acc__hit" type="button" aria-expanded="false" aria-controls="acc-anchorage"><img class="l-acc__logo" src="assets/logos/anchorage-black.svg" alt="Anchorage Digital" style="--logo-h: 32px"></button>
-          <figure class="l-acc__story" id="acc-anchorage">
-            <blockquote>“Institutional-grade risk controls, with the transparency only onchain can offer.”</blockquote>
-            <figcaption class="l-acc__by"><strong>Name Surname</strong><span>Title, Anchorage Digital</span></figcaption>
-          </figure>
-        </div>
+        <button class="l-acc__hit" type="button" aria-expanded="false" aria-controls="acc-anchorage"><span class="l-acc__index l-mono" aria-hidden="true">03</span><img class="l-acc__logo" src="assets/logos/anchorage-black.svg" alt="Anchorage Digital" style="--logo-h: 30px"></button>
+        <figure class="l-acc__story" id="acc-anchorage">
+          <blockquote>“Institutional-grade risk controls, with the transparency only onchain can offer.”</blockquote>
+          <figcaption class="l-acc__by"><strong>Name Surname</strong><span>Title, Anchorage Digital</span></figcaption>
+        </figure>
       </article>
       <article class="l-acc__item">
-        <div class="l-acc__card">
-          <button class="l-acc__hit" type="button" aria-expanded="false" aria-controls="acc-okx"><img class="l-acc__logo" src="assets/logos/okx.svg" alt="OKX" style="--logo-h: 22px"></button>
-          <figure class="l-acc__story" id="acc-okx">
-            <blockquote>“Kamino is the liquidity layer we build on, not around.”</blockquote>
-            <figcaption class="l-acc__by"><strong>Name Surname</strong><span>Title, OKX</span></figcaption>
-          </figure>
-        </div>
+        <button class="l-acc__hit" type="button" aria-expanded="false" aria-controls="acc-okx"><span class="l-acc__index l-mono" aria-hidden="true">04</span><img class="l-acc__logo" src="assets/logos/okx.svg" alt="OKX" style="--logo-h: 20px"></button>
+        <figure class="l-acc__story" id="acc-okx">
+          <blockquote>“Kamino is the liquidity layer we build on, not around.”</blockquote>
+          <figcaption class="l-acc__by"><strong>Name Surname</strong><span>Title, OKX</span></figcaption>
+        </figure>
       </article>
     </div>
   </section>
@@ -1142,6 +1134,6 @@
   <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
   <script src="../section-card-lock/js/stack.js"></script>
   <!-- Page interactions + lazy three.js (hero, APY story) -->
-  <script src="js/landing.js?v=1029f"></script>
+  <script src="js/landing.js?v=1029g"></script>
 </body>
 </html>
