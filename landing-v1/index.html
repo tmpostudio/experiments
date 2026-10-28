@@ -11,8 +11,8 @@
   <!-- Coded sections, reused as-is from their experiments -->
   <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
   <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1023">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1029l">
-  <link rel="stylesheet" href="css/landing.css?v=1029l">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1030b">
+  <link rel="stylesheet" href="css/landing.css?v=1030b">
 </head>
 <body class="l-page">
   <!-- Hiring tab: a curved folder tab peeking in from the right edge of every screen. Hover pulls
@@ -946,8 +946,8 @@
             <svg class="l-folio__shape" aria-hidden="true"></svg>
             <button class="l-folio__tab" type="button" role="tab" id="ff-tab-custom" aria-controls="ff-custom">Custom</button>
             <div class="l-folio__page" id="ff-custom" role="tabpanel" aria-labelledby="ff-tab-custom">
-              <header class="l-folio__meta"><span class="l-mono">Custom · On-chain</span><span class="l-mono">kamino_lending::cpi</span></header>
-              <pre class="l-folio__code"><i><span class="c">// Compose Kamino Lend into your own program</span></i><i><span class="k">use</span> kamino_lending::cpi::{</i><i>    accounts::DepositReserveLiquidity, deposit,</i><i>};</i><i> </i><i><span class="k">pub fn</span> sweep_to_kamino(</i><i>    ctx: Context&lt;Sweep&gt;, amount: <span class="k">u64</span>,</i><i>) -&gt; Result&lt;()&gt; {</i><i>  <span class="k">let</span> accounts = DepositReserveLiquidity {</i><i>    owner: ctx.accounts.vault.to_account_info(),</i><i>    reserve: ctx.accounts.reserve.to_account_info(),</i><i>    lending_market: ctx.accounts.market(),</i><i>    ..ctx.accounts.kamino()</i><i>  };</i><i>  <span class="k">let</span> program = ctx.accounts.klend();</i><i>  deposit(CpiContext::new(program, accounts), amount)</i><i>}</i></pre>
+              <header class="l-folio__meta"><span class="l-mono">Custom · On-chain</span><span class="l-mono">Partnerships</span></header>
+              <p class="l-folio__pitch"><i>Big ideas need a custom integration.</i><i>Let’s build it together.</i></p>
               <span class="l-folio__big" aria-hidden="true">Custom</span>
             </div>
           </article>
@@ -1039,6 +1039,187 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- ============ What's new, second take (Figma 5040:38599): a full-width index on pale blue that
+       rises into a folder tab over the first column, drawn like the Build folio tabs. Hovering a row nudges its text across; clicking opens it to a short
+       preview, a Read article link and an image (js/landing.js "What's new index"). Shown below the first take to compare. Preview copy is placeholder. ============ -->
+  <section class="l-index" id="news-index" aria-labelledby="news-index-title">
+    <svg class="l-index__tab" viewBox="0 0 312 37" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 37V36C12 36 12 0 24 0H272C292 0 292 36 312 36V37Z"/></svg>
+    <div class="l-index__head l-wrap">
+      <h2 class="l-index__heading" id="news-index-title">What’s new at Kamino</h2>
+      <img class="l-index__icon" src="assets/ui/doc-dots.svg" alt="" width="25" height="38">
+    </div>
+    <ul class="l-index__list">
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-1">
+              <span class="l-index__title">Brazilian Credit Card Receivables Are Now Collateral</span>
+              <span class="l-index__cat">RWA</span>
+              <time class="l-index__date">SEP 08 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-1" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">A $1.68 trillion credit market, onchain for the first time. Originated by Agora Data, structured by Figure Forge and issued by Hastra.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/news/still-coins.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-2">
+              <span class="l-index__title">Zcash Joins Solana Credit Markets</span>
+              <span class="l-index__cat">MARKETS</span>
+              <time class="l-index__date">SEP 07 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-2" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">Bridged ZEC can now be supplied and borrowed against on Kamino, in a market with its own risk settings.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/news/onre-dark.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-3">
+              <span class="l-index__title">Midas Brings Fasanara’s $5B Private Credit Onchain</span>
+              <span class="l-index__cat">PRIVATE CREDIT</span>
+              <time class="l-index__date">AUG 20 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-3" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">A tokenised share of an institutional private credit book, held onchain and usable as collateral.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/build-column.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-4">
+              <span class="l-index__title">Solana Mobile Brings Onchain USDC Yield to Seeker</span>
+              <span class="l-index__cat">FINTECHS</span>
+              <time class="l-index__date">AUG 19 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-4" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">Seeker owners can earn on USDC from the wallet on their phone, with Kamino running underneath.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/news/onre-sky.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-5">
+              <span class="l-index__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+              <span class="l-index__cat">TREASURIES</span>
+              <time class="l-index__date">AUG 17 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-5" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">Short-duration Treasuries, tokenised and usable as collateral on Kamino.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/news/onre-blue.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-6">
+              <span class="l-index__title">AUTO is Now Live: Tokenized U.S. Auto Loans on Solana</span>
+              <span class="l-index__cat">RWA</span>
+              <time class="l-index__date">AUG 04 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-6" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">A pool of U.S. auto loans, tokenised and brought to Kamino as a new source of real-world yield.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/build-machine.webp" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-7">
+              <span class="l-index__title">Introducing Kamino Institutional Commodity Yield</span>
+              <span class="l-index__cat">PRODUCT</span>
+              <time class="l-index__date">AUG 03 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-7" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">Yield on commodity exposure for institutions, with the custody and reporting they already expect.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/commodity.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-8">
+              <span class="l-index__title">Obligate Brings Institutional Trade Finance Yield to Solana</span>
+              <span class="l-index__cat">TRADE FINANCE</span>
+              <time class="l-index__date">JUL 31 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-8" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">Short-dated trade finance notes, issued onchain and open to Kamino lenders.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/build-bg.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-9">
+              <span class="l-index__title">Hyperliquid’s Native Token Now Has a Credit Market</span>
+              <span class="l-index__cat">MARKETS</span>
+              <time class="l-index__date">JUL 28 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-9" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">HYPE holders can borrow against their position without selling it, in an isolated market.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/hero-studio-coin.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-10">
+              <span class="l-index__title">Tokenized Gold on Kamino, PAXG Now Live</span>
+              <span class="l-index__cat">COMMODITIES</span>
+              <time class="l-index__date">JUL 28 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-10" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">Gold, held in a vault and tokenised as PAXG, now works as collateral on Kamino.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/hero-studio.webp" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-11">
+              <span class="l-index__title">The First Tokenized STRC Lending Market on Solana</span>
+              <span class="l-index__cat">TOKENIZED EQUITIES</span>
+              <time class="l-index__date">MAY 28 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-11" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">A lending market for tokenised STRC, the first of its kind on Solana.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/build-api.webp" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="l-index__item">
+          <div class="l-index__row">
+            <button class="l-index__toggle" type="button" aria-expanded="false" aria-controls="ix-12">
+              <span class="l-index__title">Galaxy Brings a NASDAQ-Listed Public Equity Onchain</span>
+              <span class="l-index__cat">TOKENIZED EQUITIES</span>
+              <time class="l-index__date">MAR 31 2026</time>
+              <span class="l-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="l-index__more" id="ix-12" inert><div class="l-index__more-in">
+              <div class="l-index__text"><p class="l-index__blurb">A listed public equity, issued onchain by Galaxy and held directly by its owners.</p><a class="l-index__read" href="#">Read article<span class="l-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="l-index__media"><img src="assets/story-rockaway.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+    </ul>
   </section>
 
   <!-- ============ Newsletter (kamino-sign-here) ============ -->
@@ -1134,6 +1315,6 @@
   <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
   <script src="../section-card-lock/js/stack.js"></script>
   <!-- Page interactions + lazy three.js (hero, APY story) -->
-  <script src="js/landing.js?v=1029l"></script>
+  <script src="js/landing.js?v=1030b"></script>
 </body>
 </html>

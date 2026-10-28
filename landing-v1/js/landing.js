@@ -170,7 +170,7 @@
     // pool or on a ripple front) and traces 4–8 grid steps along the grid, horizontally and
     // vertically only, turning 0–2 corners on the way; it holds, then fades.
     const LINK_TURNS = [0.4, 0.35, 0.25]; // chance of 0, 1 and 2 corners
-    const LINK_MAX = 10;
+    const LINK_MAX = 20;
     const LINK_WIDTH = 0.5;
     const LINK_SPEED = 230;      // px per second while tracing
     const LINK_HOLD = 700;       // ms fully drawn
@@ -270,7 +270,7 @@
     }
 
     function light(x, y, now) {
-      if (Math.random() < 0.055) {
+      if (Math.random() < 0.11) {
         const ang = Math.random() * Math.PI * 2, d = Math.sqrt(Math.random()) * REACH * 0.75;
         spawnLink(x + Math.cos(ang) * d, y + Math.sin(ang) * d, now);
       }
@@ -298,7 +298,7 @@
         const age = (now - rp.t) / RIPPLE_LIFE;
         const radius = ((now - rp.t) / 1000) * RIPPLE_SPEED;
         const strength = (1 - age) * (1 - age);
-        if (Math.random() < 0.02 * strength) {
+        if (Math.random() < 0.04 * strength) {
           const ang = Math.random() * Math.PI * 2;
           spawnLink(rp.x + Math.cos(ang) * radius, rp.y + Math.sin(ang) * radius, now);
         }
@@ -1061,6 +1061,33 @@
     }));
   }
 
+  // ---------- What's new index (second take) ----------
+  // Hover only nudges a row's text (CSS). Clicking a row opens it and closes any other; clicking
+  // an open row's header closes it. The Read article link inside follows as a normal link, and
+  // clicks inside the open preview (to select text, say) leave it open. Closed previews are inert,
+  // so their links stay out of the tab order.
+  const index = $(".l-index__list");
+  if (index) {
+    const items = $$(".l-index__item", index);
+    const setOpen = (it, on) => {
+      it.classList.toggle("is-open", on);
+      $(".l-index__toggle", it).setAttribute("aria-expanded", String(on));
+      $(".l-index__more", it).inert = !on;
+    };
+    items.forEach((item) => item.addEventListener("click", (e) => {
+      if (e.target.closest("a")) return;
+      const more = $(".l-index__more", item);
+      if (item.classList.contains("is-open") && more.contains(e.target)) return;
+      const on = !item.classList.contains("is-open");
+      items.forEach((it) => setOpen(it, on && it === item));
+    }));
+    index.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      const item = e.target.closest(".l-index__item");
+      if (item?.classList.contains("is-open")) { setOpen(item, false); $(".l-index__toggle", item).focus(); }
+    });
+  }
+
   // ---------- Build folios ----------
   // "file" has every tab on the left, and cycles instead: clicking the front sheet drops it off the
   // page under gravity with a slight tilt, then it fades back in at the back of the stack while
@@ -1301,7 +1328,7 @@
 
   // ---------- Gentle reveal for section content ----------
   if (!reduced && "IntersectionObserver" in window) {
-    const targets = $$(".l-products .l-headline, .l-product, .l-partners .l-headline, .l-acc, .l-record .l-split, .l-audits, .l-stories .l-split, .l-folio__head, .l-feed__title, .l-feed__grid");
+    const targets = $$(".l-products .l-headline, .l-product, .l-partners .l-headline, .l-acc, .l-record .l-split, .l-audits, .l-stories .l-split, .l-folio__head, .l-feed__title, .l-feed__grid, .l-index__head");
     targets.forEach((el, i) => {
       el.classList.add("l-reveal");
       el.style.transitionDelay = `${(i % 4) * 70}ms`;
