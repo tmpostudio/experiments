@@ -140,8 +140,12 @@
   // white dots. The pointer lights a wide soft pool around it and sends out ripples;
   // every lit dot twinkles at its own pace, so the trail glimmers as it fades.
   // mountDots(host, canvas, active): host takes the pointer and sets the size; active() can
-  // switch it off (e.g. headers it doesn't suit). Used by the header and the commodity section.
-  function mountDots(host, dotCanvas, active = () => true) {
+  // switch it off (e.g. headers it doesn't suit); look() gives the dot colour and strength.
+  // Used by the header and the commodity section.
+  const DOTS_WHITE = { color: "#fff", alpha: 1 };
+  // Dash: black on the light page, a longer-lingering pool, and hairlines that trace from dot to dot
+  const DOTS_DASH = { color: "#000", alpha: 0.42, lines: true, hold: 500, fade: 3200 };
+  function mountDots(host, dotCanvas, active = () => true, look = () => DOTS_WHITE) {
     if (!host || !dotCanvas || reduced) return;
     const SPACING = 11;          // grid pitch
     const DOT_MIN = 0.7;         // dot radius when barely lit…
@@ -162,12 +166,23 @@
     let phase = new Float32Array(0);   // per-dot twinkle offset
     let rate = new Float32Array(0);    // per-dot twinkle speed
     let ripples = [];
+    // Hairline links: { pts, len, t, trace, life }. Now and then one starts from a lit dot (in the
+    // pool or on a ripple front) and traces 4–8 grid steps along the grid, horizontally and
+    // vertically only, turning 0–2 corners on the way; it holds, then fades.
+    const LINK_TURNS = [0.4, 0.35, 0.25]; // chance of 0, 1 and 2 corners
+    const LINK_MAX = 10;
+    const LINK_WIDTH = 0.5;
+    const LINK_SPEED = 230;      // px per second while tracing
+    const LINK_HOLD = 700;       // ms fully drawn
+    const LINK_FADE = 1400;      // ms to fade out
+    let links = [];
+    let holdMs = HOLD_MS, fadeMs = FADE_MS;   // the pool's timing for the current header
     let running = false;
     let prev = null;
     let sinceRipple = 0;
 
     function pool(i, now) {
-      const t = (now - litAt[i] - HOLD_MS) / FADE_MS;
+      const t = (now - litAt[i] - holdMs) / fadeMs;
       if (t <= 0) return peak[i];
       if (t >= 1) return 0;
       return peak[i] * (1 - t) * (1 - t);
@@ -196,8 +211,42 @@
         rate[i] = 0.004 + Math.random() * 0.009;
       }
       ripples = [];
+      links = [];
     }
     new ResizeObserver(resize).observe(host);
+
+    // Grid index nearest (x, y), or -1 off the grid
+    function dotAt(x, y) {
+      const c = Math.round((x - originX) / SPACING), r = Math.round((y - originY) / SPACING);
+      return c < 0 || r < 0 || c >= cols || r >= rows ? -1 : r * cols + c;
+    }
+    // A grid path from the dot nearest (x, y): a random number of corners, each a quarter turn
+    function spawnLink(x, y, now) {
+      if (!look().lines || links.length >= LINK_MAX) return;
+      const a = dotAt(x, y);
+      if (a < 0) return;
+      const roll = Math.random();
+      const total = 4 + Math.floor(Math.random() * 5);
+      // Every leg needs 2 steps, so a short route can't take two corners
+      const turns = Math.min(roll < LINK_TURNS[0] ? 0 : roll < LINK_TURNS[0] + LINK_TURNS[1] ? 1 : 2, total / 2 - 1 | 0);
+      // Split the steps into turns + 1 legs of at least 2 steps each
+      const legs = Array(turns + 1).fill(2);
+      for (let s = total - 2 * legs.length; s > 0; s--) legs[Math.floor(Math.random() * legs.length)]++;
+      const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+      let dir = Math.floor(Math.random() * 4);
+      let c = a % cols, r = Math.floor(a / cols);
+      const pts = [[c, r]];
+      for (let k = 0; k < legs.length; k++) {
+        if (k) dir = (dir + (Math.random() < 0.5 ? 1 : 3)) % 4;
+        c += DIRS[dir][0] * legs[k];
+        r += DIRS[dir][1] * legs[k];
+        if (c < 0 || r < 0 || c >= cols || r >= rows) return;
+        pts.push([c, r]);
+      }
+      const len = total * SPACING;
+      const trace = (len / LINK_SPEED) * 1000;
+      links.push({ a, pts, len, t: now, trace, life: trace + LINK_HOLD + LINK_FADE });
+    }
 
     // Calls fn(index, distance) for every dot within `radius` of (x, y)
     function near(x, y, radius, fn) {
@@ -214,7 +263,17 @@
     }
 
     // Soft pool around the pointer; brightest at the centre
+    function timing() {
+      const lk = look();
+      holdMs = lk.hold ?? HOLD_MS;
+      fadeMs = lk.fade ?? FADE_MS;
+    }
+
     function light(x, y, now) {
+      if (Math.random() < 0.055) {
+        const ang = Math.random() * Math.PI * 2, d = Math.sqrt(Math.random()) * REACH * 0.75;
+        spawnLink(x + Math.cos(ang) * d, y + Math.sin(ang) * d, now);
+      }
       near(x, y, REACH, (i, d) => {
         const t = 1 - d / REACH;
         const v = t * t * (3 - 2 * t) * 0.8;
@@ -226,6 +285,7 @@
     }
 
     function draw(now) {
+      timing();
       ctx.clearRect(0, 0, w, h);
       let alive = false;
       for (let i = 0; i < val.length; i++) {
@@ -238,6 +298,10 @@
         const age = (now - rp.t) / RIPPLE_LIFE;
         const radius = ((now - rp.t) / 1000) * RIPPLE_SPEED;
         const strength = (1 - age) * (1 - age);
+        if (Math.random() < 0.02 * strength) {
+          const ang = Math.random() * Math.PI * 2;
+          spawnLink(rp.x + Math.cos(ang) * radius, rp.y + Math.sin(ang) * radius, now);
+        }
         near(rp.x, rp.y, radius + RIPPLE_WIDTH * 2, (i, d) => {
           const k = (d - radius) / RIPPLE_WIDTH;
           const v = strength * Math.exp(-k * k);
@@ -245,14 +309,53 @@
         });
         alive = true;
       }
-      ctx.fillStyle = "#fff";
+      const { color, alpha } = look();
+      ctx.fillStyle = color;
+      // Hairlines first, under the dots. Each traces out from its start dot (eased, with a small
+      // dot riding the tip), holds, then fades; it dims a little as its start dot goes dark.
+      links = links.filter((ln) => now - ln.t < ln.life);
+      if (links.length) {
+        alive = true;
+        ctx.strokeStyle = color;
+        ctx.lineWidth = LINK_WIDTH;
+        for (const ln of links) {
+          const age = now - ln.t;
+          const p = Math.min(1, age / ln.trace);
+          const e = 1 - Math.pow(1 - p, 2.2);
+          const f = Math.max(0, (age - ln.trace - LINK_HOLD) / LINK_FADE);
+          const lit = Math.max(0.5, Math.min(1, val[ln.a] * 1.4));
+          const a = (1 - f) * (1 - f) * lit * alpha * 1.5;
+          if (a < 0.01) continue;
+          // Walk the path up to the eased distance; the tip is where it stops
+          let left = e * ln.len;
+          let hx = originX + ln.pts[0][0] * SPACING, hy = originY + ln.pts[0][1] * SPACING;
+          ctx.globalAlpha = Math.min(1, a);
+          ctx.beginPath();
+          ctx.moveTo(hx, hy);
+          for (let k = 1; k < ln.pts.length && left > 0; k++) {
+            const nx = originX + ln.pts[k][0] * SPACING, ny = originY + ln.pts[k][1] * SPACING;
+            const seg = Math.abs(nx - hx) + Math.abs(ny - hy);
+            const u = Math.min(1, left / seg);
+            hx += (nx - hx) * u;
+            hy += (ny - hy) * u;
+            left -= seg;
+            ctx.lineTo(hx, hy);
+          }
+          ctx.stroke();
+          if (p < 1) {
+            ctx.beginPath();
+            ctx.arc(hx, hy, 1.1, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
       for (let i = 0; i < val.length; i++) {
         let v = val[i];
         if (v < 0.02) continue;
         // Glimmer: each dot pulses on its own clock, with the odd bright spark
         const tw = 0.5 + 0.5 * Math.sin(now * rate[i] + phase[i]);
         v *= 0.35 + 0.65 * tw * tw;
-        ctx.globalAlpha = Math.min(1, v * MAX_ALPHA * 1.25);
+        ctx.globalAlpha = Math.min(1, v * MAX_ALPHA * 1.25) * alpha;
         const radius = DOT_MIN + (DOT_MAX - DOT_MIN) * v;
         ctx.beginPath();
         ctx.arc(originX + (i % cols) * SPACING, originY + Math.floor(i / cols) * SPACING, radius, 0, Math.PI * 2);
@@ -269,6 +372,7 @@
 
     host.addEventListener("pointermove", (event) => {
       if (!active()) return;
+      timing();
       const rect = host.getBoundingClientRect();
       const p = { x: event.clientX - rect.left, y: event.clientY - rect.top };
       const now = performance.now();
@@ -297,7 +401,9 @@
     });
     host.addEventListener("pointerleave", () => (prev = null));
   }
-  mountDots(hero, $(".l-hero__dots"), () => !["dots", "half", "dash"].includes(hero.dataset.hero)); // full-bleed photo headers only
+  // Photo headers in white, Dash in subtle grey; not on Dots or Half
+  mountDots(hero, $(".l-hero__dots"), () => !["dots", "half"].includes(hero.dataset.hero),
+    () => (hero.dataset.hero === "dash" ? DOTS_DASH : DOTS_WHITE));
   mountDots($(".l-commodity"), $(".l-commodity__dots"));
 
   // ---------- Titles switch (Resources menu; also ?titles=serif) ----------

@@ -392,7 +392,7 @@ html { overflow-x: clip; }
 .l-hero[data-hero="app"] .l-hero__photo { object-position: 50% 50%; }
 /* Hover dot grid (js/landing.js): over the photo, under the screenshot, copy and nav */
 .l-hero__dots { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.l-hero:is([data-hero="dots"], [data-hero="half"], [data-hero="dash"]) .l-hero__dots { display: none; }
+.l-hero:is([data-hero="dots"], [data-hero="half"]) .l-hero__dots { display: none; }
 .l-hero__copy, .l-hero__app { z-index: 1; }
 /* Logo strip sits lower than on Studio: 46px off the bottom edge instead of 72px */
 .l-hero[data-hero="app"] + .l-marquee { margin-top: -76px; padding-bottom: 20px; }
@@ -418,7 +418,6 @@ html { overflow-x: clip; }
    never moves; the screen and then the rest of the page scroll up over it. ---------- */
 
 .l-hero[data-hero="dash"] { height: auto; min-height: 0; padding-bottom: 24px; overflow: visible; background: var(--bg, #fafafa); }
-.l-hero[data-hero="dash"] .l-hero__dots { display: none; }
 .l-hero__dash { --dash-top: clamp(140px, 17.5vh, 168px); position: relative; display: flex; flex-direction: column; align-items: center; padding-top: var(--dash-top); }
 .l-hero__copy--dash {
   position: sticky;
