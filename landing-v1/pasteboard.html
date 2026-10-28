@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kamino — Landing pasteboard</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1028y">
+  <link rel="stylesheet" href="css/landing.css?v=1028y">
+  <link rel="stylesheet" href="css/pasteboard.css?v=1028y">
+</head>
+<body class="l-page pb-page">
+  <!-- Sections cut from landing-v1, and versions set aside along the way, kept working so they
+       can come back when the site grows. To add one: paste the section's markup as a new entry at
+       the top of the list, its CSS into css/pasteboard.css and its script into js/pasteboard.js.
+       A copy of something still on the landing needs its own class prefix (see the partners
+       entries) so the landing's CSS does not reach it. -->
+  <header class="pb-head l-wrap">
+    <span class="l-mono">Landing v1 · Pasteboard</span>
+    <h1 class="l-display">Sections cut from the landing, and versions set aside, kept for later.</h1>
+    <p>Each entry runs as it did on the page, with its own styles and script. Newest first. <a href="index.html">Back to the landing →</a></p>
+  </header>
+
+  <article class="pb-entry" id="cut-whats-new">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Cut · 27 Oct 2026</span>
+      <h2>What’s New — accordion with image</h2>
+      <p>A screen-tall pale section: the index on the left as an accordion (a title opens its preview and Read article link), and the open article’s image beside it, crossfading as another opens. Replaced by the featured article with an index beside it.</p>
+    </header>
+  <!-- ============ What's new ============ -->
+  <section class="l-news" id="news">
+    <div class="l-wrap l-news__inner">
+      <div class="l-news__side">
+        <h2 class="l-display">What’s New</h2>
+        <div class="l-news__actions" hidden><!-- X link hidden for now -->
+          <a class="l-btn l-btn--dark" href="#"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.4l7.9-9L1 2h7l4.8 6.4L18.2 2Zm-1.2 18h1.9L7.1 4H5.1l11.9 16Z"/></svg>@kamino</a>
+        </div>
+      </div>
+      <!-- The open article's image, crossfading as you open another (js/landing.js) -->
+      <div class="l-news__media" aria-hidden="true">
+        <img class="is-on" src="assets/news/onre-dark.jpg" alt="" loading="lazy">
+        <img src="assets/news/onre-blue.jpg" alt="" loading="lazy">
+        <img src="assets/news/onre-sky.jpg" alt="" loading="lazy">
+      </div>
+      <!-- Accordion: a title opens its preview, which carries the link to the full article (js/landing.js) -->
+      <div class="l-news__body">
+      <ul class="l-news__list">
+        <li class="l-news__item is-open" data-image="0">
+          <button class="l-news__toggle" type="button" aria-expanded="true" aria-controls="news-0">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-0" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+        <li class="l-news__item" data-image="1">
+          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-1">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-1" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+        <li class="l-news__item" data-image="2">
+          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-2">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-2" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+        <li class="l-news__item" data-image="0">
+          <button class="l-news__toggle" type="button" aria-expanded="false" aria-controls="news-3">
+            <span class="l-news__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+            <span class="l-news__meta l-mono"><span>Treasuries</span><span>Funds</span><span>RWA</span><time>Aug 17 2026</time></span>
+            <span class="l-news__icon" aria-hidden="true"></span>
+          </button>
+          <div class="l-news__panel" id="news-3" role="region">
+            <div class="l-news__preview">
+              <p>A short preview of the article sits here: what launched, who it’s for and why it matters, in two or three lines before the link through to the full story. [Preview copy to come]</p>
+              <div class="l-news__more"><span class="l-mono">4 min read</span><a class="l-btn l-btn--outline" href="#">Read article <span aria-hidden="true">↗</span></a></div>
+            </div>
+          </div>
+        </li>
+      </ul>
+      <!-- Sits on the bottom of the column, level with the bottom of the image -->
+      <a class="l-news__all" href="#">Read all articles <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+  </article>
+  <article class="pb-entry" id="aside-build-folio1">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Set aside · 27 Oct 2026</span>
+      <h2>Build on Kamino — folio, first take</h2>
+      <p>Four sheets graded from grey to blue with angled tabs stepping down; the chosen sheet lifts forward in sky blue and its sample cascades in. Set aside for the single-blue folios with curved file tabs.</p>
+    </header>
+  <!-- ============ Build: a folio of four folded sheets, one per way to build, each carrying a
+       sample; click a tab to pull its sheet to the front (js/landing.js "Build folio") ============ -->
+  <section class="pb-folio1" id="pb-folio1" aria-labelledby="pb-folio1-title">
+    <div class="l-wrap pb-folio1__inner">
+      <div class="pb-folio1__head">
+        <h2 class="l-display" id="pb-folio1-title">Build on Kamino</h2>
+        <p>Plug into a trusted foundation of products. Earn, lend or borrow programmatically, and use our APIs to read market data and user positions.</p>
+        <a class="l-btn l-btn--outline pb-folio1__cta" href="#">Explore Kamino Docs <span aria-hidden="true">↗</span></a>
+      </div>
+      <!-- Samples are placeholders. Tabs step down along the top; the front sheet is sky blue -->
+      <div class="pb-folio1__stage" role="tablist" aria-label="Ways to build">
+        <article class="pb-folio1__sheet is-front" style="--i: 0" data-sheet="api">
+          <button class="pb-folio1__tab" type="button" role="tab" aria-selected="true" aria-controls="pb-folio1-api" id="pb-folio1-tab-api"><span class="l-mono">01</span>API</button>
+          <div class="pb-folio1__page" id="pb-folio1-api" role="tabpanel" aria-labelledby="pb-folio1-tab-api">
+            <header class="pb-folio1__meta"><span class="l-mono">API · REST</span><span class="l-mono">GET /v2/markets/main/reserves/metrics</span></header>
+            <pre class="pb-folio1__code"><i>[</i>
+<i>  {</i>
+<i>    <span class="k">"symbol"</span>: <span class="s">"USDC"</span>,</i>
+<i>    <span class="k">"supplyApy"</span>: 0.0712,</i>
+<i>    <span class="k">"borrowApy"</span>: 0.0894,</i>
+<i>    <span class="k">"totalSupply"</span>: <span class="s">"412,880,190.42"</span>,</i>
+<i>    <span class="k">"totalBorrow"</span>: <span class="s">"301,557,004.10"</span>,</i>
+<i>    <span class="k">"utilization"</span>: 0.7304,</i>
+<i>    <span class="k">"maxLtv"</span>: 0.80</i>
+<i>  },</i>
+<i>  {</i>
+<i>    <span class="k">"symbol"</span>: <span class="s">"SOL"</span>,</i>
+<i>    <span class="k">"supplyApy"</span>: 0.0418,</i>
+<i>    <span class="k">"borrowApy"</span>: 0.0663,</i>
+<i>    <span class="k">"totalSupply"</span>: <span class="s">"5,120,774.88"</span>,</i>
+<i>    <span class="k">"utilization"</span>: 0.6129</i>
+<i>  }</i>
+<i>]</i></pre>
+          </div>
+        </article>
+        <article class="pb-folio1__sheet" style="--i: 1" data-sheet="sdk">
+          <button class="pb-folio1__tab" type="button" role="tab" aria-selected="false" aria-controls="pb-folio1-sdk" id="pb-folio1-tab-sdk"><span class="l-mono">02</span>SDK</button>
+          <div class="pb-folio1__page" id="pb-folio1-sdk" role="tabpanel" aria-labelledby="pb-folio1-tab-sdk">
+            <header class="pb-folio1__meta"><span class="l-mono">SDK · TYPESCRIPT</span><span class="l-mono">@kamino-finance/klend-sdk</span></header>
+            <pre class="pb-folio1__code"><i><span class="k">import</span> { KaminoMarket }</i>
+<i>  <span class="k">from</span> <span class="s">"@kamino-finance/klend-sdk"</span>;</i>
+<i> </i>
+<i><span class="k">const</span> market = <span class="k">await</span> KaminoMarket.load(</i>
+<i>  connection, MAIN_MARKET</i>
+<i>);</i>
+<i><span class="k">const</span> usdc = market.getReserveBySymbol(<span class="s">"USDC"</span>);</i>
+<i> </i>
+<i><span class="c">// Live rates</span></i>
+<i>console.log(usdc.totalSupplyAPY());</i>
+<i>console.log(usdc.totalBorrowAPY());</i>
+<i> </i>
+<i><span class="c">// Deposit 1,000 USDC</span></i>
+<i><span class="k">const</span> tx = <span class="k">await</span> market.deposit({</i>
+<i>  owner: wallet.publicKey,</i>
+<i>  reserve: usdc,</i>
+<i>  amount: 1_000_000_000n,</i>
+<i>});</i>
+<i><span class="k">await</span> sendAndConfirm(tx);</i></pre>
+          </div>
+        </article>
+        <article class="pb-folio1__sheet" style="--i: 2" data-sheet="cli">
+          <button class="pb-folio1__tab" type="button" role="tab" aria-selected="false" aria-controls="pb-folio1-cli" id="pb-folio1-tab-cli"><span class="l-mono">03</span>CLI</button>
+          <div class="pb-folio1__page" id="pb-folio1-cli" role="tabpanel" aria-labelledby="pb-folio1-tab-cli">
+            <header class="pb-folio1__meta"><span class="l-mono">CLI</span><span class="l-mono">kamino --market main</span></header>
+            <pre class="pb-folio1__code"><i><span class="c">$</span> kamino markets list</i>
+<i>MARKET        RESERVES   TVL</i>
+<i>main          28         $2.94B</i>
+<i>jlp           6          $214.6M</i>
+<i>altcoins      11         $88.2M</i>
+<i> </i>
+<i><span class="c">$</span> kamino reserve show USDC --market main</i>
+<i>supply apy    7.12%</i>
+<i>borrow apy    8.94%</i>
+<i>utilization   73.0%</i>
+<i> </i>
+<i><span class="c">$</span> kamino deposit 1000 USDC --market main</i>
+<i><span class="k">✓</span> deposited 1,000.00 USDC</i>
+<i>  tx 4mQe…9Rz2</i></pre>
+          </div>
+        </article>
+        <article class="pb-folio1__sheet" style="--i: 3" data-sheet="custom">
+          <button class="pb-folio1__tab" type="button" role="tab" aria-selected="false" aria-controls="pb-folio1-custom" id="pb-folio1-tab-custom"><span class="l-mono">04</span>Custom</button>
+          <div class="pb-folio1__page" id="pb-folio1-custom" role="tabpanel" aria-labelledby="pb-folio1-tab-custom">
+            <header class="pb-folio1__meta"><span class="l-mono">CUSTOM · ON-CHAIN</span><span class="l-mono">kamino_lending::cpi</span></header>
+            <pre class="pb-folio1__code"><i><span class="c">// Compose Kamino Lend into your own program</span></i>
+<i><span class="k">use</span> kamino_lending::cpi::{</i>
+<i>    accounts::DepositReserveLiquidity, deposit,</i>
+<i>};</i>
+<i> </i>
+<i><span class="k">pub fn</span> sweep_to_kamino(</i>
+<i>    ctx: Context&lt;Sweep&gt;, amount: <span class="k">u64</span>,</i>
+<i>) -&gt; Result&lt;()&gt; {</i>
+<i>  <span class="k">let</span> accounts = DepositReserveLiquidity {</i>
+<i>    owner: ctx.accounts.vault.to_account_info(),</i>
+<i>    reserve: ctx.accounts.reserve.to_account_info(),</i>
+<i>    lending_market: ctx.accounts.market(),</i>
+<i>    ..ctx.accounts.kamino()</i>
+<i>  };</i>
+<i>  <span class="k">let</span> program = ctx.accounts.klend();</i>
+<i>  deposit(CpiContext::new(program, accounts), amount)</i>
+<i>}</i></pre>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+  </article>
+  <article class="pb-entry" id="cut-build-screen">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Cut · 27 Oct 2026</span>
+      <h2>Build on Kamino — still life with live code screen</h2>
+      <p>The square still life with its screen masked black, typing out a sample for whichever way to build is picked (API, SDK, CLI, Custom), hairline wires running in from the page edge with a light-blue pulse on the chosen one. Replaced by the folded-sheet folio with the same copy.</p>
+    </header>
+  <!-- ============ Build: square still life on the left with live code on its screen; copy and
+       the API / SDK / CLI / Custom tabs on the right (js/landing.js "Build screen") ============ -->
+  <section class="l-bsq" id="build" aria-labelledby="build-title">
+    <div class="l-bsq__media">
+      <img src="assets/build-screen-3.webp" alt="" width="2000" height="2000" loading="lazy">
+      <!-- Hairlines running in from the right edge of the page to the screen, one per tab; the
+           selected tab's line carries a light blue pulse (js/landing.js) -->
+      <svg class="l-bsq__wires" aria-hidden="true"></svg>
+      <!-- Black screen laid over the blue panel in the photo (its exact bounds, in % of the square) -->
+      <div class="l-bsq__screen" aria-hidden="true">
+        <span class="l-bsq__label l-mono" data-code-label>API · REST</span>
+        <div class="l-bsq__code"><div class="l-bsq__lines" data-code-lines></div></div>
+      </div>
+      <!-- Tabs sit on the empty floor under the plinth, so they read as the screen's controls -->
+      <div class="l-bsq__foot">
+        <span class="l-mono">Build with</span>
+        <ul class="l-bsq__tabs" role="tablist" aria-label="Ways to build">
+          <li><button type="button" role="tab" aria-selected="true" data-code-tab="api">API</button></li>
+          <li><button type="button" role="tab" aria-selected="false" data-code-tab="sdk">SDK</button></li>
+          <li><button type="button" role="tab" aria-selected="false" data-code-tab="cli">CLI</button></li>
+          <li><button type="button" role="tab" aria-selected="false" data-code-tab="custom">Custom</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="l-bsq__panel">
+      <div class="l-bsq__head">
+        <h2 class="l-display" id="build-title">Build on Kamino</h2>
+        <p>Plug into a trusted foundation of products. Earn, lend or borrow programmatically, and use our APIs to read market data and user positions.</p>
+        <a class="l-btn l-btn--outline l-bsq__cta" href="#">Explore Kamino Docs <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+  </article>
+  <article class="pb-entry" id="copy-partners-turn">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Copy · 27 Oct 2026</span>
+      <h2>Partners — turning card</h2>
+      <p>The version on the landing (a copy, so it can be compared here). Each card is laid out the open way and turned a quarter to stand in its slot; clicking turns it upright as it grows, scaled frame by frame so it never leaves its slot, and the quote rises and fades in.</p>
+    </header>
+  <!-- ============ Partners accordion (Figma 5000:3884, four logos) ============ -->
+  <!-- Click a panel to open it: the whole card turns upright and grows into the open panel while the
+       others turn back into thin strips; only the quote fades (js/landing.js). Only Binance
+       has approved copy; the other quotes and names are placeholders. -->
+  <section class="pb-turn-partners l-wrap" id="pb-turn" aria-labelledby="pb-turn-title">
+    <h2 class="l-headline" id="pb-turn-title"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
+    <div class="pb-turn">
+      <article class="pb-turn__item is-open">
+        <div class="pb-turn__card">
+          <button class="pb-turn__hit" type="button" aria-expanded="true" aria-controls="pb-turn-binance"><img class="pb-turn__logo" src="assets/logos/binance-black.svg" alt="Binance" style="--logo-h: 32px"></button>
+          <figure class="pb-turn__story" id="pb-turn-binance">
+            <blockquote>“The performance of Kamino speaks for itself – the product has significantly increased our users yields and has a flawless track record for security and risk management.”</blockquote>
+            <figcaption class="pb-turn__by"><strong>Peter Welinder</strong><span>VP of Product and Partnerships, Binance</span></figcaption>
+          </figure>
+        </div>
+      </article>
+      <article class="pb-turn__item">
+        <div class="pb-turn__card">
+          <button class="pb-turn__hit" type="button" aria-expanded="false" aria-controls="pb-turn-kraken"><img class="pb-turn__logo" src="assets/logos/kraken-black.svg" alt="Kraken" style="--logo-h: 24px"></button>
+          <figure class="pb-turn__story" id="pb-turn-kraken">
+            <blockquote>“The cleanest way we’ve found to put onchain credit to work for our users.”</blockquote>
+            <figcaption class="pb-turn__by"><strong>Name Surname</strong><span>Title, Kraken</span></figcaption>
+          </figure>
+        </div>
+      </article>
+      <article class="pb-turn__item">
+        <div class="pb-turn__card">
+          <button class="pb-turn__hit" type="button" aria-expanded="false" aria-controls="pb-turn-anchorage"><img class="pb-turn__logo" src="assets/logos/anchorage-black.svg" alt="Anchorage Digital" style="--logo-h: 32px"></button>
+          <figure class="pb-turn__story" id="pb-turn-anchorage">
+            <blockquote>“Institutional-grade risk controls, with the transparency only onchain can offer.”</blockquote>
+            <figcaption class="pb-turn__by"><strong>Name Surname</strong><span>Title, Anchorage Digital</span></figcaption>
+          </figure>
+        </div>
+      </article>
+      <article class="pb-turn__item">
+        <div class="pb-turn__card">
+          <button class="pb-turn__hit" type="button" aria-expanded="false" aria-controls="pb-turn-okx"><img class="pb-turn__logo" src="assets/logos/okx.svg" alt="OKX" style="--logo-h: 22px"></button>
+          <figure class="pb-turn__story" id="pb-turn-okx">
+            <blockquote>“Kamino is the liquidity layer we build on, not around.”</blockquote>
+            <figcaption class="pb-turn__by"><strong>Name Surname</strong><span>Title, OKX</span></figcaption>
+          </figure>
+        </div>
+      </article>
+    </div>
+  </section>
+  </article>
+  <article class="pb-entry" id="aside-partners-swing">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Set aside · 27 Oct 2026</span>
+      <h2>Partners — swinging logo, fading quote</h2>
+      <p>The first partners accordion: the panel widens and turns blue, the logo swings from standing along the strip to lying at the top, and the quote simply fades up. Set aside for the turning-card version.</p>
+    </header>
+  <!-- ============ Partners accordion (Figma 5000:3884, four logos) ============ -->
+  <!-- Click a panel to open it: it widens and turns blue while the others close to thin strips, and
+       the logo swings from standing along the strip to lying at the top (js/pasteboard.js). Only Binance
+       has approved copy; the other quotes and names are placeholders. -->
+  <section class="pb-swing-partners l-wrap" id="pb-swing" aria-labelledby="pb-swing-title">
+    <h2 class="l-headline" id="pb-swing-title"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
+    <div class="pb-swing">
+      <article class="pb-swing__item is-open">
+        <button class="pb-swing__hit" type="button" aria-expanded="true" aria-controls="pb-swing-binance"><span class="pb-swing__index l-mono" aria-hidden="true">01</span><img class="pb-swing__logo" src="assets/logos/binance-black.svg" alt="Binance" style="--logo-h: 30px"></button>
+        <figure class="pb-swing__story" id="pb-swing-binance">
+          <blockquote>“The performance of Kamino speaks for itself – the product has significantly increased our users yields and has a flawless track record for security and risk management.”</blockquote>
+          <figcaption class="pb-swing__by"><strong>Peter Welinder</strong><span>VP of Product and Partnerships, Binance</span></figcaption>
+        </figure>
+      </article>
+      <article class="pb-swing__item">
+        <button class="pb-swing__hit" type="button" aria-expanded="false" aria-controls="pb-swing-kraken"><span class="pb-swing__index l-mono" aria-hidden="true">02</span><img class="pb-swing__logo" src="assets/logos/kraken-black.svg" alt="Kraken" style="--logo-h: 22px"></button>
+        <figure class="pb-swing__story" id="pb-swing-kraken">
+          <blockquote>“The cleanest way we’ve found to put onchain credit to work for our users.”</blockquote>
+          <figcaption class="pb-swing__by"><strong>Name Surname</strong><span>Title, Kraken</span></figcaption>
+        </figure>
+      </article>
+      <article class="pb-swing__item">
+        <button class="pb-swing__hit" type="button" aria-expanded="false" aria-controls="pb-swing-anchorage"><span class="pb-swing__index l-mono" aria-hidden="true">03</span><img class="pb-swing__logo" src="assets/logos/anchorage-black.svg" alt="Anchorage Digital" style="--logo-h: 30px"></button>
+        <figure class="pb-swing__story" id="pb-swing-anchorage">
+          <blockquote>“Institutional-grade risk controls, with the transparency only onchain can offer.”</blockquote>
+          <figcaption class="pb-swing__by"><strong>Name Surname</strong><span>Title, Anchorage Digital</span></figcaption>
+        </figure>
+      </article>
+      <article class="pb-swing__item">
+        <button class="pb-swing__hit" type="button" aria-expanded="false" aria-controls="pb-swing-okx"><span class="pb-swing__index l-mono" aria-hidden="true">04</span><img class="pb-swing__logo" src="assets/logos/okx.svg" alt="OKX" style="--logo-h: 20px"></button>
+        <figure class="pb-swing__story" id="pb-swing-okx">
+          <blockquote>“Kamino is the liquidity layer we build on, not around.”</blockquote>
+          <figcaption class="pb-swing__by"><strong>Name Surname</strong><span>Title, OKX</span></figcaption>
+        </figure>
+      </article>
+    </div>
+  </section>
+  </article>
+  <article class="pb-entry" id="cut-trusted-cards">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Cut 27 Oct 2026</span>
+      <h2>Trusted by — card carousel</h2>
+      <p>Figma 4956:32553. The card in focus locks to the headline’s left edge, widens and turns blue; drag, swipe, scroll sideways, use the arrow keys or click a card. Was the default Trusted section; replaced by the four-logo accordion.</p>
+    </header>
+  <!-- ============ Testimonials, card carousel (Figma 4956:32553) — swapped in by the Trusted switch ============ -->
+  <!-- The card in focus widens and turns blue; drag, swipe, scroll sideways, arrow keys or click a card (js/landing.js) -->
+  <section class="l-trust2" id="trust-cards" aria-labelledby="trust-cards-title">
+    <div class="l-wrap">
+      <h2 class="l-headline l-trust2__title" id="trust-cards-title"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
+      <!-- The brands in the carousel; each jumps to its card, the one in focus is darker (js/landing.js) -->
+      <nav class="l-trust2__brands" aria-label="Testimonials">
+        <button type="button" data-brand="0">Binance</button>
+        <button type="button" data-brand="1">Kraken</button>
+        <button type="button" data-brand="2">Anchorage Digital</button>
+        <button type="button" data-brand="3">OKX</button>
+      </nav>
+    </div>
+    <div class="l-tcar" tabindex="0" aria-roledescription="carousel" aria-label="Testimonials">
+      <div class="l-tcar__track">
+        <figure class="l-tcard">
+          <img class="l-tcard__logo" src="assets/logos/binance-black.svg" alt="" style="--logo-h: 38px">
+          <div class="l-tcard__foot">
+            <blockquote>“Kamino turned idle balances into productive capital, with every risk in plain view.”</blockquote>
+            <figcaption class="l-tcard__by"><strong>Name Surname</strong><span>Title, Binance</span></figcaption>
+          </div>
+        </figure>
+        <figure class="l-tcard">
+          <img class="l-tcard__mark" src="assets/trust/kraken-mark-large.svg" alt="" aria-hidden="true">
+          <img class="l-tcard__logo" src="assets/logos/kraken-black.svg" alt="" style="--logo-h: 26px">
+          <div class="l-tcard__foot">
+            <blockquote>“The cleanest way we’ve found to put onchain credit to work for our users.”</blockquote>
+            <figcaption class="l-tcard__by"><strong>Name Surname</strong><span>Title, Kraken</span></figcaption>
+          </div>
+        </figure>
+        <figure class="l-tcard">
+          <img class="l-tcard__logo" src="assets/logos/anchorage-black.svg" alt="" style="--logo-h: 36px">
+          <div class="l-tcard__foot">
+            <blockquote>“Institutional-grade risk controls, with the transparency only onchain can offer.”</blockquote>
+            <figcaption class="l-tcard__by"><strong>Name Surname</strong><span>Title, Anchorage Digital</span></figcaption>
+          </div>
+        </figure>
+        <figure class="l-tcard">
+          <img class="l-tcard__logo" src="assets/logos/okx.svg" alt="" style="--logo-h: 24px">
+          <div class="l-tcard__foot">
+            <blockquote>“Kamino is the liquidity layer we build on, not around.”</blockquote>
+            <figcaption class="l-tcard__by"><strong>Name Surname</strong><span>Title, OKX</span></figcaption>
+          </div>
+        </figure>
+      </div>
+    </div>
+  </section>
+  </article>
+
+  <article class="pb-entry" id="cut-trusted-tabs">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Cut 27 Oct 2026</span>
+      <h2>Trusted by — quote with logo tabs</h2>
+      <p>The first Trusted section: one quote with photo and logo overlay, the four brand tabs swapping it. Only Binance has approved copy; the others are marked as placeholders. Was the “Tabs” option of the Trusted switch in the Resources menu.</p>
+    </header>
+  <!-- ============ Testimonials ============ -->
+  <section class="l-trust l-wrap" id="trust">
+    <h2 class="l-headline l-headline--center"><span class="l-ink">Trusted</span> by the biggest names in onchain finance.</h2>
+
+    <div class="l-quote">
+      <div class="l-quote__copy">
+        <blockquote data-quote>The performance of Kamino speaks for itself – the product has significantly increased our users yields and has a flawless track record for security and risk management.</blockquote>
+        <p class="l-quote__by"><strong data-quote-name>Peter Welinder</strong><span data-quote-role>VP of Product and Partnerships<br>Binance</span></p>
+      </div>
+      <div class="l-quote__media">
+        <img class="l-quote__photo" src="assets/testimonial-binance.jpg" alt="" data-quote-photo>
+        <img class="l-quote__logo" src="assets/logos/binance-overlay.svg" alt="" data-quote-logo>
+      </div>
+    </div>
+
+    <div class="l-quote__tabs" role="tablist" aria-label="Testimonials">
+      <button class="is-on" role="tab" data-quote-tab="0"><img src="assets/logos/binance-black.svg" alt="Binance" height="38"></button>
+      <button role="tab" data-quote-tab="1"><img src="assets/logos/kraken.svg" alt="Kraken" height="24"></button>
+      <button role="tab" data-quote-tab="2"><img src="assets/logos/anchorage-grey.svg" alt="Anchorage Digital" height="36"></button>
+      <button role="tab" data-quote-tab="3"><img src="assets/logos/okx.svg" alt="OKX" height="30"></button>
+    </div>
+  </section>
+  </article>
+
+  <script src="js/pasteboard.js?v=1028y"></script>
+</body>
+</html>

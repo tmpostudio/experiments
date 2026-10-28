@@ -1,0 +1,600 @@
+/* Landing v1 pasteboard — page chrome, then each cut section's styles under its own heading.
+   Tokens, .l-wrap, .l-headline, .l-reveal and the buttons come from css/landing.css. */
+
+.pb-head { padding-top: 120px; padding-bottom: 40px; }
+.pb-head h1 { max-width: 12em; margin: 16px 0 24px; }
+.pb-head p { max-width: 520px; margin: 0; font-size: 16px; line-height: 1.4; color: #5b5f63; }
+.pb-head a { text-decoration: none; color: var(--l-ink); }
+.pb-entry { padding-top: 80px; border-top: 1px solid var(--l-line); margin-top: 80px; }
+.pb-entry__head { display: grid; gap: 10px; margin-bottom: 20px; }
+.pb-entry__head .l-mono { color: var(--l-muted); }
+.pb-entry__head h2 { margin: 0; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+.pb-entry__head p { max-width: 640px; margin: 0; font-size: 14px; line-height: 1.45; color: #5b5f63; }
+.pb-entry .l-trust, .pb-entry .l-trust2, .pb-entry .pb-turn-partners, .pb-entry .pb-swing-partners { padding-top: 40px; }
+.pb-entry .l-bsq { margin-top: 40px; }
+.pb-entry .pb-folio1 { padding-top: 40px; }
+
+/* ================= Trusted by (cut 27 Oct 2026): quote with tabs, and the card carousel ================= */
+
+/* ---------- Testimonials ---------- */
+
+.l-trust { padding-top: 170px; padding-bottom: 150px; }
+
+/* ---------- Testimonials, card carousel (Figma 4956:32553) ---------- */
+
+.l-trust[hidden], .l-trust2[hidden] { display: none !important; }
+.l-trust2 { padding: 150px 0 150px; overflow: hidden; }
+.l-trust2__title { max-width: 14.9em; }
+.l-trust2__brands { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 40px; }
+.l-trust2__brands button { padding: 0; border: 0; background: none; font: inherit; font-size: 15px; letter-spacing: -0.01em; color: var(--l-muted); cursor: pointer; transition: color 0.3s; }
+.l-trust2__brands button:hover { color: #555; }
+.l-trust2__brands button.is-on { color: #000; }
+/* Full-bleed strip; js/landing.js sets --off / --on (card widths) and --x (track offset) */
+.l-tcar { margin-top: 78px; padding: 12px 0 32px; outline: none; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.l-tcar:focus-visible .l-tcard.is-active { outline: 2px solid #000; outline-offset: 3px; }
+.l-tcar.is-dragging { cursor: grabbing; }
+/* One quick ease-out drives everything: the glide, both widths, the blue crossfade and the mark,
+   so a move starts immediately and settles softly, and a new move picks up mid-flight */
+.l-tcar { --t-ease: cubic-bezier(0.22, 1, 0.36, 1); --t-dur: 0.6s; }
+.l-tcar__track { display: flex; gap: 24px; transform: translateX(var(--x, 0px)); transition: transform var(--t-dur) var(--t-ease); }
+.l-tcar.is-dragging .l-tcar__track, .l-tcar.is-instant .l-tcar__track, .l-tcar.is-instant .l-tcard, .l-tcar.is-instant .l-tcard::before, .l-tcar.is-instant .l-tcard__mark, .l-tcar.is-instant .l-tcard__logo { transition: none; }
+.l-tcard {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: var(--off, 432px);
+  height: 480px;
+  margin: 0;
+  padding: 24px 32px;
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07); /* same edge shadow as the One platform cards */
+  color: #08090a;
+  transition: width var(--t-dur) var(--t-ease);
+}
+.l-tcard.is-active { width: var(--on, 880px); }
+/* The blue is its own layer that crossfades (opacity only, so no repaint while it fades) */
+.l-tcard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--l-mist); /* the lighter blue, #e2edf2 (was #bcdeec) */
+  opacity: 0;
+  transition: opacity var(--t-dur) var(--t-ease);
+  will-change: opacity;
+}
+.l-tcard.is-active::before { opacity: 1; }
+/* Big faint company mark riding the right edge of the card in focus */
+.l-tcard__mark {
+  position: absolute;
+  top: -360px;
+  right: -600px;
+  width: 1200px;
+  height: 1200px;
+  max-width: none;
+  opacity: 0;
+  transition: opacity var(--t-dur) var(--t-ease);
+  will-change: opacity, transform; /* own layer: moving with the card's edge doesn't repaint the big mask */
+  pointer-events: none;
+}
+/* Marks with no large asset: the small logo as a mask (its url is set inline, so it resolves from the page) */
+span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.l-tcard.is-active .l-tcard__mark { opacity: 0.2; }
+/* Logo at the top; quote with the name + title under it at the bottom */
+/* Heights are set per logo (inline --logo-h) to balance them optically against Binance at 38px.
+   Solid black files (kraken-black / anchorage-black drop the 25% opacity baked into the originals);
+   full strength on the card in focus, 35% (grey) on the rest. */
+.l-tcard__logo {
+  position: relative;
+  display: block;
+  width: auto;
+  height: var(--logo-h, 32px);
+  align-self: flex-start; /* don't stretch across the card */
+  opacity: 0.35;
+  transition: opacity var(--t-dur) var(--t-ease);
+  pointer-events: none;
+}
+.l-tcard.is-active .l-tcard__logo { opacity: 1; }
+.l-tcard__foot { position: relative; display: grid; gap: 20px; }
+.l-tcard__by { display: grid; font-size: 14px; line-height: 21px; letter-spacing: -0.013em; }
+.l-tcard__by strong { font-weight: 400; }
+.l-tcard__by > span { opacity: 0.6; }
+/* Same measure small or wide, so the quote never re-wraps as the card expands */
+.l-tcard blockquote { position: relative; width: min(381px, calc(var(--off, 432px) - 64px)); margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
+@media (max-width: 720px) {
+  .l-tcard { height: 420px; padding: 22px 24px; }
+  .l-tcard blockquote { width: calc(var(--off, 432px) - 48px); font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-tcar__track, .l-tcard, .l-tcard::before, .l-tcard__mark, .l-tcard__logo { transition: none; }
+}
+.l-quote {
+  display: grid;
+  grid-template-columns: 471fr 594fr;
+  max-width: 1065px;
+  min-height: 440px;
+  margin: 70px auto 0;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.04);
+}
+.l-quote__copy { display: flex; flex-direction: column; justify-content: space-between; padding: 32px; }
+.l-quote blockquote { margin: 0; max-width: 17em; font-size: 22px; line-height: 1.1; letter-spacing: -0.02em; color: var(--l-text); transition: opacity 0.3s; }
+.l-quote__by { display: grid; gap: 14px; margin: 0; font-size: 14px; line-height: 1.1; color: var(--l-text); transition: opacity 0.3s; }
+.l-quote__by strong { font-weight: 500; font-size: 16px; }
+.l-quote__media { position: relative; overflow: hidden; background: #0c1a24; }
+.l-quote__photo { position: absolute; inset: -3% -20%; width: 140%; height: 110%; object-fit: cover; transition: opacity 0.4s, transform 6s linear; }
+.l-quote:hover .l-quote__photo { transform: scale(1.05); }
+.l-quote__logo { position: absolute; left: 23.6%; right: 27.6%; top: 43.6%; width: 49%; transition: opacity 0.4s; }
+.l-quote.is-swapping blockquote, .l-quote.is-swapping .l-quote__by, .l-quote.is-swapping .l-quote__photo, .l-quote.is-swapping .l-quote__logo { opacity: 0; }
+.l-quote__tabs { display: flex; justify-content: center; align-items: center; gap: 70px; margin-top: 60px; }
+.l-quote__tabs button { border: 0; background: none; padding: 6px; cursor: pointer; opacity: 0.3; filter: grayscale(1); transition: opacity 0.25s; }
+.l-quote__tabs button:hover { opacity: 0.6; }
+.l-quote__tabs button.is-on { opacity: 1; }
+.l-quote__tabs img { display: block; width: auto; }
+
+@media (max-width: 720px) {
+  .l-quote { grid-template-columns: 1fr; }
+  .l-quote__media { height: 260px; }
+  .l-quote__tabs { gap: 24px; flex-wrap: wrap; }
+}
+
+
+/* ================= Partners accordion, turning card (copy 27 Oct 2026) ================= */
+
+/* ---------- Partners accordion (Figma 5000:3884) ---------- */
+/* Four slots in a row, one open. Each slot holds a card laid out the open way: logo lying at the
+   top-left, quote at the foot. Closed, the whole card is turned a quarter anticlockwise about its
+   centre and sized to stand in the thin slot, so the logo reads up the strip from its foot. Opening
+   turns the card upright while it grows to the open size; only the quote fades in. Nothing on the
+   card moves relative to the card. js/landing.js drives the slot widths, the turn and the card's
+   size frame by frame, with the rule that a turning card never leaves its slot (it scales down
+   just enough mid-turn), so cards never overlap at any row width. The CSS below holds the two
+   rest states; the blue and the quote fade here. */
+
+.pb-turn-partners { padding-top: 150px; padding-bottom: 150px; }
+.pb-turn-partners .l-headline { max-width: 14.9em; }
+/* --off is the closed strip's width and, because the card turns, also the band the logo is centred
+   in at the top of the open card: a narrower strip is what brings the logo nearer the top edge */
+.pb-turn { --off: 100px; --gap: 12px; --h: 520px; --pad: 32px; --a-dur: 0.65s; display: flex; gap: var(--gap); margin-top: 64px; }
+.pb-turn__item { position: relative; z-index: 1; flex: none; width: var(--off); height: var(--h); }
+.pb-turn__item.is-open { z-index: 2; width: var(--on, 60%); }
+/* The card sits on the slot's centre: closed it is --h wide and --off tall, turned a quarter to
+   stand in the slot; open it is the slot's size, upright */
+.pb-turn__card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--h);
+  height: var(--off);
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: var(--l-pale);
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07); /* same edge as the One platform cards */
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+.pb-turn__item.is-open .pb-turn__card { width: var(--on, 100%); height: var(--h); transform: translate(-50%, -50%); }
+/* The blue is its own layer that crossfades (opacity only, so no repaint while it fades) */
+.pb-turn__card::before { content: ""; position: absolute; inset: 0; background: var(--l-mist); opacity: 0; transition: opacity var(--a-dur) var(--l-ease); }
+.pb-turn__item.is-open .pb-turn__card::before { opacity: 1; }
+/* The whole card is the button */
+.pb-turn__hit { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; border-radius: inherit; background: none; cursor: pointer; text-align: left; }
+.pb-turn__item.is-open .pb-turn__hit { cursor: default; }
+.pb-turn__hit:focus-visible { outline-offset: -3px; }
+/* Logo lying at the top-left, centred in a band as tall as a closed strip so it is centred across
+   the strip when the card is turned; --pad from the left is its distance from the strip's foot */
+.pb-turn__logo {
+  position: absolute;
+  display: block;
+  width: auto;
+  height: var(--logo-h, 28px);
+  left: var(--pad);
+  top: calc((var(--off) - var(--logo-h, 28px)) / 2);
+  pointer-events: none;
+}
+/* Quote at the foot: a fixed measure so it never re-wraps while the card is still growing.
+   It rises and fades in slowly once the card is well into its turn, and drops out quickly the
+   moment the card starts closing */
+.pb-turn__story {
+  position: absolute;
+  left: var(--pad);
+  bottom: var(--pad);
+  width: min(460px, calc(var(--on, 600px) - 2 * var(--pad)));
+  display: grid;
+  gap: 20px;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(24px);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s var(--l-ease), transform 0.25s var(--l-ease), visibility 0s 0.25s;
+}
+.pb-turn__item.is-open .pb-turn__story { opacity: 1; transform: none; visibility: visible; transition: opacity 1.1s var(--l-ease) 0.3s, transform 1.1s var(--l-ease) 0.3s, visibility 0s; }
+/* Quote and name, same as the card carousel this replaced */
+.pb-turn__story blockquote { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -0.025em; color: #08090a; text-wrap: balance; }
+.pb-turn__by { display: grid; font-size: 14px; line-height: 21px; letter-spacing: -0.013em; color: #08090a; }
+.pb-turn__by strong { font-weight: 400; }
+.pb-turn__by > span { opacity: 0.6; }
+@media (max-width: 720px) {
+  /* Stacked: thin bars with the logo lying in them; the open one grows downwards, no turning */
+  .pb-turn { flex-direction: column; --off: 72px; --h: 400px; --pad: 20px; }
+  .pb-turn__item { width: 100%; height: var(--off); transition: height var(--a-dur) var(--l-ease); }
+  .pb-turn__item.is-open { width: 100%; height: var(--h); }
+  .pb-turn__card, .pb-turn__item.is-open .pb-turn__card { left: 0; top: 0; width: 100%; height: 100%; transform: none; transition: none; }
+  .pb-turn__story { width: auto; right: var(--pad); }
+  .pb-turn__story blockquote { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-turn__item, .pb-turn__card, .pb-turn__card::before, .pb-turn__story { transition: none; }
+}
+
+/* ================= Partners accordion, swinging logo (set aside 27 Oct 2026) ================= */
+
+/* ---------- Partners accordion (Figma 5000:3884) ---------- */
+/* Four panels in a row: thin grey strips with the logo standing along them, and one open panel
+   (blue) with the logo lying at the top and the story at the foot. Both widths are px (js/landing.js
+   sets --on from the row width), so a click glides every panel at once. */
+
+.pb-swing-partners { padding-top: 150px; padding-bottom: 150px; }
+.pb-swing-partners .l-headline { max-width: 14.9em; }
+.pb-swing { --off: 132px; --gap: 12px; --h: 520px; --pad: 32px; --a-dur: 0.65s; display: flex; gap: var(--gap); margin-top: 64px; }
+.pb-swing__item {
+  position: relative;
+  flex: none;
+  width: var(--off);
+  height: var(--h);
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: var(--l-pale);
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07); /* same edge as the One platform cards */
+  transition: width var(--a-dur) var(--l-ease);
+}
+.pb-swing__item.is-open { width: var(--on, 60%); }
+.pb-swing.is-instant .pb-swing__item, .pb-swing.is-instant .pb-swing__story { transition: none; }
+/* The blue is its own layer that crossfades (opacity only, so no repaint while it fades) */
+.pb-swing__item::before { content: ""; position: absolute; inset: 0; background: var(--l-mist); opacity: 0; transition: opacity var(--a-dur) var(--l-ease); }
+.pb-swing__item.is-open::before { opacity: 1; }
+/* The whole panel is the button; the story's link sits above it once open */
+.pb-swing__hit { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; border-radius: inherit; background: none; cursor: pointer; text-align: left; }
+.pb-swing__item.is-open .pb-swing__hit { cursor: default; }
+.pb-swing__hit:focus-visible { outline-offset: -3px; }
+.pb-swing__index { position: absolute; left: 14px; top: 14px; font-size: 10px; color: var(--l-muted); transition: opacity 0.3s var(--l-ease); }
+.pb-swing__item.is-open .pb-swing__index { opacity: 0; }
+/* The logo is one element in both states: standing along the strip with its foot at the bottom
+   (turned about its top-left corner), or lying at the top-left. Moving the corner and turning it
+   at the same time is what swings it between the two. */
+.pb-swing__logo {
+  position: absolute;
+  display: block;
+  width: auto;
+  height: var(--logo-h, 28px);
+  left: calc((var(--off) - var(--logo-h, 28px)) / 2);
+  top: calc(var(--h) - var(--pad));
+  transform-origin: 0 0;
+  transform: rotate(-90deg);
+  transition: left var(--a-dur) var(--l-ease), top var(--a-dur) var(--l-ease), transform var(--a-dur) var(--l-ease);
+  pointer-events: none;
+}
+.pb-swing__item.is-open .pb-swing__logo { left: var(--pad); top: var(--pad); transform: none; }
+/* Story at the foot: a fixed measure so it never re-wraps while the panel is still widening;
+   it fades in a beat after the panel starts opening and out as soon as it starts closing */
+.pb-swing__story {
+  position: absolute;
+  left: var(--pad);
+  bottom: var(--pad);
+  width: min(460px, calc(var(--on, 600px) - 2 * var(--pad)));
+  display: grid;
+  gap: 20px;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(10px);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s var(--l-ease), transform var(--a-dur) var(--l-ease), visibility 0s 0.3s;
+}
+.pb-swing__item.is-open .pb-swing__story { opacity: 1; transform: none; visibility: visible; transition: opacity 0.45s var(--l-ease) 0.2s, transform var(--a-dur) var(--l-ease), visibility 0s; }
+/* Quote and name, same as the card carousel this replaced */
+.pb-swing__story blockquote { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -0.025em; color: #08090a; text-wrap: balance; }
+.pb-swing__by { display: grid; font-size: 14px; line-height: 21px; letter-spacing: -0.013em; color: #08090a; }
+.pb-swing__by strong { font-weight: 400; }
+.pb-swing__by > span { opacity: 0.6; }
+@media (max-width: 720px) {
+  /* Stacked: thin bars with the logo lying in them; the open one grows downwards */
+  .pb-swing { flex-direction: column; --off: 72px; --h: 400px; --pad: 20px; }
+  .pb-swing__item { width: 100%; height: var(--off); transition: height var(--a-dur) var(--l-ease); }
+  .pb-swing__item.is-open { width: 100%; height: var(--h); }
+  .pb-swing__index { display: none; }
+  .pb-swing__logo { left: var(--pad); top: calc((var(--off) - var(--logo-h, 28px)) / 2); transform: none; }
+  .pb-swing__item.is-open .pb-swing__logo { top: var(--pad); }
+  .pb-swing__story { width: auto; right: var(--pad); }
+  .pb-swing__story blockquote { font-size: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-swing__item, .pb-swing__item::before, .pb-swing__logo, .pb-swing__story { transition: none; }
+}
+
+
+/* ================= Build on Kamino, live code screen (cut 27 Oct 2026) ================= */
+
+/* ---------- Build: the square still life fills the left half (so the section is half the screen
+   width tall); its blue screen is masked black and runs live code. The right half is the photo's
+   own wall colour (sampled down its right edge), and the photo's edge fades into it. ---------- */
+
+.l-bsq {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: linear-gradient(180deg, #cad1d5 0%, #ccd2d6 10%, #d1d8dc 20%, #d7dee0 30%, #dae0e2 40%, #dce2e5 50%, #dde4e6 60%, #dbe1e4 70%, #d7dee0 80%, #d5dbde 90%, #d6dce1 100%); /* build-screen-3, sampled down its left edge */
+  color: #000;
+}
+/* Image on the right, copy on the left. The image stops at the page's right margin rather than
+   bleeding off, so the device and the tabs under it sit inside the page column. The margin below
+   gives the tabs room under the plinth now the image is smaller. */
+.l-bsq__media {
+  --edge: max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad)));
+  position: relative;
+  order: 2;
+  align-self: center;
+  justify-self: end;
+  /* fills its column, but never so tall that it and the tabs overflow the screen-high section */
+  width: min(calc(100% - var(--edge)), calc(100svh - 200px));
+  aspect-ratio: 1;
+  margin: 0 var(--edge) 64px 0;
+}
+.l-bsq__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* every edge fades into the wall */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent), linear-gradient(180deg, transparent 4%, #000 26%, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent), linear-gradient(180deg, transparent 4%, #000 26%, #000 88%, transparent);
+  mask-composite: intersect;
+}
+/* Wires: from the screen's right edge out to the right edge of the page (past the media's margin) */
+.l-bsq__wires { position: absolute; left: 0; top: 0; width: calc(100% + var(--edge)); height: 100%; overflow: visible; pointer-events: none; }
+.l-bsq__wires path { fill: none; stroke: rgba(0, 0, 0, 0.13); stroke-width: 1; transition: stroke 0.5s; }
+.l-bsq__wires path.is-on { stroke: rgba(0, 0, 0, 0.3); }
+.l-bsq__wires polyline { fill: none; stroke-width: 1.25; stroke-linecap: round; }
+/* build-screen-2/3: the blue screen is x 546–1470, y 516–1170 of 2000px; nudged a hair outward so no
+   blue fringe shows, still inside the black frame (520–1494, 492–1194) */
+.l-bsq__screen {
+  position: absolute;
+  left: 27.15%;
+  top: 25.65%;
+  width: 46.5%;
+  height: 33%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9em;
+  padding: 1.2em 1.4em 0;
+  background: #000;
+  color: #d8f3ff;
+  overflow: hidden;
+  container-type: inline-size;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: clamp(8px, 0.7vw, 12px);
+}
+.l-bsq__label { flex: none; font-size: 0.85em; letter-spacing: 0.08em; color: rgba(216, 243, 255, 0.55); }
+.l-bsq__code { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%); mask-image: linear-gradient(180deg, transparent, #000 18%); }
+/* js appends a line at a time from the top; once the screen is full the block slides up so the
+   newest line always sits at the bottom */
+.l-bsq__lines { position: absolute; left: 0; right: 0; top: 0; transition: transform 0.12s linear; }
+/* Sized off the screen's own width (it's a size container) so the longest line, ~54 characters,
+   always fits across without truncating */
+.l-bsq__lines { font-size: 2.7cqw; }
+.l-bsq__lines div { min-height: 1.55em; line-height: 1.55em; white-space: pre; overflow: hidden; text-overflow: clip; }
+.l-bsq__lines div.is-new { animation: l-code-in 0.14s var(--l-ease); }
+@keyframes l-code-in { from { opacity: 0; } to { opacity: 1; } }
+.l-bsq__lines .c { color: rgba(216, 243, 255, 0.45); }  /* comments, prompts */
+.l-bsq__lines .k { color: #8fd6ff; }                     /* keys, keywords */
+.l-bsq__lines .s { color: #c6f4ff; }                     /* strings */
+
+.l-bsq__panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 100px 48px 48px max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad))); /* starts on the page's first column */
+}
+.l-bsq__head { max-width: 460px; }
+.l-bsq__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; }
+.l-bsq__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
+.l-bsq__cta { margin-top: 32px; gap: 34px; border-color: #000; background: transparent; }
+.l-bsq__cta:hover { background: #000; color: #fff !important; }
+/* Under the image: on the floor below the plinth, lined up with the panel's bottom inset and the
+   page's right edge. Label above the rule, tabs below it. */
+/* Spans the image, so the tabs sit centred under the device and end on the right page margin */
+.l-bsq__foot { position: absolute; left: 0; right: 0; bottom: -16px; display: grid; gap: 14px; }
+.l-bsq__foot > .l-mono { font-size: 12px; color: rgba(0, 0, 0, 0.6); }
+/* Spread edge to edge so the first word starts and the last ends on the rule's ends */
+.l-bsq__tabs { display: flex; justify-content: space-between; column-gap: 16px; margin: 0; padding: 22px 0 0; border-top: 1px solid rgba(0, 0, 0, 0.2); list-style: none; }
+.l-bsq__tabs button { padding: 0; border: 0; background: none; font: inherit; font-size: clamp(24px, 2.3vw, 34px); line-height: 1; letter-spacing: -0.03em; color: rgba(0, 0, 0, 0.3); text-align: left; cursor: pointer; transition: color 0.3s; }
+.l-bsq__tabs button:hover { color: rgba(0, 0, 0, 0.6); }
+.l-bsq__tabs button[aria-selected="true"] { color: #000; }
+
+@media (max-width: 960px) {
+  .l-bsq { grid-template-columns: 1fr; min-height: 0; }
+  .l-bsq__media { order: 0; width: auto; margin: 0; }
+  .l-bsq__wires { width: 100%; }
+  .l-bsq__media img { -webkit-mask-image: none; mask-image: none; }
+  .l-bsq__screen { font-size: clamp(7px, 1.4vw, 12px); }
+  .l-bsq__panel { gap: 56px; padding: 48px var(--l-pad) 56px; }
+  .l-bsq__media { aspect-ratio: auto; display: flex; flex-direction: column; }
+  .l-bsq__media img { aspect-ratio: 1; height: auto; }
+  .l-bsq__foot { position: static; padding: 24px var(--l-pad) 0; }
+}
+@media (max-width: 560px) { .l-bsq__tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; } }
+@media (prefers-reduced-motion: reduce) { .l-bsq__lines { transition: none; } .l-bsq__lines div.is-new { animation: none; } }
+
+
+/* ================= Build folio, first take (set aside 27 Oct 2026) ================= */
+
+/* ---------- Build: a folio of four folded sheets, one per way to build, each carrying a sample.
+   The tabs step down along the top like index folders (each tab has its own cut height); every
+   body shares one top line, so whichever sheet is pulled to the front covers only the bodies and
+   never a tab. Sizes are all fractions of the stage, so the set reads the same at any width. ---------- */
+
+.pb-folio1 { padding-top: 150px; padding-bottom: 150px; background: var(--bg, #fafafa); }
+.pb-folio1__inner { display: grid; grid-template-columns: minmax(280px, 400px) minmax(0, 1fr); gap: 72px; align-items: center; }
+.pb-folio1__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; }
+.pb-folio1__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
+.pb-folio1__cta { margin-top: 32px; gap: 34px; border-color: #000; background: transparent; }
+.pb-folio1__cta:hover { background: #000; color: #fff !important; }
+.pb-folio1__stage {
+  --n: 4;
+  --tg: 8px;                                   /* gap between tabs */
+  --tw: calc((100% - (var(--n) - 1) * var(--tg)) / var(--n)); /* tab width */
+  --cap: 40px;                                 /* the tab's cap, where the label sits */
+  --step: 22px;                                /* each tab cut this much lower than the last */
+  --s: 12px;                                   /* the shoulder slant */
+  --body: calc((var(--n) - 1) * var(--step) + var(--cap)); /* where every body starts */
+  position: relative;
+  height: 560px;
+}
+/* A sheet: the body below the shared line, its tab reaching up from it at the tab's own height */
+.pb-folio1__sheet {
+  --tx: calc(var(--i) * (var(--tw) + var(--tg)));
+  --ty: calc(var(--i) * var(--step));
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--body);
+  bottom: 0;
+  border-radius: 0 6px 6px 6px;
+  background: var(--tint);
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 1px 0 1px rgba(0, 0, 0, 0.07); /* the One platform edge */
+  transition: transform 0.45s var(--l-ease), background-color 0.45s var(--l-ease), box-shadow 0.45s var(--l-ease);
+}
+.pb-folio1__sheet:nth-child(1) { --tint: #f2f3f5; }
+.pb-folio1__sheet:nth-child(2) { --tint: #e6edf1; }
+.pb-folio1__sheet:nth-child(3) { --tint: #d9e6ec; }
+.pb-folio1__sheet:nth-child(4) { --tint: #c9dfe9; }
+.pb-folio1__sheet.is-front { z-index: 5; --tint: var(--l-sky); transform: translateY(-6px); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 1px 0 1px rgba(0, 0, 0, 0.07), 0 18px 40px -18px rgba(0, 40, 60, 0.35); }
+/* The fold: a bright hairline just under the body's top edge, like light on the crease */
+.pb-folio1__sheet::before { content: ""; position: absolute; left: 0; right: 0; top: 1px; height: 1px; background: rgba(255, 255, 255, 0.55); pointer-events: none; }
+/* The tab: the sheet's own colour, shoulders cut at --s, reaching from its cut height down into
+   the body (1px over, so no seam shows). The whole stem is the button. */
+.pb-folio1__tab {
+  position: absolute;
+  left: var(--tx);
+  top: calc(var(--ty) - var(--body));
+  width: var(--tw);
+  height: calc(var(--body) - var(--ty) + 1px);
+  padding: 0;
+  padding-top: 11px;
+  border: 0;
+  background: var(--tint);
+  clip-path: polygon(var(--s) 0, calc(100% - var(--s)) 0, 100% var(--s), 100% 100%, 0 100%, 0 var(--s));
+  color: #000;
+  font: inherit;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  text-align: left;
+  text-indent: 18px;
+  cursor: pointer;
+  transition: background-color 0.45s var(--l-ease), transform 0.3s var(--l-ease);
+}
+.pb-folio1__tab .l-mono { display: inline-block; margin-right: 10px; font-size: 10px; color: rgba(0, 0, 0, 0.45); }
+.pb-folio1__sheet:not(.is-front) .pb-folio1__tab:hover { transform: translateY(-3px); }
+.pb-folio1__sheet.is-front .pb-folio1__tab { cursor: default; }
+.pb-folio1__tab:focus-visible { outline: 2px solid #000; outline-offset: -6px; }
+/* The body's content only shows on the front sheet: a mono header line, then the sample's lines
+   cascading in one after another */
+.pb-folio1__page { position: absolute; inset: 0; padding: 28px 32px 0; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.25s var(--l-ease), visibility 0s 0.25s; }
+.pb-folio1__sheet.is-front .pb-folio1__page { opacity: 1; visibility: visible; transition: opacity 0.4s var(--l-ease) 0.15s, visibility 0s; }
+.pb-folio1__meta { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid rgba(0, 0, 0, 0.12); }
+.pb-folio1__meta .l-mono { font-size: 11px; color: rgba(0, 0, 0, 0.55); }
+.pb-folio1__meta .l-mono + .l-mono { text-align: right; opacity: 0.8; }
+.pb-folio1__code {
+  margin: 20px 0 0;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #0b1a24;
+  white-space: normal; /* the lines are the <i> blocks; the source newlines between them must not count */
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent);
+  mask-image: linear-gradient(180deg, #000 78%, transparent);
+}
+.pb-folio1__code i { display: block; min-height: 1.6em; font-style: normal; white-space: pre; }
+.pb-folio1__code .c { color: rgba(11, 26, 36, 0.5); }
+.pb-folio1__code .k { color: #0a6fa8; }
+.pb-folio1__code .s { color: #2a7d5a; }
+.pb-folio1__sheet.is-front .pb-folio1__code i { animation: pb-folio1-line 0.45s var(--l-ease) both; animation-delay: calc(0.12s + var(--n, 0) * 28ms); }
+@keyframes pb-folio1-line { from { opacity: 0; transform: translateX(-6px); } }
+@media (max-width: 960px) {
+  .pb-folio1 { padding-top: 96px; padding-bottom: 96px; }
+  .pb-folio1__inner { grid-template-columns: 1fr; gap: 48px; }
+  .pb-folio1__stage { height: 520px; --cap: 36px; --step: 18px; --s: 10px; }
+  .pb-folio1__tab { font-size: 13px; text-indent: 12px; }
+  .pb-folio1__tab .l-mono { display: none; }
+  .pb-folio1__page { padding: 22px 20px 0; }
+  .pb-folio1__meta .l-mono + .l-mono { display: none; } /* the path doesn't fit a narrow sheet */
+  .pb-folio1__code { font-size: 11.5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-folio1__sheet, .pb-folio1__tab, .pb-folio1__page { transition: none; }
+  .pb-folio1__sheet.is-front .pb-folio1__code i { animation: none; }
+}
+
+
+/* ================= What's new, accordion with image (cut 27 Oct 2026) ================= */
+
+/* ---------- What's new ---------- */
+
+/* One full screen tall, content centred in it (grows if the list ever needs more) */
+.l-news { position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; min-height: 100svh; background: var(--l-pale); }
+/* Title row across the top; below it the list (left) beside the open article's image (right).
+   The image fills the full height of the list and crops from the centre (the blog art keeps its
+   logos central for exactly this). */
+.l-news__inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "head head" "list media"; column-gap: 32px; row-gap: 56px; width: 100%; padding-top: 96px; padding-bottom: 96px; }
+.l-news__side { grid-area: head; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+.l-news__media { grid-area: media; position: relative; min-height: 420px; border-radius: 4px; overflow: hidden; background: #d9dde2; }
+.l-news__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; opacity: 0; transition: opacity 0.6s var(--l-ease); }
+.l-news__media img.is-on { opacity: 1; }
+.l-news__body { grid-area: list; display: flex; flex-direction: column; gap: 48px; }
+.l-news__all { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: baseline; gap: 0.35em; font-size: clamp(22px, 2vw, 28px); line-height: 1; letter-spacing: -0.03em; color: var(--l-muted); text-decoration: none; transition: color 0.3s; }
+.l-news__all:hover { color: #000; }
+.l-news__all span { font-size: 0.7em; transition: transform 0.35s var(--l-ease); }
+.l-news__all:hover span { transform: translate(3px, -3px); }
+@media (max-width: 960px) {
+  .l-news__inner { grid-template-columns: 1fr; grid-template-areas: "head" "media" "list"; row-gap: 32px; }
+  .l-news__side { flex-direction: column; align-items: flex-start; }
+  .l-news__media { min-height: 0; aspect-ratio: 16 / 10; }
+}
+.l-news__actions { display: flex; gap: 14px; }
+.l-news__actions[hidden] { display: none; }
+.l-news__list { margin: 0; padding: 0; list-style: none; }
+.l-news__item { border-bottom: 1px solid #000; }
+.l-news__toggle { position: relative; display: grid; gap: 14px; width: 100%; padding: 22px 56px 22px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: padding-left 0.35s var(--l-ease); }
+.l-news__toggle:hover, .l-news__item.is-open .l-news__toggle { padding-left: 14px; }
+.l-news__title { font-size: 24px; letter-spacing: -0.02em; }
+.l-news__meta { display: flex; gap: 24px; font-size: 11px; }
+.l-news__meta time { color: #939393; }
+/* Plus that turns into a cross when open */
+.l-news__icon { position: absolute; right: 12px; top: 28px; width: 16px; height: 16px; transition: transform 0.4s var(--l-ease); }
+.l-news__icon::before, .l-news__icon::after { content: ""; position: absolute; left: 0; top: 7.5px; width: 16px; height: 1px; background: #000; }
+.l-news__icon::after { transform: rotate(90deg); }
+.l-news__item.is-open .l-news__icon { transform: rotate(45deg); }
+/* The preview opens by animating its row from 0 to its natural height */
+.l-news__panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s var(--l-ease); }
+.l-news__item.is-open .l-news__panel { grid-template-rows: 1fr; }
+.l-news__preview { min-height: 0; overflow: hidden; padding-left: 14px; opacity: 0; transition: opacity 0.3s; }
+.l-news__item.is-open .l-news__preview { opacity: 1; transition: opacity 0.4s 0.1s; }
+.l-news__preview p { max-width: 34em; margin: 2px 0 0; font-size: 16px; line-height: 1.4; color: #333; }
+.l-news__more { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 12px 26px 0; }
+.l-news__more .l-mono { font-size: 11px; color: #939393; }
+@media (prefers-reduced-motion: reduce) { .l-news__panel, .l-news__preview, .l-news__icon, .l-news__toggle { transition: none; } }
+@media (max-width: 1100px) {
+  .l-news__inner { grid-template-columns: 1fr; gap: 50px; }
+}
+.pb-entry .l-news { min-height: 0; margin-top: 40px; }

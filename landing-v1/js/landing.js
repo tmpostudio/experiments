@@ -9,6 +9,23 @@
   const fmt = (n, d = 0) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const usd = (n) => "$" + fmt(Math.round(n));
 
+  // The CSS cubic-bezier(x1, y1, x2, y2) timing function as a function of progress 0–1
+  function cubicBezier(x1, y1, x2, y2) {
+    const at = (t, a, b) => (((1 - 3 * b + 3 * a) * t + (3 * b - 6 * a)) * t + 3 * a) * t;
+    const slope = (t, a, b) => 3 * (1 - 3 * b + 3 * a) * t * t + 2 * (3 * b - 6 * a) * t + 3 * a;
+    return (x) => {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      let t = x;
+      for (let i = 0; i < 8; i++) { // Newton on the x curve
+        const d = slope(t, x1, x2);
+        if (!d) break;
+        t -= (at(t, x1, x2) - x) / d;
+      }
+      return at(t, y1, y2);
+    };
+  }
+
   // Runs fn once when el comes within `margin` of the viewport
   function whenNear(el, fn, margin = "0px") {
     if (!el) return;
@@ -100,7 +117,25 @@
   heroButtons.forEach((b) => b.addEventListener("click", () => setHero(b.dataset.heroSet, true)));
   let startHero = new URLSearchParams(location.search).get("hero");
   if (!startHero) try { startHero = localStorage.getItem("landing-v4:hero"); } catch (e) {}
-  setHero(["app", "half"].includes(startHero) ? startHero : "studio", false); // default: Studio (the Dots header is retired from the switch)
+  setHero(["app", "half", "dash"].includes(startHero) ? startHero : "studio", false); // default: Studio (the Dots header is retired from the switch)
+
+  // ---------- Dash header: the copy is pinned while the screen scrolls up over it. As the screen
+  // covers it, the copy drifts up at a third of the page's pace and fades out, so the two move
+  // against each other (the parallax); it comes back the same way on the way up ----------
+  const dashCopy = $(".l-hero__copy--dash");
+  const dashStage = $(".l-hero__dash-stage");
+  if (dashCopy && dashStage && hero && !reduced) {
+    const onScroll = () => {
+      if (hero.dataset.hero !== "dash") return;
+      const c = dashCopy.getBoundingClientRect(), s = dashStage.getBoundingClientRect();
+      const covered = Math.min(1, Math.max(0, (c.bottom - s.top) / c.height)); // how far the screen has slid over the copy
+      dashCopy.style.setProperty("--drift", `${(-scrollY * 0.3).toFixed(1)}px`);
+      dashCopy.style.setProperty("--fade", (1 - covered).toFixed(3));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
+  }
 
   // ---------- Hover dot grid: header photos (App screen, Studio) and the commodity video ----------
   // After kamino-sign-here/js/dots.js, reworked for the header: a fine grid of invisible
@@ -264,7 +299,7 @@
     });
     host.addEventListener("pointerleave", () => (prev = null));
   }
-  mountDots(hero, $(".l-hero__dots"), () => !["dots", "half"].includes(hero.dataset.hero)); // full-bleed photo headers only
+  mountDots(hero, $(".l-hero__dots"), () => !["dots", "half", "dash"].includes(hero.dataset.hero)); // full-bleed photo headers only
   mountDots($(".l-commodity"), $(".l-commodity__dots"));
 
   // ---------- Titles switch (Resources menu; also ?titles=serif) ----------
@@ -301,183 +336,94 @@
   let startPlatform = new URLSearchParams(location.search).get("platform");
   if (!startPlatform) try { startPlatform = localStorage.getItem("landing-v4:platform"); } catch (e) {}
 
-  // ---------- Trusted: card carousel ----------
-  // The card in focus locks to the headline's left edge, widens and turns blue (CSS transitions);
-  // the track glides so it lands there. Drag / swipe, sideways scroll, arrow keys or click a card.
-  // Infinite: the cards are cloned into two sets either side; once a move has fully settled outside
-  // the middle set, it jumps (with every transition off) to the identical card in the middle set.
-  const tcar = $(".l-tcar");
-  function layoutTrust() {}
-  if (tcar) {
-    const track = $(".l-tcar__track", tcar);
-    const originals = $$(".l-tcard", tcar);
-    const n = originals.length;
-    const clone = (c) => {
-      const copy = c.cloneNode(true);
-      copy.setAttribute("aria-hidden", "true");
-      return copy;
+  // ---------- Partners accordion ----------
+  // Click a slot to open it and the open one closes. Each slot has a progress p (0 closed, 1 open)
+  // that runs through the page's ease; from p come the slot's width, the card's unturned size and
+  // its turn (a quarter anticlockwise when closed). The rule: a turning card never leaves its slot.
+  // Each frame the card is scaled to the largest size whose turned bounding box still fits the slot
+  // at that instant, so nothing ever overlaps a neighbour, whatever the row width. The blue and the
+  // quote fade in CSS off the is-open class; on phones (stacked bars) CSS does the whole move.
+  const acc = $(".l-acc");
+  if (acc) {
+    const items = $$(".l-acc__item", acc);
+    const cards = items.map((it) => $(".l-acc__card", it));
+    const hits = items.map((it) => $(".l-acc__hit", it));
+    const stacked = window.matchMedia("(max-width: 720px)");
+    const ease = cubicBezier(0.22, 1, 0.36, 1); // --l-ease
+    const dims = { off: 132, gap: 12, h: 520, on: 600, dur: 650 };
+    const state = items.map((it) => ({ p: it.classList.contains("is-open") ? 1 : 0, from: 0, to: 0, t0: 0 }));
+    const measure = () => {
+      const cs = getComputedStyle(acc);
+      const v = (name, fallback) => parseFloat(cs.getPropertyValue(name)) || fallback;
+      dims.off = v("--off", 132);
+      dims.gap = v("--gap", 12);
+      dims.h = v("--h", 520);
+      dims.dur = v("--a-dur", 0.65) * 1000;
+      dims.on = acc.clientWidth - (items.length - 1) * (dims.off + dims.gap);
+      acc.style.setProperty("--on", `${dims.on}px`); // the quote's measure reads it
     };
-    const SETS = 5; // the middle one is the real cards
-    for (let k = 0; k < (SETS - 1) / 2; k++) {
-      track.prepend(...originals.map(clone));
-      track.append(...originals.map(clone));
-    }
-    const lo = n * (SETS - 1) / 2; // first index of the middle set
-    const tcards = $$(".l-tcard", tcar);
-    const title = $(".l-trust2__title");
-    const GAP = 24;
-    let index = lo + Math.min(1, n - 1);
-    let off = 432, left = 0;
-    let settleTimer = 0;
-    let dragging = false;
-    // Brand names under the title jump the carousel to that brand's card
-    const brandLinks = $$("[data-brand]");
-
-    const offsetFor = (i) => left - i * (off + GAP);
-    const setX = (x) => track.style.setProperty("--x", `${x.toFixed(1)}px`);
-    function instantly(fn) {
-      tcar.classList.add("is-instant");
-      fn();
-      void track.offsetWidth; // apply without transitions
-      requestAnimationFrame(() => requestAnimationFrame(() => tcar.classList.remove("is-instant")));
-    }
-    function go(i) {
-      index = Math.max(0, Math.min(tcards.length - 1, i));
-      tcards.forEach((c, k) => {
-        c.classList.toggle("is-active", k === index);
-        if (k >= lo && k < lo + n) c.setAttribute("aria-current", String(k === index));
+    const render = (i) => {
+      const it = items[i], card = cards[i], p = state[i].p;
+      if (stacked.matches) { // bars: leave it to the CSS
+        it.style.width = "";
+        card.style.width = card.style.height = card.style.transform = "";
+        return;
+      }
+      const { off, h, on } = dims;
+      const sw = off + (on - off) * p; // the slot now
+      const w = h + (on - h) * p; // the card before its turn
+      const ch = off + (h - off) * p;
+      const a = (-Math.PI / 2) * (1 - p);
+      const c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a));
+      const fit = Math.min(1, sw / (w * c + ch * s), h / (w * s + ch * c)); // turned box inside the slot
+      it.style.width = `${sw.toFixed(2)}px`;
+      card.style.width = `${w.toFixed(2)}px`;
+      card.style.height = `${ch.toFixed(2)}px`;
+      card.style.transform = `translate(-50%, -50%) rotate(${((a * 180) / Math.PI).toFixed(3)}deg) scale(${fit.toFixed(4)})`;
+    };
+    const renderAll = () => items.forEach((_, i) => render(i));
+    measure();
+    renderAll();
+    window.addEventListener("resize", () => { measure(); renderAll(); });
+    let raf = 0;
+    const tick = (now) => {
+      let busy = false;
+      state.forEach((st, i) => {
+        if (!st.t0) return;
+        const t = Math.min(1, (now - st.t0) / dims.dur);
+        st.p = st.from + (st.to - st.from) * ease(t);
+        if (t < 1) busy = true; else st.t0 = 0;
+        render(i);
       });
-      const brand = (((index - lo) % n) + n) % n; // which original card is in focus
-      brandLinks.forEach((b) => b.classList.toggle("is-on", Number(b.dataset.brand) === brand));
-      setX(offsetFor(index));
-      clearTimeout(settleTimer);
-      settleTimer = setTimeout(recentre, 800); // fallback if transitionend doesn't arrive
-    }
-    // Back into the middle set once the glide has finished
-    function recentre() {
-      clearTimeout(settleTimer);
-      if (dragging || (index >= lo && index < lo + n)) return;
-      const same = lo + (((index - lo) % n) + n) % n;
-      instantly(() => go(same));
-      clearTimeout(settleTimer);
-    }
-    track.addEventListener("transitionend", (e) => {
-      if (e.target === track && e.propertyName === "transform") recentre();
-    });
-    layoutTrust = function () {
-      if (!title.offsetParent) return; // section hidden by the switch
-      left = title.getBoundingClientRect().left;
-      off = Math.min(432, innerWidth * 0.72);
-      track.style.setProperty("--off", `${off}px`);
-      track.style.setProperty("--on", `${Math.min(880, innerWidth - left * 2)}px`);
-      instantly(() => go(index));
+      raf = busy ? requestAnimationFrame(tick) : 0;
     };
-    layoutTrust();
-    window.addEventListener("resize", layoutTrust);
-    brandLinks.forEach((b) => b.addEventListener("click", () => {
-      // nearest copy of that card, so it glides the short way round
-      const target = lo + Number(b.dataset.brand);
-      const d = ((((target - index) % n) + n + n / 2) % n) - n / 2;
-      go(index + d);
-    }));
-
-    // Drag / swipe: the track follows the pointer, then locks to the nearest card
-    let startX = 0, dx = 0, moved = false, downCard = null, vel = 0, lastX = 0, lastT = 0;
-    tcar.addEventListener("pointerdown", (e) => {
-      if (e.button !== 0) return;
-      dragging = true;
-      moved = false;
-      dx = 0;
-      vel = 0;
-      startX = lastX = e.clientX;
-      lastT = performance.now();
-      downCard = e.target.closest(".l-tcard");
-      clearTimeout(settleTimer);
-      tcar.setPointerCapture(e.pointerId);
-    });
-    tcar.addEventListener("pointermove", (e) => {
-      if (!dragging) return;
-      dx = e.clientX - startX;
+    const open = (item) => {
       const now = performance.now();
-      vel = vel * 0.5 + 0.5 * ((e.clientX - lastX) / Math.max(1, now - lastT)); // px/ms, smoothed
-      lastX = e.clientX;
-      lastT = now;
-      if (!moved && Math.abs(dx) > 4) {
-        moved = true;
-        tcar.classList.add("is-dragging");
-      }
-      if (moved) setX(offsetFor(index) + dx);
-    });
-    const endDrag = () => {
-      if (!dragging) return;
-      dragging = false;
-      tcar.classList.remove("is-dragging");
-      if (moved) {
-        // One card per swipe (a long drag across several cards can still move several);
-        // a short quick flick still counts as one
-        let steps = Math.round(-dx / (off + GAP));
-        const fresh = performance.now() - lastT < 80; // finger still moving at release
-        if (!steps && (Math.abs(dx) > 30 || (fresh && Math.abs(vel) > 0.25))) steps = dx < 0 ? 1 : -1;
-        go(index + steps);
-      } else {
-        go(downCard ? tcards.indexOf(downCard) : index);
-      }
+      items.forEach((it, i) => {
+        const on = it === item;
+        it.classList.toggle("is-open", on);
+        hits[i].setAttribute("aria-expanded", String(on));
+        const st = state[i], to = on ? 1 : 0;
+        if (st.p === to && !st.t0) return;
+        if (reduced || stacked.matches) { st.p = to; st.t0 = 0; render(i); return; }
+        st.from = st.p; // picks up mid-move
+        st.to = to;
+        st.t0 = now;
+      });
+      if (!raf) raf = requestAnimationFrame(tick);
     };
-    tcar.addEventListener("pointerup", endDrag);
-    tcar.addEventListener("pointercancel", endDrag);
-
-    // Trackpad sideways scroll: one card per swipe. After a step it ignores the rest of that swipe
-    // and its momentum. A fresh swipe is only recognised once the momentum has been dying away (the
-    // deltas were shrinking) and then jumps back up, or the direction reverses, and never within
-    // 220ms of a step: a swipe's own ramp-up must not count as a second swipe.
-    let wheelSum = 0, wheelLocked = false, wheelTimer = 0, lastDelta = 0, decaying = false, steppedAt = 0;
-    tcar.addEventListener("wheel", (e) => {
-      const ax = Math.abs(e.deltaX);
-      if (ax <= Math.abs(e.deltaY) * 0.8) return;
+    hits.forEach((hit, i) => hit.addEventListener("click", () => open(items[i])));
+    acc.addEventListener("keydown", (e) => {
+      const i = hits.indexOf(document.activeElement);
+      if (i < 0) return;
+      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!step) return;
+      const next = (i + step + items.length) % items.length;
+      open(items[next]);
+      hits[next].focus();
       e.preventDefault();
-      clearTimeout(wheelTimer);
-      wheelTimer = setTimeout(() => { wheelLocked = false; wheelSum = 0; lastDelta = 0; decaying = false; }, 160);
-      if (wheelLocked) {
-        const prev = Math.abs(lastDelta);
-        if (ax < prev) decaying = true;
-        const reversed = lastDelta && Math.sign(e.deltaX) !== Math.sign(lastDelta) && ax > 4;
-        const reaccelerated = decaying && ax > 8 && ax > prev * 2;
-        if (performance.now() - steppedAt > 220 && (reversed || reaccelerated)) { wheelLocked = false; wheelSum = 0; decaying = false; }
-      }
-      lastDelta = e.deltaX;
-      if (wheelLocked) return;
-      wheelSum += e.deltaX;
-      if (Math.abs(wheelSum) > 28) {
-        go(index + (wheelSum > 0 ? 1 : -1));
-        wheelLocked = true;
-        wheelSum = 0;
-        decaying = false;
-        steppedAt = performance.now();
-      }
-    }, { passive: false });
-
-    tcar.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowRight") { go(index + 1); e.preventDefault(); }
-      if (e.key === "ArrowLeft") { go(index - 1); e.preventDefault(); }
     });
   }
-
-  // ---------- Trusted section switch (Resources menu; also ?trust=tabs) ----------
-  const trustTabs = $("#trust");
-  const trustCards = $("#trust-cards");
-  const trustButtons = $$("[data-trust-set]");
-  function setTrust(name, remember) {
-    if (!trustTabs || !trustCards) return;
-    trustTabs.hidden = name !== "tabs";
-    trustCards.hidden = name === "tabs";
-    trustButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.trustSet === name)));
-    if (remember) try { localStorage.setItem("landing-v3:trust", name); } catch (e) {}
-    layoutTrust();
-    window.dispatchEvent(new Event("resize")); // later sections (stack, pinned rows) re-measure
-  }
-  trustButtons.forEach((b) => b.addEventListener("click", () => setTrust(b.dataset.trustSet, true)));
-  let startTrust = new URLSearchParams(location.search).get("trust");
-  if (!startTrust) try { startTrust = localStorage.getItem("landing-v3:trust"); } catch (e) {}
 
   // ---------- Partner stories: flip carousel ----------
   // Paper-thin cards standing in a row under a near-orthographic camera. Stacked cards are turned
@@ -671,7 +617,6 @@
   if (!startProducts) try { startProducts = localStorage.getItem("landing-v2:products"); } catch (e) {}
   setProducts("row", false); // Products switch retired from the menu: always the row
   setPlatform(startPlatform === "stack" ? "stack" : "row", false); // default: Row (four cards)
-  setTrust(startTrust === "tabs" ? "tabs" : "cards", false); // default: Cards
   setStories(startStories === "photos" ? "photos" : "flip", false); // default: Flip
 
   // ---------- Marquee: second copy of the row for a seamless loop ----------
@@ -884,34 +829,50 @@
     render();
   }
 
-  // ---------- Testimonials ----------
-  const quote = $(".l-quote");
-  if (quote) {
-    // Only Binance has approved copy in the Figma; the others are marked as placeholders
-    const QUOTES = [
-      { text: $("[data-quote]").textContent, name: "Peter Welinder", role: "VP of Product and Partnerships<br>Binance", photo: "assets/testimonial-binance.jpg", logo: "assets/logos/binance-overlay.svg" },
-      { text: "[Kraken testimonial — copy to come]", name: "Name Surname", role: "Title<br>Kraken", photo: "", logo: "" },
-      { text: "[Anchorage Digital testimonial — copy to come]", name: "Name Surname", role: "Title<br>Anchorage Digital", photo: "", logo: "" },
-      { text: "[OKX testimonial — copy to come]", name: "Name Surname", role: "Title<br>OKX", photo: "", logo: "" },
-    ];
-    const tabs = $$("[data-quote-tab]");
-    tabs.forEach((tab) => tab.addEventListener("click", () => {
-      const q = QUOTES[+tab.dataset.quoteTab];
-      tabs.forEach((t) => t.classList.toggle("is-on", t === tab));
-      quote.classList.add("is-swapping");
-      setTimeout(() => {
-        $("[data-quote]").textContent = q.text;
-        $("[data-quote-name]").textContent = q.name;
-        $("[data-quote-role]").innerHTML = q.role;
-        const photo = $("[data-quote-photo]");
-        const logo = $("[data-quote-logo]");
-        photo.hidden = !q.photo;
-        logo.hidden = !q.logo;
-        if (q.photo) photo.src = q.photo;
-        if (q.logo) logo.src = q.logo;
-        quote.classList.remove("is-swapping");
-      }, 280);
-    }));
+  // ---------- Slider drift ----------
+  // Until someone touches a widget, its sliders slowly sweep back and forth on their own so
+  // the demos play by themselves. Each slider starts from its set value and moves at its own
+  // phase; the first pointer or key on a widget hands that widget over for good.
+  if (products && !reduced) {
+    const PERIOD = 22000; // ms for a full there-and-back
+    const drifters = [];
+    $$(".w", products).forEach((widget, w) => {
+      const ranges = $$(".w-range", widget);
+      if (!ranges.length) return;
+      const stop = () => { drifters.forEach((d) => { if (d.widget === widget) d.on = false; }); };
+      widget.addEventListener("pointerdown", stop, { capture: true });
+      widget.addEventListener("keydown", stop, { capture: true });
+      ranges.forEach((range, i) => {
+        const min = +range.min, max = +range.max, step = +range.step || 1;
+        // Phase so the sweep starts at the slider's own value, heading up
+        const theta = Math.acos(1 - 2 * ((+range.value - min) / (max - min)));
+        drifters.push({ widget, range, min, max, step, theta, speed: (2 * Math.PI) / (PERIOD * (1 + 0.12 * ((w + i) % 3))), on: true, last: +range.value });
+      });
+    });
+    let raf = 0, lastT = 0;
+    const tick = (now) => {
+      raf = requestAnimationFrame(tick);
+      const dt = lastT ? Math.min(now - lastT, 100) : 0;
+      lastT = now;
+      drifters.forEach((d) => {
+        if (!d.on) return;
+        d.theta += d.speed * dt;
+        const raw = d.min + (d.max - d.min) * (0.5 - 0.5 * Math.cos(d.theta));
+        const value = +(d.min + Math.round((raw - d.min) / d.step) * d.step).toFixed(4);
+        if (value === d.last) return;
+        d.last = value;
+        setRange(d.range, value);
+      });
+      if (!drifters.some((d) => d.on)) { cancelAnimationFrame(raf); raf = 0; }
+    };
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting && !raf && drifters.some((d) => d.on)) { lastT = 0; raf = requestAnimationFrame(tick); }
+        else if (!entry.isIntersecting && raf) { cancelAnimationFrame(raf); raf = 0; }
+      }).observe(products);
+    } else {
+      raf = requestAnimationFrame(tick);
+    }
   }
 
   // ---------- Count-ups ----------
@@ -1001,184 +962,288 @@
     if (!reduced) setInterval(() => { if (!paused) show((index + 1) % items.length); }, 1800);
   });
 
-  // ---------- What's new: accordion; one story open at a time ----------
-  const newsItems = $$(".l-news__item");
-  const newsImages = $$(".l-news__media img");
-  newsItems.forEach((item) => {
-    $(".l-news__toggle", item).addEventListener("click", () => {
-      const open = !item.classList.contains("is-open");
-      newsItems.forEach((other) => {
-        const on = other === item && open;
-        other.classList.toggle("is-open", on);
-        $(".l-news__toggle", other).setAttribute("aria-expanded", String(on));
-      });
-      // Show this article's image (stays on the last one if everything is closed)
-      if (open) newsImages.forEach((img, k) => img.classList.toggle("is-on", k === Number(item.dataset.image)));
-    });
-  });
-
-  // ---------- Build screen: code types out line by line on the photo's screen ----------
-  // Placeholder snippets for each way to build; the tab picks which one runs. It moves on to the
-  // next tab by itself every so often until someone picks one.
-  const codeLines = $("[data-code-lines]");
-  if (codeLines) {
-    const k = (t) => `<span class="k">${t}</span>`;
-    const st = (t) => `<span class="s">${t}</span>`;
-    const cm = (t) => `<span class="c">${t}</span>`;
-    const SNIPPETS = {
-      api: { label: "API · REST", lines: [
-        cm("GET /v2/markets/main/reserves/metrics"),
-        "[",
-        "  {",
-        `    ${k('"symbol"')}: ${st('"USDC"')},`,
-        `    ${k('"supplyApy"')}: 0.0712,`,
-        `    ${k('"borrowApy"')}: 0.0894,`,
-        `    ${k('"totalSupply"')}: ${st('"412,880,190.42"')},`,
-        `    ${k('"totalBorrow"')}: ${st('"301,557,004.10"')},`,
-        `    ${k('"utilization"')}: 0.7304,`,
-        `    ${k('"maxLtv"')}: 0.80`,
-        "  },",
-        "  {",
-        `    ${k('"symbol"')}: ${st('"SOL"')},`,
-        `    ${k('"supplyApy"')}: 0.0418,`,
-        `    ${k('"borrowApy"')}: 0.0663,`,
-        `    ${k('"totalSupply"')}: ${st('"5,120,774.88"')},`,
-        `    ${k('"utilization"')}: 0.6129`,
-        "  }",
-        "]",
-        "",
-      ] },
-      sdk: { label: "SDK · TYPESCRIPT", lines: [
-        `${k("import")} { KaminoMarket }`,
-        `  ${k("from")} ${st('"@kamino-finance/klend-sdk"')};`,
-        "",
-        `${k("const")} market = ${k("await")} KaminoMarket.load(`,
-        `  connection, MAIN_MARKET`,
-        `);`,
-        `${k("const")} usdc = market.getReserveBySymbol(${st('"USDC"')});`,
-        "",
-        cm("// Live rates"),
-        `console.log(usdc.totalSupplyAPY());`,
-        `console.log(usdc.totalBorrowAPY());`,
-        "",
-        cm("// Deposit 1,000 USDC"),
-        `${k("const")} tx = ${k("await")} market.deposit({`,
-        `  owner: wallet.publicKey,`,
-        `  reserve: usdc,`,
-        `  amount: 1_000_000_000n,`,
-        `});`,
-        `${k("await")} sendAndConfirm(tx);`,
-        "",
-      ] },
-      cli: { label: "CLI", lines: [
-        `${cm("$")} kamino markets list`,
-        `MARKET        RESERVES   TVL`,
-        `main          28         $2.94B`,
-        `jlp           6          $214.6M`,
-        `altcoins      11         $88.2M`,
-        "",
-        `${cm("$")} kamino reserve show USDC --market main`,
-        `supply apy    7.12%`,
-        `borrow apy    8.94%`,
-        `utilization   73.0%`,
-        "",
-        `${cm("$")} kamino deposit 1000 USDC --market main`,
-        `${k("✓")} deposited 1,000.00 USDC`,
-        `  tx 4mQe…9Rz2`,
-        "",
-      ] },
-      custom: { label: "CUSTOM · ON-CHAIN", lines: [
-        cm("// Compose Kamino Lend into your own program"),
-        `${k("use")} kamino_lending::cpi::{`,
-        `    accounts::DepositReserveLiquidity, deposit,`,
-        `};`,
-        "",
-        `${k("pub fn")} sweep_to_kamino(`,
-        `    ctx: Context&lt;Sweep&gt;, amount: ${k("u64")},`,
-        `) -&gt; Result&lt;()&gt; {`,
-        `  ${k("let")} accounts = DepositReserveLiquidity {`,
-        `    owner: ctx.accounts.vault.to_account_info(),`,
-        `    reserve: ctx.accounts.reserve.to_account_info(),`,
-        `    lending_market: ctx.accounts.market(),`,
-        `    ..ctx.accounts.kamino()`,
-        `  };`,
-        `  ${k("let")} program = ctx.accounts.klend();`,
-        `  deposit(CpiContext::new(program, accounts), amount)`,
-        `}`,
-        "",
-      ] },
+  // ---------- What's new: the index row clicked becomes the feature ----------
+  // Each article's content rides on data attributes. Clicking a row swaps it with the feature: the
+  // feature takes the row's article (new image in at 110% settling to 100% as it fades up, the copy
+  // rising into place) and the row takes the article that was featured.
+  const feed = $(".l-feed");
+  if (feed) {
+    const feature = $(".l-feed__feature", feed);
+    const media = $(".l-feed__media", feed);
+    const KEYS = ["title", "text", "tags", "date", "image"];
+    const read = (el) => Object.fromEntries(KEYS.map((k) => [k, el.dataset[k]]));
+    const write = (el, a) => KEYS.forEach((k) => (el.dataset[k] = a[k]));
+    const metaHtml = (a) => a.tags.split("|").map((t) => `<span>${t}</span>`).join("") + `<time>${a.date}</time>`;
+    const replay = (el) => { el.classList.remove("is-in"); void el.offsetWidth; el.classList.add("is-in"); };
+    const showFeature = (a) => {
+      write(feature, a);
+      $("h3", feature).textContent = a.title;
+      $(".l-feed__copy p", feature).textContent = a.text;
+      replay(feature);
+      // the new image on top of the old, which goes once the new one has settled
+      const img = new Image();
+      img.alt = "";
+      img.src = a.image;
+      img.className = "is-in";
+      media.appendChild(img);
+      const old = $$("img", media).filter((x) => x !== img);
+      img.addEventListener("animationend", () => old.forEach((x) => x.remove()), { once: true });
+      if (reduced) old.forEach((x) => x.remove());
     };
-    const label = $("[data-code-label]");
-    const tabs = $$("[data-code-tab]");
-    const MAX_LINES = 120;
-    const LINE_MS = 140; // a new line every this many ms
-    let current = "api", cursor = 0, timer = 0, rotate = 0, userPicked = false;
-
-    function addLine() {
-      const snippet = SNIPPETS[current].lines;
-      const row = document.createElement("div");
-      row.innerHTML = snippet[cursor % snippet.length] || "&nbsp;";
-      row.className = "is-new";
-      codeLines.appendChild(row);
-      cursor++;
-      // Every so often drop a batch of lines long gone off the top (without animating that jump)
-      if (codeLines.children.length > MAX_LINES) {
-        for (let n = MAX_LINES / 2; n > 0; n--) codeLines.firstElementChild.remove();
-        codeLines.style.transition = "none";
-        slide();
-        void codeLines.offsetHeight;
-        codeLines.style.transition = "";
-        return;
-      }
-      slide();
-    }
-    function slide() {
-      const overflow = codeLines.scrollHeight - codeLines.parentElement.clientHeight;
-      codeLines.style.transform = `translateY(${-Math.max(0, overflow)}px)`;
-    }
-    function play(name) {
-      current = name;
-      cursor = 0;
-      label.textContent = SNIPPETS[name].label;
-      tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.codeTab === name)));
-      codeLines.innerHTML = "";
-      codeLines.style.transition = "none";
-      codeLines.style.transform = "translateY(0)";
-      void codeLines.offsetHeight;
-      codeLines.style.transition = "";
-      clearInterval(timer);
-      if (reduced) { SNIPPETS[name].lines.forEach(addLine); return; }
-      addLine();
-      timer = setInterval(addLine, LINE_MS);
-    }
-    tabs.forEach((t) => t.addEventListener("click", () => {
-      userPicked = true;
-      clearInterval(rotate);
-      play(t.dataset.codeTab);
+    const showRow = (row, a) => {
+      write(row, a);
+      $(".l-feed__row-title", row).textContent = a.title;
+      $(".l-feed__meta", row).innerHTML = metaHtml(a);
+      replay(row);
+    };
+    $$(".l-feed__row", feed).forEach((row) => row.addEventListener("click", () => {
+      const next = read(row), prev = read(feature);
+      showFeature(next);
+      showRow(row, prev);
     }));
-    // Only type while the section is on screen
-    let started = false;
-    const order = tabs.map((t) => t.dataset.codeTab);
-    new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        if (!started) {
-          started = true;
-          play(current);
-          if (!reduced) rotate = setInterval(() => { if (!userPicked) play(order[(order.indexOf(current) + 1) % order.length]); }, 9000);
-        } else if (!timer && !reduced) timer = setInterval(addLine, LINE_MS);
-      } else {
-        clearInterval(timer);
-        timer = 0;
-      }
-    }).observe(codeLines.closest(".l-bsq"));
   }
+
+  // ---------- Build folios ----------
+  // "file" has every tab on the left, and cycles instead: clicking the front sheet drops it off the
+  // page under gravity with a slight tilt, then it fades back in at the back of the stack while
+  // the others step forward. Clicking a sheet further back drops each one in front of it in turn.
+  // Each [data-folio] stage holds four sheets stacked a step apart (the last slot is the front).
+  // A sheet is an SVG silhouette drawn to the stage's width: a body with a tab rising from its top
+  // edge on curved shoulders. The tab's place belongs to the slot, not the sheet: "steps" moves one
+  // slot across per card (an even stagger), "file" alternates left, right, left, right down the
+  // stack. Clicking a tab brings its sheet to the front; every sheet that changes slot slides to
+  // its new height while its tab glides to the slot's place. Until someone picks one, the back
+  // sheet comes forward every so often while the folio is on screen.
+  // The outline: the tab spans tL..tR at the base (shoulders included), th tall, shoulders sL / sR
+  // wide. A tab may run past either edge (its shoulder then falls outside); the rounded clip
+  // (radius rc) trims it, so a tab sliding to an edge ends in a rounded corner with no jump.
+  // straight: shoulders cut as plain slants with sharp joins instead of curves.
+  function sheetPath(W, H, tL, tR, th, sL, sR, rc, straight) {
+    const r0 = Math.max(0, Math.min(rc, tL)), r1 = Math.max(0, Math.min(rc, W - tR));
+    const d = [tL >= 0 ? `M0 ${H} V${th + r0} Q0 ${th} ${r0} ${th} H${tL}` : `M${tL} ${H} V${th}`];
+    d.push(straight
+      ? `L${tL + sL} 0 H${tR - sR} L${tR} ${th}`
+      : `C${tL + sL / 2} ${th} ${tL + sL / 2} 0 ${tL + sL} 0 H${tR - sR} C${tR - sR / 2} 0 ${tR - sR / 2} ${th} ${tR} ${th}`);
+    d.push(tR <= W ? `H${W - r1} Q${W} ${th} ${W} ${th + r1} V${H} Z` : `V${H} Z`);
+    return d.join(" ");
+  }
+  const folioEase = cubicBezier(0.22, 1, 0.36, 1); // --l-ease
+  $$("[data-folio]").forEach((stage) => {
+    const kind = stage.dataset.folio; // "steps" | "file"
+    const sheets = $$(".l-folio__sheet", stage);
+    const tabs = sheets.map((s) => $(".l-folio__tab", s));
+    const n = sheets.length;
+    const uid = stage.id || kind;
+    $$(".l-folio__code", stage).forEach((code) => $$("i", code).forEach((line, k) => line.style.setProperty("--n", k)));
+    sheets.forEach((s, i) => {
+      $(".l-folio__shape", s).innerHTML =
+        `<defs><clipPath id="${uid}-k${i}"><path class="l-folio__clip"/></clipPath>` +
+        `<filter id="${uid}-g${i}" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="${i + 3}"/>` +
+        `<feColorMatrix values="0 0 0 0 0.05  0 0 0 0 0.2  0 0 0 0 0.28  0 0 0 0.5 0"/></filter>` +
+        `<clipPath id="${uid}-c${i}" clip-path="url(#${uid}-k${i})"><path/></clipPath></defs>` +
+        `<g clip-path="url(#${uid}-k${i})"><path class="l-folio__fill"/></g>` +
+        `<rect class="l-folio__grain" clip-path="url(#${uid}-c${i})" filter="url(#${uid}-g${i})"/>`;
+    });
+    let c = null, W = 0;
+    let order = sheets.map((_, i) => i); // order[slot] = sheet; the last slot is the front
+    const at = sheets.map(() => ({ x: 0, from: 0, to: 0 })); // each tab's left base, animated
+    // Where the tab of a sheet in this slot sits (its left base)
+    const slotX = (slot) => kind === "file" ? c.lead : slot * (W / n); // file: a short ledge before the lip so its curve runs out flat
+    const sheetH = () => c.h;
+    const draw = (i) => {
+      const s = sheets[i], svg = $(".l-folio__shape", s);
+      const tL = at[i].x, tR = tL + c.tw;
+      const d = sheetPath(W, sheetH(i), tL, tR, c.th, c.sL, c.sR, c.rc);
+      $$("path:not(.l-folio__clip)", svg).forEach((p) => p.setAttribute("d", d));
+      // the label sits on the tab's flat top, clear of the shoulders
+      const x0 = Math.max(0, tL + c.sL), x1 = Math.min(W, tR - c.sR);
+      s.style.setProperty("--tab-x", `${x0.toFixed(1)}px`);
+      s.style.setProperty("--tab-w", `${(x1 - x0).toFixed(1)}px`);
+    };
+    const layout = () => {
+      W = stage.clientWidth;
+      if (!W) return;
+      const small = W < 560;
+      c = kind === "file"
+        ? { th: small ? 31 : 36, step: small ? 40 : 48, h: small ? 400 : 480, sL: small ? 14 : 24, sR: small ? 22 : 40, rc: 0, rb: 4, lead: small ? 10 : 18 }
+        : { th: small ? 28 : 32, step: 24, h: small ? 440 : 480, sL: small ? 8 : 14, sR: small ? 14 : 28, rc: 6, rb: 6 };
+      c.tw = kind === "file" ? W * (small ? 0.5 : 0.36) : W / n;
+      stage.style.setProperty("--th", `${c.th}px`);
+      stage.style.setProperty("--step", `${c.step}px`);
+      stage.style.setProperty("--sheet-h", `${c.h}px`);
+      stage.style.setProperty("--stage-h", `${(n - 1) * c.step + c.h}px`);
+      sheets.forEach((s, i) => {
+        const svg = $(".l-folio__shape", s);
+        svg.setAttribute("viewBox", `0 0 ${W} ${sheetH(i)}`);
+        $$("rect", svg).forEach((r) => { r.setAttribute("width", W); r.setAttribute("height", sheetH(i)); });
+        s.style.setProperty("--sh", `${sheetH(i)}px`);
+        // the outer trim: top corners rc, bottom corners rb
+        const H = sheetH(i), rc = c.rc, rb = c.rb;
+        $(".l-folio__clip", svg).setAttribute("d", `M0 ${rc} A${rc} ${rc} 0 0 1 ${rc} 0 H${W - rc} A${rc} ${rc} 0 0 1 ${W} ${rc} V${H - rb} A${rb} ${rb} 0 0 1 ${W - rb} ${H} H${rb} A${rb} ${rb} 0 0 1 0 ${H - rb} Z`);
+        at[i].x = at[i].to = slotX(order.indexOf(i));
+        draw(i);
+      });
+    };
+    let raf = 0, t0 = 0;
+    const DUR = 700;
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / DUR), e = folioEase(t);
+      sheets.forEach((_, i) => { at[i].x = at[i].from + (at[i].to - at[i].from) * e; draw(i); });
+      raf = t < 1 ? requestAnimationFrame(tick) : 0;
+    };
+    const place = (animate) => {
+      order.forEach((i, slot) => {
+        const s = sheets[i], front = slot === n - 1;
+        s.style.setProperty("--slot", slot);
+        s.style.zIndex = slot + 1;
+        s.classList.toggle("is-front", front);
+        s.classList.toggle("is-right", kind === "file" && slot % 2 === 1);
+        tabs[i].setAttribute("aria-selected", String(front));
+        tabs[i].tabIndex = front ? 0 : -1;
+        at[i].from = at[i].x;
+        at[i].to = slotX(slot);
+      });
+      if (!animate || reduced) { sheets.forEach((_, i) => { at[i].x = at[i].to; draw(i); }); return; }
+      t0 = performance.now();
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    if (kind === "file") {
+      // One click is one planned move, so several sheets dropping never retarget each other: the
+      // sheets in front of the one picked fall as a staggered cascade, everything behind glides
+      // forward the whole way in a single motion, and each fallen sheet comes back in at the back,
+      // straight into its final place. Clicks during a move are ignored.
+      const FALL = 950, FADE = 260, BACK = 420, STAGGER = 110; // ms
+      let moving = false;
+      const mark = () => order.forEach((i, slot) => {
+        const front = slot === n - 1;
+        sheets[i].classList.toggle("is-front", front);
+        tabs[i].setAttribute("aria-selected", String(front));
+      });
+      const settle = () => order.forEach((i, slot) => {
+        const s = sheets[i];
+        s.style.setProperty("--slot", slot);
+        s.style.zIndex = slot + 2;
+      });
+      const cycle = (count) => {
+        if (moving || count < 1) return;
+        moving = true;
+        const fallen = order.slice(n - count).reverse(); // front first
+        order = order.slice(n - count).concat(order.slice(0, n - count)); // the fallen end up at the back
+        mark();
+        if (reduced) { settle(); moving = false; return; }
+        // the rest: straight to their new slots, one smooth glide, above anything coming back in
+        order.forEach((i, slot) => {
+          if (fallen.includes(i)) return;
+          sheets[i].style.setProperty("--slot", slot);
+          sheets[i].style.zIndex = slot + 2;
+        });
+        const fall = innerHeight + stage.offsetHeight; // well down the page, over whatever is below
+        let pending = fallen.length;
+        const finish = () => {
+          settle();
+          // hand back to the stylesheet's slot transform without it gliding again
+          fallen.forEach((i) => {
+            const s = sheets[i];
+            s.style.transition = "none";
+            s.style.translate = s.style.transform = s.style.opacity = "";
+            void s.offsetWidth;
+            s.style.transition = "";
+          });
+          moving = false;
+        };
+        fallen.forEach((i, k) => {
+          const s = sheets[i], from = (n - 1 - k) * c.step, to = order.indexOf(i);
+          const tilt = (k % 2 ? 1 : -1) * (Math.random() < 0.5 ? -1 : 1) * (7 + Math.random() * 5); // 7–12°
+          s.style.zIndex = n + 10 - k; // the front one stays in front as they fall
+          s.classList.add("is-dropping");
+          // the fall runs on the separate translate property with transform cleared, so the tilt turns the
+          // card about its own centre and it only ever moves straight down
+          s.style.transition = "none";
+          s.style.transform = "none";
+          s.style.translate = `0 ${from}px`;
+          void s.offsetWidth;
+          // gravity: starts slow and gathers speed; fully solid all the way, fading only at the very end, far down the page
+          const delay = k * STAGGER;
+          // the tilt has its own curve (the separate rotate property): it waits a beat, then builds as the sheet
+          // gathers speed, so it is barely tipped near the stack and well tipped by the time it is far down
+          s.style.transition = `translate ${FALL}ms cubic-bezier(0.55, 0, 0.85, 0.35) ${delay}ms, rotate ${FALL * 0.75}ms cubic-bezier(0.45, 0, 0.7, 0.6) ${delay + FALL * 0.25}ms, opacity ${FADE}ms linear ${delay + FALL - FADE}ms`;
+          s.style.translate = `0 ${from + fall}px`;
+          s.style.rotate = `${tilt.toFixed(2)}deg`;
+          s.style.opacity = "0";
+          // It comes back as soon as it has fallen out of view (or when the fall ends, whichever is first)
+          let back = false;
+          const comeBack = () => {
+            if (back) return;
+            back = true;
+            // back in behind the stack: from a step above its final slot, settling into it
+            s.classList.remove("is-dropping");
+            s.style.transition = "none";
+            s.style.rotate = "";
+            s.style.zIndex = to + 2;
+            s.style.setProperty("--slot", to);
+            s.style.translate = `0 ${(to - 1) * c.step}px`;
+            void s.offsetWidth;
+            s.style.transition = `translate ${BACK}ms var(--l-ease), opacity ${BACK * 0.7}ms var(--l-ease)`;
+            s.style.translate = `0 ${to * c.step}px`;
+            s.style.opacity = "1";
+            setTimeout(() => { if (--pending === 0) finish(); }, BACK);
+          };
+          const watch = () => {
+            if (back) return;
+            if (s.getBoundingClientRect().top > innerHeight) comeBack();
+            else requestAnimationFrame(watch);
+          };
+          setTimeout(() => requestAnimationFrame(watch), delay + 120);
+          setTimeout(comeBack, delay + FALL);
+        });
+      };
+      // the front sheet drops itself; a sheet further back drops every sheet in front of it
+      tabs.forEach((t, i) => t.addEventListener("click", () => cycle(Math.max(1, n - 1 - order.indexOf(i)))));
+      stage.addEventListener("keydown", (e) => {
+        if (!["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"].includes(e.key)) return;
+        cycle(1);
+        e.preventDefault();
+      });
+      stage.classList.add("is-instant");
+      layout();
+      mark();
+      settle();
+      setTimeout(() => stage.classList.remove("is-instant"), 60);
+      new ResizeObserver(layout).observe(stage);
+      return;
+    }
+    const bring = (i) => { order = order.filter((k) => k !== i).concat(i); place(true); };
+    let picked = false, rotate = 0;
+    const pick = (i) => { picked = true; clearInterval(rotate); bring(i); };
+    tabs.forEach((t, i) => t.addEventListener("click", () => pick(i)));
+    stage.addEventListener("keydown", (e) => {
+      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!step) return;
+      const i = (order[n - 1] + step + n) % n;
+      pick(i);
+      tabs[i].focus();
+      e.preventDefault();
+    });
+    stage.classList.add("is-instant");
+    layout();
+    place(false);
+    setTimeout(() => stage.classList.remove("is-instant"), 60);
+    new ResizeObserver(layout).observe(stage);
+    if (!reduced && "IntersectionObserver" in window) {
+      new IntersectionObserver(([entry]) => {
+        clearInterval(rotate);
+        rotate = 0;
+        if (entry.isIntersecting && !picked) rotate = setInterval(() => bring(order[0]), 7000);
+      }).observe(stage);
+    }
+  });
 
   // ---------- Placeholder links don't jump to the top ----------
   $$('a[href="#"]').forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
 
   // ---------- Gentle reveal for section content ----------
   if (!reduced && "IntersectionObserver" in window) {
-    const targets = $$(".l-products .l-headline, .l-product, .l-trust .l-headline, .l-quote, .l-record .l-split, .l-audits, .l-stories .l-split, .l-bsq__head, .l-news__inner > *");
+    const targets = $$(".l-products .l-headline, .l-product, .l-partners .l-headline, .l-acc, .l-record .l-split, .l-audits, .l-stories .l-split, .l-folio__head, .l-feed__title, .l-feed__grid");
     targets.forEach((el, i) => {
       el.classList.add("l-reveal");
       el.style.transitionDelay = `${(i % 4) * 70}ms`;

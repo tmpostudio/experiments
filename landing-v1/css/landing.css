@@ -3,6 +3,13 @@
    everything here is l- prefixed or scoped so nothing collides with them. */
 
 @font-face {
+  font-family: "MD Thermochrome";
+  src: url("../assets/fonts/MDThermochrome0.4-Light.otf") format("opentype");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Serrif";
   src: url("../assets/fonts/Serrif-TRIAL-Light.woff2") format("woff2");
   font-weight: 300;
@@ -385,7 +392,7 @@ html { overflow-x: clip; }
 .l-hero[data-hero="app"] .l-hero__photo { object-position: 50% 50%; }
 /* Hover dot grid (js/landing.js): over the photo, under the screenshot, copy and nav */
 .l-hero__dots { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.l-hero:is([data-hero="dots"], [data-hero="half"]) .l-hero__dots { display: none; }
+.l-hero:is([data-hero="dots"], [data-hero="half"], [data-hero="dash"]) .l-hero__dots { display: none; }
 .l-hero__copy, .l-hero__app { z-index: 1; }
 /* Logo strip sits lower than on Studio: 46px off the bottom edge instead of 72px */
 .l-hero[data-hero="app"] + .l-marquee { margin-top: -76px; padding-bottom: 20px; }
@@ -405,6 +412,55 @@ html { overflow-x: clip; }
   box-shadow: 3px 4px 10.9px rgba(0, 0, 0, 0.29);
 }
 .l-hero__app img { display: block; width: 100%; height: auto; }
+
+/* ---------- Header E: "Dash" — light page, centred copy, the app's home screen below it in full
+   (Figma 5027:38366, but nothing cropped). The copy is pinned while the screen scrolls up over
+   it; as it is covered it drifts up a little slower than the page and fades (js/landing.js sets
+   --drift / --fade), which is the parallax. The nav keeps its default black. ---------- */
+
+.l-hero[data-hero="dash"] { height: auto; min-height: 0; padding-bottom: 24px; overflow: visible; background: var(--bg, #fafafa); }
+.l-hero[data-hero="dash"] .l-hero__dots { display: none; }
+.l-hero__dash { position: relative; display: flex; flex-direction: column; align-items: center; padding-top: clamp(140px, 17.5vh, 168px); }
+.l-hero__copy--dash {
+  position: sticky;
+  top: clamp(120px, 15vh, 150px);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: none;
+  padding: 0 var(--l-pad);
+  text-align: center;
+  opacity: var(--fade, 1);
+  transform: translateY(var(--drift, 0px));
+  animation: l-dash-copy 0.9s var(--l-ease) both;
+}
+.l-hero__copy--dash .l-hero__title { max-width: 15.3em; font-size: clamp(34px, 3.05vw, 46px); letter-spacing: -0.05em; }
+.l-hero__copy--dash .l-hero__lede { max-width: 22em; margin-top: 24px; line-height: 1.2; color: rgba(0, 0, 0, 0.65); }
+.l-hero__copy--dash .l-hero__actions { margin-top: 38px; justify-content: center; }
+/* The screen rides above the pinned copy and slides up over it with the page */
+.l-hero__dash-stage { position: relative; z-index: 2; width: min(78.3%, 1184px); margin-top: 62px; animation: l-dash-rise 1.2s var(--l-ease) 0.15s both; }
+.l-hero__dash-screen {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 3px 4px 10.9px rgba(0, 0, 0, 0.29);
+}
+.l-hero__dash-screen img { display: block; width: 100%; height: auto; }
+/* Light catching the bezel: a bright hairline along the top, a faint one round the rest */
+.l-hero__dash-screen::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 0 0 0.5px rgba(0, 0, 0, 0.1); pointer-events: none; }
+@keyframes l-dash-copy { from { opacity: 0; transform: translateY(14px); } }
+@keyframes l-dash-rise { from { opacity: 0; transform: translateY(90px); } }
+@media (max-width: 720px) {
+  .l-hero__dash { padding-top: 110px; }
+  .l-hero__copy--dash { top: 96px; }
+  .l-hero__dash-stage { width: calc(100% - 2 * var(--l-pad)); margin-top: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-hero__copy--dash, .l-hero__dash-stage { animation: none; }
+  .l-hero__copy--dash { position: static; opacity: 1; transform: none; }
+}
 
 /* ---------- Titles switch: every 44px+ heading in Serrif Light ---------- */
 
@@ -756,128 +812,92 @@ html { overflow-x: clip; }
 
 .platform { padding-top: 20px; }
 
-/* ---------- Testimonials ---------- */
+/* ---------- Partners accordion (Figma 5000:3884) ---------- */
+/* Four slots in a row, one open. Each slot holds a card laid out the open way: logo lying at the
+   top-left, quote at the foot. Closed, the whole card is turned a quarter anticlockwise about its
+   centre and sized to stand in the thin slot, so the logo reads up the strip from its foot. Opening
+   turns the card upright while it grows to the open size; only the quote fades in. Nothing on the
+   card moves relative to the card. js/landing.js drives the slot widths, the turn and the card's
+   size frame by frame, with the rule that a turning card never leaves its slot (it scales down
+   just enough mid-turn), so cards never overlap at any row width. The CSS below holds the two
+   rest states; the blue and the quote fade here. */
 
-.l-trust { padding-top: 170px; padding-bottom: 150px; }
-
-/* ---------- Testimonials, card carousel (Figma 4956:32553) ---------- */
-
-.l-trust[hidden], .l-trust2[hidden] { display: none !important; }
-.l-trust2 { padding: 150px 0 150px; overflow: hidden; }
-.l-trust2__title { max-width: 14.9em; }
-.l-trust2__brands { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 40px; }
-.l-trust2__brands button { padding: 0; border: 0; background: none; font: inherit; font-size: 15px; letter-spacing: -0.01em; color: var(--l-muted); cursor: pointer; transition: color 0.3s; }
-.l-trust2__brands button:hover { color: #555; }
-.l-trust2__brands button.is-on { color: #000; }
-/* Full-bleed strip; js/landing.js sets --off / --on (card widths) and --x (track offset) */
-.l-tcar { margin-top: 78px; padding: 12px 0 32px; outline: none; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
-.l-tcar:focus-visible .l-tcard.is-active { outline: 2px solid #000; outline-offset: 3px; }
-.l-tcar.is-dragging { cursor: grabbing; }
-/* One quick ease-out drives everything: the glide, both widths, the blue crossfade and the mark,
-   so a move starts immediately and settles softly, and a new move picks up mid-flight */
-.l-tcar { --t-ease: cubic-bezier(0.22, 1, 0.36, 1); --t-dur: 0.6s; }
-.l-tcar__track { display: flex; gap: 24px; transform: translateX(var(--x, 0px)); transition: transform var(--t-dur) var(--t-ease); }
-.l-tcar.is-dragging .l-tcar__track, .l-tcar.is-instant .l-tcar__track, .l-tcar.is-instant .l-tcard, .l-tcar.is-instant .l-tcard::before, .l-tcar.is-instant .l-tcard__mark, .l-tcar.is-instant .l-tcard__logo { transition: none; }
-.l-tcard {
-  position: relative;
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: var(--off, 432px);
-  height: 480px;
-  margin: 0;
-  padding: 24px 32px;
+.l-partners { padding-top: 150px; padding-bottom: 150px; }
+.l-partners .l-headline { max-width: 14.9em; }
+/* --off is the closed strip's width and, because the card turns, also the band the logo is centred
+   in at the top of the open card: a narrower strip is what brings the logo nearer the top edge */
+.l-acc { --off: 100px; --gap: 12px; --h: 520px; --pad: 32px; --a-dur: 0.65s; display: flex; gap: var(--gap); margin-top: 64px; }
+.l-acc__item { position: relative; z-index: 1; flex: none; width: var(--off); height: var(--h); }
+.l-acc__item.is-open { z-index: 2; width: var(--on, 60%); }
+/* The card sits on the slot's centre: closed it is --h wide and --off tall, turned a quarter to
+   stand in the slot; open it is the slot's size, upright */
+.l-acc__card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--h);
+  height: var(--off);
   overflow: hidden;
   border: 0.5px solid rgba(0, 0, 0, 0.05);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07); /* same edge shadow as the One platform cards */
-  color: #08090a;
-  transition: width var(--t-dur) var(--t-ease);
+  background: var(--l-pale);
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07); /* same edge as the One platform cards */
+  transform: translate(-50%, -50%) rotate(-90deg);
 }
-.l-tcard.is-active { width: var(--on, 880px); }
+.l-acc__item.is-open .l-acc__card { width: var(--on, 100%); height: var(--h); transform: translate(-50%, -50%); }
 /* The blue is its own layer that crossfades (opacity only, so no repaint while it fades) */
-.l-tcard::before {
-  content: "";
+.l-acc__card::before { content: ""; position: absolute; inset: 0; background: var(--l-mist); opacity: 0; transition: opacity var(--a-dur) var(--l-ease); }
+.l-acc__item.is-open .l-acc__card::before { opacity: 1; }
+/* The whole card is the button */
+.l-acc__hit { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; border-radius: inherit; background: none; cursor: pointer; text-align: left; }
+.l-acc__item.is-open .l-acc__hit { cursor: default; }
+.l-acc__hit:focus-visible { outline-offset: -3px; }
+/* Logo lying at the top-left, centred in a band as tall as a closed strip so it is centred across
+   the strip when the card is turned; --pad from the left is its distance from the strip's foot */
+.l-acc__logo {
   position: absolute;
-  inset: 0;
-  background: var(--l-mist); /* the lighter blue, #e2edf2 (was #bcdeec) */
-  opacity: 0;
-  transition: opacity var(--t-dur) var(--t-ease);
-  will-change: opacity;
-}
-.l-tcard.is-active::before { opacity: 1; }
-/* Big faint company mark riding the right edge of the card in focus */
-.l-tcard__mark {
-  position: absolute;
-  top: -360px;
-  right: -600px;
-  width: 1200px;
-  height: 1200px;
-  max-width: none;
-  opacity: 0;
-  transition: opacity var(--t-dur) var(--t-ease);
-  will-change: opacity, transform; /* own layer: moving with the card's edge doesn't repaint the big mask */
-  pointer-events: none;
-}
-/* Marks with no large asset: the small logo as a mask (its url is set inline, so it resolves from the page) */
-span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
-.l-tcard.is-active .l-tcard__mark { opacity: 0.2; }
-/* Logo at the top; quote with the name + title under it at the bottom */
-/* Heights are set per logo (inline --logo-h) to balance them optically against Binance at 38px.
-   Solid black files (kraken-black / anchorage-black drop the 25% opacity baked into the originals);
-   full strength on the card in focus, 35% (grey) on the rest. */
-.l-tcard__logo {
-  position: relative;
   display: block;
   width: auto;
-  height: var(--logo-h, 32px);
-  align-self: flex-start; /* don't stretch across the card */
-  opacity: 0.35;
-  transition: opacity var(--t-dur) var(--t-ease);
+  height: var(--logo-h, 28px);
+  left: var(--pad);
+  top: calc((var(--off) - var(--logo-h, 28px)) / 2);
   pointer-events: none;
 }
-.l-tcard.is-active .l-tcard__logo { opacity: 1; }
-.l-tcard__foot { position: relative; display: grid; gap: 20px; }
-.l-tcard__by { display: grid; font-size: 14px; line-height: 21px; letter-spacing: -0.013em; }
-.l-tcard__by strong { font-weight: 400; }
-.l-tcard__by > span { opacity: 0.6; }
-/* Same measure small or wide, so the quote never re-wraps as the card expands */
-.l-tcard blockquote { position: relative; width: min(381px, calc(var(--off, 432px) - 64px)); margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
+/* Quote at the foot: a fixed measure so it never re-wraps while the card is still growing.
+   It rises and fades in slowly once the card is well into its turn, and drops out quickly the
+   moment the card starts closing */
+.l-acc__story {
+  position: absolute;
+  left: var(--pad);
+  bottom: var(--pad);
+  width: min(460px, calc(var(--on, 600px) - 2 * var(--pad)));
+  display: grid;
+  gap: 20px;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(24px);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s var(--l-ease), transform 0.25s var(--l-ease), visibility 0s 0.25s;
+}
+.l-acc__item.is-open .l-acc__story { opacity: 1; transform: none; visibility: visible; transition: opacity 1.1s var(--l-ease) 0.3s, transform 1.1s var(--l-ease) 0.3s, visibility 0s; }
+/* Quote and name, same as the card carousel this replaced */
+.l-acc__story blockquote { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -0.025em; color: #08090a; text-wrap: balance; }
+.l-acc__by { display: grid; font-size: 14px; line-height: 21px; letter-spacing: -0.013em; color: #08090a; }
+.l-acc__by strong { font-weight: 400; }
+.l-acc__by > span { opacity: 0.6; }
 @media (max-width: 720px) {
-  .l-tcard { height: 420px; padding: 22px 24px; }
-  .l-tcard blockquote { width: calc(var(--off, 432px) - 48px); font-size: 22px; }
+  /* Stacked: thin bars with the logo lying in them; the open one grows downwards, no turning */
+  .l-acc { flex-direction: column; --off: 72px; --h: 400px; --pad: 20px; }
+  .l-acc__item { width: 100%; height: var(--off); transition: height var(--a-dur) var(--l-ease); }
+  .l-acc__item.is-open { width: 100%; height: var(--h); }
+  .l-acc__card, .l-acc__item.is-open .l-acc__card { left: 0; top: 0; width: 100%; height: 100%; transform: none; transition: none; }
+  .l-acc__story { width: auto; right: var(--pad); }
+  .l-acc__story blockquote { font-size: 22px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .l-tcar__track, .l-tcard, .l-tcard::before, .l-tcard__mark, .l-tcard__logo { transition: none; }
+  .l-acc__item, .l-acc__card, .l-acc__card::before, .l-acc__story { transition: none; }
 }
-.l-quote {
-  display: grid;
-  grid-template-columns: 471fr 594fr;
-  max-width: 1065px;
-  min-height: 440px;
-  margin: 70px auto 0;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.04);
-}
-.l-quote__copy { display: flex; flex-direction: column; justify-content: space-between; padding: 32px; }
-.l-quote blockquote { margin: 0; max-width: 17em; font-size: 22px; line-height: 1.1; letter-spacing: -0.02em; color: var(--l-text); transition: opacity 0.3s; }
-.l-quote__by { display: grid; gap: 14px; margin: 0; font-size: 14px; line-height: 1.1; color: var(--l-text); transition: opacity 0.3s; }
-.l-quote__by strong { font-weight: 500; font-size: 16px; }
-.l-quote__media { position: relative; overflow: hidden; background: #0c1a24; }
-.l-quote__photo { position: absolute; inset: -3% -20%; width: 140%; height: 110%; object-fit: cover; transition: opacity 0.4s, transform 6s linear; }
-.l-quote:hover .l-quote__photo { transform: scale(1.05); }
-.l-quote__logo { position: absolute; left: 23.6%; right: 27.6%; top: 43.6%; width: 49%; transition: opacity 0.4s; }
-.l-quote.is-swapping blockquote, .l-quote.is-swapping .l-quote__by, .l-quote.is-swapping .l-quote__photo, .l-quote.is-swapping .l-quote__logo { opacity: 0; }
-.l-quote__tabs { display: flex; justify-content: center; align-items: center; gap: 70px; margin-top: 60px; }
-.l-quote__tabs button { border: 0; background: none; padding: 6px; cursor: pointer; opacity: 0.3; filter: grayscale(1); transition: opacity 0.25s; }
-.l-quote__tabs button:hover { opacity: 0.6; }
-.l-quote__tabs button.is-on { opacity: 1; }
-.l-quote__tabs img { display: block; width: auto; }
 
 /* ---------- Commodity ---------- */
 
@@ -1177,110 +1197,137 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 
 /* ---------- Build ---------- */
 
-/* ---------- Build: the square still life fills the left half (so the section is half the screen
-   width tall); its blue screen is masked black and runs live code. The right half is the photo's
-   own wall colour (sampled down its right edge), and the photo's edge fades into it. ---------- */
+/* ---------- Build folios: four folded sheets, one per way to build, in one shade of blue. Each
+   sheet is an SVG silhouette (js/landing.js draws the tab, its curved shoulders and the corners to
+   the stage's width) stacked a step below the last; the front sheet carries the page. Clicking a
+   tab pulls its sheet down to the front and the ones in front of it move up a step. Layers are
+   told apart by their colours (no shadows), plus a fine paper grain.
+   Colours per sheet, below. Two arrangements: "steps" (each card's tab one slot further across,
+   Figma 5022:36874; the tab's place belongs to the slot, so it glides there as sheets reorder)
+   and "file" (tabs all on the left, square corners; the front sheet drops away and returns at the back).
+   Ink is dark (hairline rules at 16% black) except on the black sheet. ---------- */
 
-.l-bsq {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  min-height: 100vh;
-  min-height: 100svh;
-  background: linear-gradient(180deg, #cad1d5 0%, #ccd2d6 10%, #d1d8dc 20%, #d7dee0 30%, #dae0e2 40%, #dce2e5 50%, #dde4e6 60%, #dbe1e4 70%, #d7dee0 80%, #d5dbde 90%, #d6dce1 100%); /* build-screen-3, sampled down its left edge */
-  color: #000;
+.l-folio { padding-top: 150px; padding-bottom: 150px; background: var(--bg, #fafafa); }
+.l-folio + .l-folio { padding-top: 40px; } /* the second folio sits close under the first */
+.l-folio__inner { display: grid; grid-template-columns: minmax(280px, 400px) minmax(0, 1fr); gap: 72px; align-items: center; }
+.l-folio__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; }
+.l-folio__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
+.l-folio__cta { margin-top: 32px; gap: 34px; border-color: #000; background: transparent; }
+.l-folio__cta:hover { background: #000; color: #fff !important; }
+.l-folio__stage { --paper: var(--l-blue); --rule: rgba(0, 0, 0, 0.16); position: relative; height: var(--stage-h, 600px); }
+.l-folio__sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--sheet-h, 480px);
+  transform: translateY(calc(var(--slot, 0) * var(--step, 44px) - var(--lift, 0px)));
+  transition: transform 0.7s var(--l-ease);
 }
-/* Image on the right, copy on the left. The image stops at the page's right margin rather than
-   bleeding off, so the device and the tabs under it sit inside the page column. The margin below
-   gives the tabs room under the plinth now the image is smaller. */
-.l-bsq__media {
-  --edge: max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad)));
-  position: relative;
-  order: 2;
-  align-self: center;
-  justify-self: end;
-  /* fills its column, but never so tall that it and the tabs overflow the screen-high section */
-  width: min(calc(100% - var(--edge)), calc(100svh - 200px));
-  aspect-ratio: 1;
-  margin: 0 var(--edge) 64px 0;
-}
-.l-bsq__media img {
-  display: block;
+.l-folio__sheet:not(.is-front):has(.l-folio__tab:hover) { --lift: 5px; }
+/* Sheets overlap each other's tab rows when the step is tighter than a tab, so only the tabs and
+   the open page take clicks; the sheet boxes themselves are click-through */
+.l-folio__sheet { pointer-events: none; }
+.l-folio__tab, .l-folio__page { pointer-events: auto; }
+.l-folio__shape {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  /* every edge fades into the wall */
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent), linear-gradient(180deg, transparent 4%, #000 26%, #000 88%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent), linear-gradient(180deg, transparent 4%, #000 26%, #000 88%, transparent);
-  mask-composite: intersect;
+  overflow: visible;
 }
-/* build-screen-2/3: the blue screen is x 546–1470, y 516–1170 of 2000px; nudged a hair outward so no
-   blue fringe shows, still inside the black frame (520–1494, 492–1194) */
-.l-bsq__screen {
+.l-folio__fill { fill: var(--paper); }
+.l-folio__grain { opacity: 0.3; mix-blend-mode: multiply; pointer-events: none; }
+/* The tab's label sits on the tab; the whole tab is the button */
+.l-folio__tab {
   position: absolute;
-  left: 27.15%;
-  top: 25.65%;
-  width: 46.5%;
-  height: 33%;
-  display: flex;
-  flex-direction: column;
-  gap: 0.9em;
-  padding: 1.2em 1.4em 0;
-  background: #000;
-  color: #d8f3ff;
-  overflow: hidden;
-  container-type: inline-size;
+  top: 0;
+  left: var(--tab-x, 0px);
+  width: var(--tab-w, 160px);
+  height: var(--th, 32px);
+  padding: 0 18px;
+  border: 0;
+  background: none;
+  font-family: "Aeonik", "Inter", system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-align: left;
+  color: #000;
+  cursor: pointer;
+}
+.l-folio__sheet.is-right .l-folio__tab { text-align: right; }
+.l-folio__sheet.is-front .l-folio__tab { cursor: default; }
+.l-folio__tab:focus-visible { outline: 2px solid #000; outline-offset: -4px; border-radius: 6px; }
+/* The page: only the front sheet's shows, a beat after it lands */
+.l-folio__page { position: absolute; left: 0; right: 0; top: var(--th, 32px); bottom: 0; padding: 26px 30px 0; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.25s var(--l-ease), visibility 0s 0.25s; }
+.l-folio__sheet.is-front .l-folio__page { opacity: 1; visibility: visible; transition: opacity 0.5s var(--l-ease) 0.3s, visibility 0s; }
+.l-folio__meta { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.l-folio__meta .l-mono { font-size: 11px; color: rgba(0, 0, 0, 0.55); }
+.l-folio__meta .l-mono + .l-mono { text-align: right; opacity: 0.8; }
+.l-folio__code {
+  margin: 20px 0 0;
   font-family: "Roboto Mono", ui-monospace, monospace;
-  font-size: clamp(8px, 0.7vw, 12px);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #0b1a24;
+  white-space: normal; /* the lines are the <i> blocks; the source newlines between them must not count */
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent);
+  mask-image: linear-gradient(180deg, #000 78%, transparent);
 }
-.l-bsq__label { flex: none; font-size: 0.85em; letter-spacing: 0.08em; color: rgba(216, 243, 255, 0.55); }
-.l-bsq__code { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%); mask-image: linear-gradient(180deg, transparent, #000 18%); }
-/* js appends a line at a time from the top; once the screen is full the block slides up so the
-   newest line always sits at the bottom */
-.l-bsq__lines { position: absolute; left: 0; right: 0; top: 0; transition: transform 0.12s linear; }
-/* Sized off the screen's own width (it's a size container) so the longest line, ~54 characters,
-   always fits across without truncating */
-.l-bsq__lines { font-size: 2.7cqw; }
-.l-bsq__lines div { min-height: 1.55em; line-height: 1.55em; white-space: pre; overflow: hidden; text-overflow: clip; }
-.l-bsq__lines div.is-new { animation: l-code-in 0.14s var(--l-ease); }
-@keyframes l-code-in { from { opacity: 0; } to { opacity: 1; } }
-.l-bsq__lines .c { color: rgba(216, 243, 255, 0.45); }  /* comments, prompts */
-.l-bsq__lines .k { color: #8fd6ff; }                     /* keys, keywords */
-.l-bsq__lines .s { color: #c6f4ff; }                     /* strings */
+.l-folio__code i { display: block; min-height: 1.6em; font-style: normal; white-space: pre; }
+.l-folio__code .c { color: rgba(11, 26, 36, 0.5); }
+.l-folio__code .k { color: #0a5f91; }
+.l-folio__code .s { color: #22694c; }
+.l-folio__sheet.is-front .l-folio__code i { animation: l-folio-line 0.45s var(--l-ease) both; animation-delay: calc(0.4s + var(--n, 0) * 28ms); }
+@keyframes l-folio-line { from { opacity: 0; transform: translateX(-6px); } }
 
-.l-bsq__panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 100px 48px 48px max(var(--l-pad), calc((100vw - var(--l-max)) / 2 + var(--l-pad))); /* starts on the page's first column */
+/* Each sheet keeps its own colour in both folios (black, sky, blue, mist), so a sheet's colour
+   travels with it as the stack reorders. The black sheet (Custom)'s ink is the sky blue, never white, with
+   the code colours of the old build screen. */
+.l-folio__sheet[data-sheet="custom"] { --paper: #1b1b1b; --ink: #cff3fd; --rule: rgba(207, 243, 253, 0.22); }
+.l-folio__sheet[data-sheet="sdk"] { --paper: #cff3fd; }
+.l-folio__sheet[data-sheet="cli"] { --paper: #c3ddea; }
+.l-folio__sheet[data-sheet="api"] { --paper: var(--l-pale); } /* the light grey of the partner strips */
+.l-folio__sheet[data-sheet="custom"] :is(.l-folio__tab, .l-folio__page, .l-folio__page .l-mono) { color: var(--ink); }
+.l-folio__sheet[data-sheet="custom"] .l-folio__page .l-mono { opacity: 0.6; }
+.l-folio__sheet[data-sheet="custom"] .l-folio__code { color: #d8f3ff; }
+.l-folio__sheet[data-sheet="custom"] .l-folio__code .c { color: rgba(216, 243, 255, 0.45); }
+.l-folio__sheet[data-sheet="custom"] .l-folio__code .k { color: #8fd6ff; }
+.l-folio__sheet[data-sheet="custom"] .l-folio__code .s { color: #c6f4ff; }
+.l-folio__sheet[data-sheet="custom"] .l-folio__tab:focus-visible { outline-color: var(--ink); }
+
+/* "file": tabs all on the left with section 1's lips, square corners. A dropped sheet falls on down
+   over the page below, solid until it is far down, then comes back in at the back. */
+.l-folio__stage.is-instant .l-folio__sheet { transition: none; } /* first paint: no slide-in */
+.l-folio--file .l-folio__sheet.is-dropping { pointer-events: none; }
+.l-folio--file .l-folio__sheet.is-dropping .l-folio__page { opacity: 1; visibility: visible; transition: none; } /* it falls with its page showing */
+.l-folio--file .l-folio__tab { padding: 0 22px; font-family: "Roboto Mono", ui-monospace, monospace; font-size: 14px; font-weight: 400; letter-spacing: 0.04em; }
+/* The way to build again, large in the page's bottom-left corner; on desktop the code moves to the right half */
+.l-folio__big { display: none; }
+@media (min-width: 961px) {
+  .l-folio--file .l-folio__code { width: 50%; margin-left: 50%; font-size: 11.5px; }
+  .l-folio--file .l-folio__big { display: block; position: absolute; left: 30px; bottom: 24px; font-family: "MD Thermochrome", "Aeonik", "Inter", system-ui, sans-serif; font-size: 64px; font-weight: 300; line-height: 0.9; letter-spacing: 0; text-transform: uppercase; }
 }
-.l-bsq__head { max-width: 460px; }
-.l-bsq__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; }
-.l-bsq__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
-.l-bsq__cta { margin-top: 32px; gap: 34px; border-color: #000; background: transparent; }
-.l-bsq__cta:hover { background: #000; color: #fff !important; }
-/* Under the image: on the floor below the plinth, lined up with the panel's bottom inset and the
-   page's right edge. Label above the rule, tabs below it. */
-/* Spans the image, so the tabs sit centred under the device and end on the right page margin */
-.l-bsq__foot { position: absolute; left: 0; right: 0; bottom: -16px; display: grid; gap: 14px; }
-.l-bsq__foot > .l-mono { font-size: 12px; color: rgba(0, 0, 0, 0.6); }
-/* Spread edge to edge so the first word starts and the last ends on the rule's ends */
-.l-bsq__tabs { display: flex; justify-content: space-between; column-gap: 16px; margin: 0; padding: 22px 0 0; border-top: 1px solid rgba(0, 0, 0, 0.2); list-style: none; }
-.l-bsq__tabs button { padding: 0; border: 0; background: none; font: inherit; font-size: clamp(24px, 2.3vw, 34px); line-height: 1; letter-spacing: -0.03em; color: rgba(0, 0, 0, 0.3); text-align: left; cursor: pointer; transition: color 0.3s; }
-.l-bsq__tabs button:hover { color: rgba(0, 0, 0, 0.6); }
-.l-bsq__tabs button[aria-selected="true"] { color: #000; }
 
 @media (max-width: 960px) {
-  .l-bsq { grid-template-columns: 1fr; min-height: 0; }
-  .l-bsq__media { order: 0; width: auto; margin: 0; }
-  .l-bsq__media img { -webkit-mask-image: none; mask-image: none; }
-  .l-bsq__screen { font-size: clamp(7px, 1.4vw, 12px); }
-  .l-bsq__panel { gap: 56px; padding: 48px var(--l-pad) 56px; }
-  .l-bsq__media { aspect-ratio: auto; display: flex; flex-direction: column; }
-  .l-bsq__media img { aspect-ratio: 1; height: auto; }
-  .l-bsq__foot { position: static; padding: 24px var(--l-pad) 0; }
+  .l-folio { padding-top: 96px; padding-bottom: 96px; }
+  .l-folio + .l-folio { padding-top: 24px; }
+  .l-folio__inner { grid-template-columns: 1fr; gap: 48px; }
+  .l-folio__tab, .l-folio--file .l-folio__tab { padding: 0 12px; font-size: 14px; }
+  .l-folio--file .l-folio__tab { font-size: 13px; }
+  .l-folio:not(.l-folio--file) .l-folio__tab { padding: 0 6px; font-size: 11px; letter-spacing: 0; }
+  .l-folio__page { padding: 20px 18px 0; }
+  .l-folio__meta .l-mono + .l-mono { display: none; }
+  .l-folio__code { font-size: 11px; }
 }
-@media (max-width: 560px) { .l-bsq__tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; } }
-@media (prefers-reduced-motion: reduce) { .l-bsq__lines { transition: none; } .l-bsq__lines div.is-new { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .l-folio__sheet, .l-folio__page { transition: none; }
+  .l-folio__sheet.is-front .l-folio__code i { animation: none; }
+}
 
 .l-build { padding-top: 110px; padding-bottom: 150px; }
 .l-build .l-split { padding-bottom: 48px; }
@@ -1294,51 +1341,67 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
 /* Horizontal 308×35 strip stood on end down the panel's right edge */
 .l-build__dots { position: absolute; top: 24px; right: 21px; width: 308px; transform-origin: top right; transform: translateX(-35px) rotate(-90deg); }
 
-/* ---------- What's new ---------- */
+/* ---------- What's new (Figma 5028:38527) ---------- */
+/* Title, then two columns: the featured article (image, title, blurb, Read More) and the index
+   of the rest, one ruled row each. js/landing.js swaps an index row into the feature: the new image
+   comes in at 110% and settles to 100% as it fades up; the copy rises into place. */
 
-/* One full screen tall, content centred in it (grows if the list ever needs more) */
-.l-news { position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 100vh; min-height: 100svh; background: var(--l-pale); }
-/* Title row across the top; below it the list (left) beside the open article's image (right).
-   The image fills the full height of the list and crops from the centre (the blog art keeps its
-   logos central for exactly this). */
-.l-news__inner { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "head head" "list media"; column-gap: 32px; row-gap: 56px; width: 100%; padding-top: 96px; padding-bottom: 96px; }
-.l-news__side { grid-area: head; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
-.l-news__media { grid-area: media; position: relative; min-height: 420px; border-radius: 4px; overflow: hidden; background: #d9dde2; }
-.l-news__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; opacity: 0; transition: opacity 0.6s var(--l-ease); }
-.l-news__media img.is-on { opacity: 1; }
-.l-news__body { grid-area: list; display: flex; flex-direction: column; gap: 48px; }
-.l-news__all { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: baseline; gap: 0.35em; font-size: clamp(22px, 2vw, 28px); line-height: 1; letter-spacing: -0.03em; color: var(--l-muted); text-decoration: none; transition: color 0.3s; }
-.l-news__all:hover { color: #000; }
-.l-news__all span { font-size: 0.7em; transition: transform 0.35s var(--l-ease); }
-.l-news__all:hover span { transform: translate(3px, -3px); }
-@media (max-width: 960px) {
-  .l-news__inner { grid-template-columns: 1fr; grid-template-areas: "head" "media" "list"; row-gap: 32px; }
-  .l-news__side { flex-direction: column; align-items: flex-start; }
-  .l-news__media { min-height: 0; aspect-ratio: 16 / 10; }
+.l-feed { padding-top: 96px; padding-bottom: 120px; background: var(--bg, #fafafa); }
+.l-feed__title { margin: 0; font-size: clamp(40px, 4.2vw, 64px); }
+.l-feed__grid { display: grid; grid-template-columns: minmax(0, 657fr) minmax(0, 653fr); gap: 28px; margin-top: 52px; align-items: start; }
+.l-feed__feature { display: flex; flex-direction: column; align-items: flex-start; gap: 25px; }
+.l-feed__media { position: relative; display: block; width: 100%; aspect-ratio: 657 / 363; overflow: hidden; border-radius: 4px; background: #c9c5bd; }
+.l-feed__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.l-feed__media img.is-in { animation: l-feed-img 0.7s var(--l-ease) both; }
+@keyframes l-feed-img { from { opacity: 0; transform: scale(1.1); } }
+.l-feed__copy { display: grid; gap: 14px; padding-right: 16px; }
+.l-feed__copy h3 { margin: 8px 0 0; font-size: 32px; font-weight: 400; line-height: 31.5px; letter-spacing: -0.01em; color: #1c1c1c; }
+.l-feed__copy p { max-width: 30em; margin: 0; font-size: 16px; line-height: 1.1; }
+.l-feed__more { border-radius: 2px; }
+/* the copy rises into place, title first */
+.l-feed__feature.is-in :is(.l-feed__copy h3, .l-feed__copy p, .l-feed__more) { animation: l-feed-up 0.55s var(--l-ease) both; }
+.l-feed__feature.is-in .l-feed__copy p { animation-delay: 0.05s; }
+.l-feed__feature.is-in .l-feed__more { animation-delay: 0.1s; }
+@keyframes l-feed-up { from { opacity: 0; transform: translateY(14px); } }
+
+.l-feed__list { margin: 0; padding: 0; list-style: none; }
+.l-feed__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: center;
+  gap: 16px 12px;
+  width: 100%;
+  min-height: 102px;
+  padding: 12px 1px 12px 0;
+  border: 0;
+  border-top: 1px solid #000;
+  background: none;
+  color: #0d0d0d;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
-.l-news__actions { display: flex; gap: 14px; }
-.l-news__actions[hidden] { display: none; }
-.l-news__list { margin: 0; padding: 0; list-style: none; }
-.l-news__item { border-bottom: 1px solid #000; }
-.l-news__toggle { position: relative; display: grid; gap: 14px; width: 100%; padding: 22px 56px 22px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: padding-left 0.35s var(--l-ease); }
-.l-news__toggle:hover, .l-news__item.is-open .l-news__toggle { padding-left: 14px; }
-.l-news__title { font-size: 24px; letter-spacing: -0.02em; }
-.l-news__meta { display: flex; gap: 24px; font-size: 11px; }
-.l-news__meta time { color: #939393; }
-/* Plus that turns into a cross when open */
-.l-news__icon { position: absolute; right: 12px; top: 28px; width: 16px; height: 16px; transition: transform 0.4s var(--l-ease); }
-.l-news__icon::before, .l-news__icon::after { content: ""; position: absolute; left: 0; top: 7.5px; width: 16px; height: 1px; background: #000; }
-.l-news__icon::after { transform: rotate(90deg); }
-.l-news__item.is-open .l-news__icon { transform: rotate(45deg); }
-/* The preview opens by animating its row from 0 to its natural height */
-.l-news__panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s var(--l-ease); }
-.l-news__item.is-open .l-news__panel { grid-template-rows: 1fr; }
-.l-news__preview { min-height: 0; overflow: hidden; padding-left: 14px; opacity: 0; transition: opacity 0.3s; }
-.l-news__item.is-open .l-news__preview { opacity: 1; transition: opacity 0.4s 0.1s; }
-.l-news__preview p { max-width: 34em; margin: 2px 0 0; font-size: 16px; line-height: 1.4; color: #333; }
-.l-news__more { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 12px 26px 0; }
-.l-news__more .l-mono { font-size: 11px; color: #939393; }
-@media (prefers-reduced-motion: reduce) { .l-news__panel, .l-news__preview, .l-news__icon, .l-news__toggle { transition: none; } }
+.l-feed__row-title { font-size: 24px; line-height: 1.1; letter-spacing: -0.02em; transition: transform 0.35s var(--l-ease); }
+.l-feed__arrow { align-self: center; width: 12px; height: 12px; transition: transform 0.35s var(--l-ease); }
+.l-feed__meta { grid-column: 1 / -1; display: flex; gap: 24px; font-size: 12px; line-height: 1; color: #000; }
+.l-feed__meta time { opacity: 0.4; }
+.l-feed__row:hover .l-feed__row-title { transform: translateX(6px); }
+.l-feed__row:hover .l-feed__arrow { transform: translate(2px, -2px); }
+.l-feed__row.is-in > * { animation: l-feed-up 0.5s var(--l-ease) both; }
+.l-feed__row.is-in .l-feed__meta { animation-delay: 0.05s; }
+.l-feed__all { display: block; padding-top: 24px; font-size: 22px; line-height: 1.1; text-align: right; color: rgba(17, 17, 17, 0.4); text-decoration: none; transition: color 0.3s; }
+.l-feed__all:hover { color: #111; }
+@media (max-width: 960px) {
+  .l-feed { padding-top: 72px; padding-bottom: 80px; }
+  .l-feed__grid { grid-template-columns: 1fr; gap: 48px; margin-top: 36px; }
+  .l-feed__copy h3 { font-size: 26px; line-height: 1.1; }
+  .l-feed__row { min-height: 88px; }
+  .l-feed__row-title { font-size: 20px; }
+  .l-feed__meta { gap: 16px; font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-feed__media img.is-in, .l-feed__feature.is-in *, .l-feed__row.is-in > * { animation: none !important; }
+}
 
 /* ---------- Newsletter: page-level adjustments only ---------- */
 
@@ -1376,7 +1439,6 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
   .l-build__grid { grid-template-columns: 1fr; height: auto; }
   .l-build__media { height: 420px; }
   .l-build__panel { min-height: 460px; }
-  .l-news__inner { grid-template-columns: 1fr; gap: 50px; }
   .l-footer__cols { justify-content: start; gap: 30px 60px; grid-template-columns: repeat(2, auto); }
 }
 
@@ -1401,9 +1463,6 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
   .l-product { grid-template-columns: 1fr; }
   .l-products[data-layout="row"] .l-product { grid-template-columns: 1fr; min-height: 0; }
   .l-product__copy { gap: 30px; }
-  .l-quote { grid-template-columns: 1fr; }
-  .l-quote__media { height: 260px; }
-  .l-quote__tabs { gap: 24px; flex-wrap: wrap; }
   .l-commodity__stat { align-self: flex-start; }
   .l-bento__big strong { font-size: 64px; }
   .l-footer__base { flex-direction: column; align-items: flex-start; gap: 24px; margin-top: 80px; }
