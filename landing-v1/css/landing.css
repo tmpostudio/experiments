@@ -413,17 +413,16 @@ html { overflow-x: clip; }
 }
 .l-hero__app img { display: block; width: 100%; height: auto; }
 
-/* ---------- Header E: "Dash" — light page, centred copy, the app's home screen below it in full
-   (Figma 5027:38366, but nothing cropped). The copy is pinned while the screen scrolls up over
-   it; as it is covered it drifts up a little slower than the page and fades (js/landing.js sets
-   --drift / --fade), which is the parallax. The nav keeps its default black. ---------- */
+/* ---------- Header E: "Dash" — light page, centred copy, the app's home screen below it, masked to
+   a desktop screen's 16:10 (Figma 5027:38366). The copy is pinned exactly where it starts, so it
+   never moves; the screen and then the rest of the page scroll up over it. ---------- */
 
 .l-hero[data-hero="dash"] { height: auto; min-height: 0; padding-bottom: 24px; overflow: visible; background: var(--bg, #fafafa); }
 .l-hero[data-hero="dash"] .l-hero__dots { display: none; }
-.l-hero__dash { position: relative; display: flex; flex-direction: column; align-items: center; padding-top: clamp(140px, 17.5vh, 168px); }
+.l-hero__dash { --dash-top: clamp(140px, 17.5vh, 168px); position: relative; display: flex; flex-direction: column; align-items: center; padding-top: var(--dash-top); }
 .l-hero__copy--dash {
   position: sticky;
-  top: clamp(120px, 15vh, 150px);
+  top: calc(var(--dash-top) + 70px); /* where it starts (under the 70px nav), so it pins without moving first */
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -431,10 +430,11 @@ html { overflow-x: clip; }
   max-width: none;
   padding: 0 var(--l-pad);
   text-align: center;
-  opacity: var(--fade, 1);
-  transform: translateY(var(--drift, 0px));
   animation: l-dash-copy 0.9s var(--l-ease) both;
 }
+/* beats the general phone rule that makes hero copy position: relative (which would also turn the
+   pin offset into a 180px shove) */
+.l-hero .l-hero__copy--dash { position: sticky; padding-bottom: 0; }
 .l-hero__copy--dash .l-hero__title { max-width: 15.3em; font-size: clamp(34px, 3.05vw, 46px); letter-spacing: -0.05em; }
 .l-hero__copy--dash .l-hero__lede { max-width: 22em; margin-top: 24px; line-height: 1.2; color: rgba(0, 0, 0, 0.65); }
 .l-hero__copy--dash .l-hero__actions { margin-top: 38px; justify-content: center; }
@@ -442,6 +442,7 @@ html { overflow-x: clip; }
 .l-hero__dash-stage { position: relative; z-index: 2; width: min(78.3%, 1184px); margin-top: 62px; animation: l-dash-rise 1.2s var(--l-ease) 0.15s both; }
 .l-hero__dash-screen {
   position: relative;
+  aspect-ratio: 16 / 10; /* a desktop screen; the app shot is cropped from the top */
   overflow: hidden;
   border-radius: 9px;
   background: #fff;
@@ -453,13 +454,11 @@ html { overflow-x: clip; }
 @keyframes l-dash-copy { from { opacity: 0; transform: translateY(14px); } }
 @keyframes l-dash-rise { from { opacity: 0; transform: translateY(90px); } }
 @media (max-width: 720px) {
-  .l-hero__dash { padding-top: 110px; }
-  .l-hero__copy--dash { top: 96px; }
+  .l-hero__dash { --dash-top: 110px; }
   .l-hero__dash-stage { width: calc(100% - 2 * var(--l-pad)); margin-top: 40px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .l-hero__copy--dash, .l-hero__dash-stage { animation: none; }
-  .l-hero__copy--dash { position: static; opacity: 1; transform: none; }
 }
 
 /* ---------- Titles switch: every 44px+ heading in Serrif Light ---------- */

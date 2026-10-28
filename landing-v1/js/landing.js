@@ -119,24 +119,6 @@
   if (!startHero) try { startHero = localStorage.getItem("landing-v4:hero"); } catch (e) {}
   setHero(["app", "half", "dash"].includes(startHero) ? startHero : "studio", false); // default: Studio (the Dots header is retired from the switch)
 
-  // ---------- Dash header: the copy is pinned while the screen scrolls up over it. As the screen
-  // covers it, the copy drifts up at a third of the page's pace and fades out, so the two move
-  // against each other (the parallax); it comes back the same way on the way up ----------
-  const dashCopy = $(".l-hero__copy--dash");
-  const dashStage = $(".l-hero__dash-stage");
-  if (dashCopy && dashStage && hero && !reduced) {
-    const onScroll = () => {
-      if (hero.dataset.hero !== "dash") return;
-      const c = dashCopy.getBoundingClientRect(), s = dashStage.getBoundingClientRect();
-      const covered = Math.min(1, Math.max(0, (c.bottom - s.top) / c.height)); // how far the screen has slid over the copy
-      dashCopy.style.setProperty("--drift", `${(-scrollY * 0.3).toFixed(1)}px`);
-      dashCopy.style.setProperty("--fade", (1 - covered).toFixed(3));
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    onScroll();
-  }
-
   // ---------- Hover dot grid: header photos (App screen, Studio) and the commodity video ----------
   // After kamino-sign-here/js/dots.js, reworked for the header: a fine grid of invisible
   // white dots. The pointer lights a wide soft pool around it and sends out ripples;
