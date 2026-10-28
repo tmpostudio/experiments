@@ -119,6 +119,22 @@
   if (!startHero) try { startHero = localStorage.getItem("landing-v4:hero"); } catch (e) {}
   setHero(["app", "half", "dash"].includes(startHero) ? startHero : "studio", false); // default: Studio (the Dots header is retired from the switch)
 
+  // ---------- Dash header: the pinned copy eases up a little as the page scrolls ----------
+  // A third of the scroll, up to 90px, followed through a soft lerp so it glides rather than tracks
+  const dashCopy = $(".l-hero__copy--dash");
+  if (dashCopy && hero && !reduced) {
+    let now = 0, raf = 0;
+    const target = () => -Math.min(90, scrollY * 0.3);
+    const step = () => {
+      const t = target();
+      now += (t - now) * 0.14;
+      if (Math.abs(t - now) < 0.1) now = t;
+      dashCopy.style.setProperty("--drift", `${now.toFixed(2)}px`);
+      raf = now === t ? 0 : requestAnimationFrame(step);
+    };
+    window.addEventListener("scroll", () => { if (hero.dataset.hero === "dash" && !raf) raf = requestAnimationFrame(step); }, { passive: true });
+  }
+
   // ---------- Hover dot grid: header photos (App screen, Studio) and the commodity video ----------
   // After kamino-sign-here/js/dots.js, reworked for the header: a fine grid of invisible
   // white dots. The pointer lights a wide soft pool around it and sends out ripples;
@@ -956,7 +972,14 @@
     const read = (el) => Object.fromEntries(KEYS.map((k) => [k, el.dataset[k]]));
     const write = (el, a) => KEYS.forEach((k) => (el.dataset[k] = a[k]));
     const metaHtml = (a) => a.tags.split("|").map((t) => `<span>${t}</span>`).join("") + `<time>${a.date}</time>`;
-    const replay = (el) => { el.classList.remove("is-in"); void el.offsetWidth; el.classList.add("is-in"); };
+    // run the entrance animation once, then hand the element back (so hovers transition normally)
+    const replay = (el) => {
+      el.classList.remove("is-in");
+      void el.offsetWidth;
+      el.classList.add("is-in");
+      clearTimeout(el._inTimer);
+      el._inTimer = setTimeout(() => el.classList.remove("is-in"), 800);
+    };
     const showFeature = (a) => {
       write(feature, a);
       $("h3", feature).textContent = a.title;

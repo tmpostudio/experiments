@@ -423,6 +423,7 @@ html { overflow-x: clip; }
 .l-hero__copy--dash {
   position: sticky;
   top: calc(var(--dash-top) + 70px); /* where it starts (under the 70px nav), so it pins without moving first */
+  translate: 0 var(--drift, 0px); /* the eased drift up (js/landing.js); separate from the entrance animation's transform */
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -1380,12 +1381,14 @@ html { overflow-x: clip; }
   text-align: left;
   cursor: pointer;
 }
-.l-feed__row-title { font-size: 24px; line-height: 1.1; letter-spacing: -0.02em; transition: transform 0.35s var(--l-ease); }
-.l-feed__arrow { align-self: center; width: 12px; height: 12px; transition: transform 0.35s var(--l-ease); }
+/* Hover nudges use the separate translate property (the swap-in animation owns transform) and a soft
+   in-out curve, so the title glides over rather than snapping */
+.l-feed__row-title { font-size: 24px; line-height: 1.1; letter-spacing: -0.02em; transition: translate 0.7s cubic-bezier(0.35, 0, 0.15, 1); }
+.l-feed__arrow { align-self: center; width: 12px; height: 12px; transition: translate 0.7s cubic-bezier(0.35, 0, 0.15, 1); }
 .l-feed__meta { grid-column: 1 / -1; display: flex; gap: 24px; font-size: 12px; line-height: 1; color: #000; }
 .l-feed__meta time { opacity: 0.4; }
-.l-feed__row:hover .l-feed__row-title { transform: translateX(6px); }
-.l-feed__row:hover .l-feed__arrow { transform: translate(2px, -2px); }
+.l-feed__row:hover .l-feed__row-title { translate: 6px 0; }
+.l-feed__row:hover .l-feed__arrow { translate: 2px -2px; }
 .l-feed__row.is-in > * { animation: l-feed-up 0.5s var(--l-ease) both; }
 .l-feed__row.is-in .l-feed__meta { animation-delay: 0.05s; }
 .l-feed__all { display: block; padding-top: 24px; font-size: 22px; line-height: 1.1; text-align: right; color: rgba(17, 17, 17, 0.4); text-decoration: none; transition: color 0.3s; }

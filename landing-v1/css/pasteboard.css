@@ -598,3 +598,139 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
   .l-news__inner { grid-template-columns: 1fr; gap: 50px; }
 }
 .pb-entry .l-news { min-height: 0; margin-top: 40px; }
+
+
+/* ================= Build, stepped folio (set aside 28 Oct 2026) ================= */
+
+/* ---------- Build folios: four folded sheets, one per way to build, in one shade of blue. Each
+   sheet is an SVG silhouette (js/landing.js draws the tab, its curved shoulders and the corners to
+   the stage's width) stacked a step below the last; the front sheet carries the page. Clicking a
+   tab pulls its sheet down to the front and the ones in front of it move up a step. Layers are
+   told apart by their colours (no shadows), plus a fine paper grain.
+   Colours per sheet, below. Two arrangements: "steps" (each card's tab one slot further across,
+   Figma 5022:36874; the tab's place belongs to the slot, so it glides there as sheets reorder)
+   and "file" (tabs all on the left, square corners; the front sheet drops away and returns at the back).
+   Ink is dark (hairline rules at 16% black) except on the black sheet. ---------- */
+
+.pb-folio2 { padding-top: 150px; padding-bottom: 150px; background: var(--bg, #fafafa); }
+.pb-folio2 + .pb-folio2 { padding-top: 40px; } /* the second folio sits close under the first */
+.pb-folio2__inner { display: grid; grid-template-columns: minmax(280px, 400px) minmax(0, 1fr); gap: 72px; align-items: center; }
+.pb-folio2__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; }
+.pb-folio2__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
+.pb-folio2__cta { margin-top: 32px; gap: 34px; border-color: #000; background: transparent; }
+.pb-folio2__cta:hover { background: #000; color: #fff !important; }
+.pb-folio2__stage { --paper: var(--l-blue); --rule: rgba(0, 0, 0, 0.16); position: relative; height: var(--stage-h, 600px); }
+.pb-folio2__sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--sheet-h, 480px);
+  transform: translateY(calc(var(--slot, 0) * var(--step, 44px) - var(--lift, 0px)));
+  transition: transform 0.7s var(--l-ease);
+}
+.pb-folio2__sheet:not(.is-front):has(.pb-folio2__tab:hover) { --lift: 5px; }
+/* Sheets overlap each other's tab rows when the step is tighter than a tab, so only the tabs and
+   the open page take clicks; the sheet boxes themselves are click-through */
+.pb-folio2__sheet { pointer-events: none; }
+.pb-folio2__tab, .pb-folio2__page { pointer-events: auto; }
+.pb-folio2__shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pb-folio2__fill { fill: var(--paper); }
+.pb-folio2__grain { opacity: 0.3; mix-blend-mode: multiply; pointer-events: none; }
+/* The tab's label sits on the tab; the whole tab is the button */
+.pb-folio2__tab {
+  position: absolute;
+  top: 0;
+  left: var(--tab-x, 0px);
+  width: var(--tab-w, 160px);
+  height: var(--th, 32px);
+  padding: 0 18px;
+  border: 0;
+  background: none;
+  font-family: "Aeonik", "Inter", system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  text-align: left;
+  color: #000;
+  cursor: pointer;
+}
+.pb-folio2__sheet.is-right .pb-folio2__tab { text-align: right; }
+.pb-folio2__sheet.is-front .pb-folio2__tab { cursor: default; }
+.pb-folio2__tab:focus-visible { outline: 2px solid #000; outline-offset: -4px; border-radius: 6px; }
+/* The page: only the front sheet's shows, a beat after it lands */
+.pb-folio2__page { position: absolute; left: 0; right: 0; top: var(--th, 32px); bottom: 0; padding: 26px 30px 0; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.25s var(--l-ease), visibility 0s 0.25s; }
+.pb-folio2__sheet.is-front .pb-folio2__page { opacity: 1; visibility: visible; transition: opacity 0.5s var(--l-ease) 0.3s, visibility 0s; }
+.pb-folio2__meta { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
+.pb-folio2__meta .l-mono { font-size: 11px; color: rgba(0, 0, 0, 0.55); }
+.pb-folio2__meta .l-mono + .l-mono { text-align: right; opacity: 0.8; }
+.pb-folio2__code {
+  margin: 20px 0 0;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #0b1a24;
+  white-space: normal; /* the lines are the <i> blocks; the source newlines between them must not count */
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, #000 78%, transparent);
+  mask-image: linear-gradient(180deg, #000 78%, transparent);
+}
+.pb-folio2__code i { display: block; min-height: 1.6em; font-style: normal; white-space: pre; }
+.pb-folio2__code .c { color: rgba(11, 26, 36, 0.5); }
+.pb-folio2__code .k { color: #0a5f91; }
+.pb-folio2__code .s { color: #22694c; }
+.pb-folio2__sheet.is-front .pb-folio2__code i { animation: pb-folio2-line 0.45s var(--l-ease) both; animation-delay: calc(0.4s + var(--n, 0) * 28ms); }
+@keyframes pb-folio2-line { from { opacity: 0; transform: translateX(-6px); } }
+
+/* Each sheet keeps its own colour in both folios (black, sky, blue, mist), so a sheet's colour
+   travels with it as the stack reorders. The black sheet (Custom)'s ink is the sky blue, never white, with
+   the code colours of the old build screen. */
+.pb-folio2__sheet[data-sheet="custom"] { --paper: #1b1b1b; --ink: #cff3fd; --rule: rgba(207, 243, 253, 0.22); }
+.pb-folio2__sheet[data-sheet="sdk"] { --paper: #cff3fd; }
+.pb-folio2__sheet[data-sheet="cli"] { --paper: #c3ddea; }
+.pb-folio2__sheet[data-sheet="api"] { --paper: var(--l-pale); } /* the light grey of the partner strips */
+.pb-folio2__sheet[data-sheet="custom"] :is(.pb-folio2__tab, .pb-folio2__page, .pb-folio2__page .l-mono) { color: var(--ink); }
+.pb-folio2__sheet[data-sheet="custom"] .pb-folio2__page .l-mono { opacity: 0.6; }
+.pb-folio2__sheet[data-sheet="custom"] .pb-folio2__code { color: #d8f3ff; }
+.pb-folio2__sheet[data-sheet="custom"] .pb-folio2__code .c { color: rgba(216, 243, 255, 0.45); }
+.pb-folio2__sheet[data-sheet="custom"] .pb-folio2__code .k { color: #8fd6ff; }
+.pb-folio2__sheet[data-sheet="custom"] .pb-folio2__code .s { color: #c6f4ff; }
+.pb-folio2__sheet[data-sheet="custom"] .pb-folio2__tab:focus-visible { outline-color: var(--ink); }
+
+/* "file": tabs all on the left with section 1's lips, square corners. A dropped sheet falls on down
+   over the page below, solid until it is far down, then comes back in at the back. */
+.pb-folio2__stage.is-instant .pb-folio2__sheet { transition: none; } /* first paint: no slide-in */
+.pb-folio2--file .pb-folio2__sheet.is-dropping { pointer-events: none; }
+.pb-folio2--file .pb-folio2__sheet.is-dropping .pb-folio2__page { opacity: 1; visibility: visible; transition: none; } /* it falls with its page showing */
+.pb-folio2--file .pb-folio2__tab { padding: 0 22px; font-family: "Roboto Mono", ui-monospace, monospace; font-size: 14px; font-weight: 400; letter-spacing: 0.04em; }
+/* The way to build again, large in the page's bottom-left corner; on desktop the code moves to the right half */
+.pb-folio2__big { display: none; }
+@media (min-width: 961px) {
+  .pb-folio2--file .pb-folio2__code { width: 50%; margin-left: 50%; font-size: 11.5px; }
+  .pb-folio2--file .pb-folio2__big { display: block; position: absolute; left: 30px; bottom: 24px; font-family: "MD Thermochrome", "Aeonik", "Inter", system-ui, sans-serif; font-size: 64px; font-weight: 300; line-height: 0.9; letter-spacing: 0; text-transform: uppercase; }
+}
+
+@media (max-width: 960px) {
+  .pb-folio2 { padding-top: 96px; padding-bottom: 96px; }
+  .pb-folio2 + .pb-folio2 { padding-top: 24px; }
+  .pb-folio2__inner { grid-template-columns: 1fr; gap: 48px; }
+  .pb-folio2__tab, .pb-folio2--file .pb-folio2__tab { padding: 0 12px; font-size: 14px; }
+  .pb-folio2--file .pb-folio2__tab { font-size: 13px; }
+  .pb-folio2:not(.pb-folio2--file) .pb-folio2__tab { padding: 0 6px; font-size: 11px; letter-spacing: 0; }
+  .pb-folio2__page { padding: 20px 18px 0; }
+  .pb-folio2__meta .l-mono + .l-mono { display: none; }
+  .pb-folio2__code { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-folio2__sheet, .pb-folio2__page { transition: none; }
+  .pb-folio2__sheet.is-front .pb-folio2__code i { animation: none; }
+}
+.pb-entry .pb-folio2 { padding-top: 40px; }

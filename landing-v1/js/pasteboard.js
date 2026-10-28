@@ -630,6 +630,243 @@
   });
   }
 
+  { // stepped folio, set aside 28 Oct 2026 (its own copy of the folio drawing)
+  // ---------- Build folios ----------
+  // "file" has every tab on the left, and cycles instead: clicking the front sheet drops it off the
+  // page under gravity with a slight tilt, then it fades back in at the back of the stack while
+  // the others step forward. Clicking a sheet further back drops each one in front of it in turn.
+  // Each [data-folio] stage holds four sheets stacked a step apart (the last slot is the front).
+  // A sheet is an SVG silhouette drawn to the stage's width: a body with a tab rising from its top
+  // edge on curved shoulders. The tab's place belongs to the slot, not the sheet: "steps" moves one
+  // slot across per card (an even stagger), "file" alternates left, right, left, right down the
+  // stack. Clicking a tab brings its sheet to the front; every sheet that changes slot slides to
+  // its new height while its tab glides to the slot's place. Until someone picks one, the back
+  // sheet comes forward every so often while the folio is on screen.
+  // The outline: the tab spans tL..tR at the base (shoulders included), th tall, shoulders sL / sR
+  // wide. A tab may run past either edge (its shoulder then falls outside); the rounded clip
+  // (radius rc) trims it, so a tab sliding to an edge ends in a rounded corner with no jump.
+  // straight: shoulders cut as plain slants with sharp joins instead of curves.
+  function sheetPath(W, H, tL, tR, th, sL, sR, rc, straight) {
+    const r0 = Math.max(0, Math.min(rc, tL)), r1 = Math.max(0, Math.min(rc, W - tR));
+    const d = [tL >= 0 ? `M0 ${H} V${th + r0} Q0 ${th} ${r0} ${th} H${tL}` : `M${tL} ${H} V${th}`];
+    d.push(straight
+      ? `L${tL + sL} 0 H${tR - sR} L${tR} ${th}`
+      : `C${tL + sL / 2} ${th} ${tL + sL / 2} 0 ${tL + sL} 0 H${tR - sR} C${tR - sR / 2} 0 ${tR - sR / 2} ${th} ${tR} ${th}`);
+    d.push(tR <= W ? `H${W - r1} Q${W} ${th} ${W} ${th + r1} V${H} Z` : `V${H} Z`);
+    return d.join(" ");
+  }
+  const folioEase = cubicBezier(0.22, 1, 0.36, 1); // --l-ease
+  $$("[data-pb-folio2]").forEach((stage) => {
+    const kind = stage.dataset.pbFolio2; // "steps" | "file"
+    const sheets = $$(".pb-folio2__sheet", stage);
+    const tabs = sheets.map((s) => $(".pb-folio2__tab", s));
+    const n = sheets.length;
+    const uid = stage.id || kind;
+    $$(".pb-folio2__code", stage).forEach((code) => $$("i", code).forEach((line, k) => line.style.setProperty("--n", k)));
+    sheets.forEach((s, i) => {
+      $(".pb-folio2__shape", s).innerHTML =
+        `<defs><clipPath id="${uid}-k${i}"><path class="pb-folio2__clip"/></clipPath>` +
+        `<filter id="${uid}-g${i}" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="${i + 3}"/>` +
+        `<feColorMatrix values="0 0 0 0 0.05  0 0 0 0 0.2  0 0 0 0 0.28  0 0 0 0.5 0"/></filter>` +
+        `<clipPath id="${uid}-c${i}" clip-path="url(#${uid}-k${i})"><path/></clipPath></defs>` +
+        `<g clip-path="url(#${uid}-k${i})"><path class="pb-folio2__fill"/></g>` +
+        `<rect class="pb-folio2__grain" clip-path="url(#${uid}-c${i})" filter="url(#${uid}-g${i})"/>`;
+    });
+    let c = null, W = 0;
+    let order = sheets.map((_, i) => i); // order[slot] = sheet; the last slot is the front
+    const at = sheets.map(() => ({ x: 0, from: 0, to: 0 })); // each tab's left base, animated
+    // Where the tab of a sheet in this slot sits (its left base)
+    const slotX = (slot) => kind === "file" ? c.lead : slot * (W / n); // file: a short ledge before the lip so its curve runs out flat
+    const sheetH = () => c.h;
+    const draw = (i) => {
+      const s = sheets[i], svg = $(".pb-folio2__shape", s);
+      const tL = at[i].x, tR = tL + c.tw;
+      const d = sheetPath(W, sheetH(i), tL, tR, c.th, c.sL, c.sR, c.rc);
+      $$("path:not(.pb-folio2__clip)", svg).forEach((p) => p.setAttribute("d", d));
+      // the label sits on the tab's flat top, clear of the shoulders
+      const x0 = Math.max(0, tL + c.sL), x1 = Math.min(W, tR - c.sR);
+      s.style.setProperty("--tab-x", `${x0.toFixed(1)}px`);
+      s.style.setProperty("--tab-w", `${(x1 - x0).toFixed(1)}px`);
+    };
+    const layout = () => {
+      W = stage.clientWidth;
+      if (!W) return;
+      const small = W < 560;
+      c = kind === "file"
+        ? { th: small ? 31 : 36, step: small ? 40 : 48, h: small ? 400 : 480, sL: small ? 14 : 24, sR: small ? 22 : 40, rc: 0, rb: 4, lead: small ? 10 : 18 }
+        : { th: small ? 28 : 32, step: 24, h: small ? 440 : 480, sL: small ? 8 : 14, sR: small ? 14 : 28, rc: 6, rb: 6 };
+      c.tw = kind === "file" ? W * (small ? 0.5 : 0.36) : W / n;
+      stage.style.setProperty("--th", `${c.th}px`);
+      stage.style.setProperty("--step", `${c.step}px`);
+      stage.style.setProperty("--sheet-h", `${c.h}px`);
+      stage.style.setProperty("--stage-h", `${(n - 1) * c.step + c.h}px`);
+      sheets.forEach((s, i) => {
+        const svg = $(".pb-folio2__shape", s);
+        svg.setAttribute("viewBox", `0 0 ${W} ${sheetH(i)}`);
+        $$("rect", svg).forEach((r) => { r.setAttribute("width", W); r.setAttribute("height", sheetH(i)); });
+        s.style.setProperty("--sh", `${sheetH(i)}px`);
+        // the outer trim: top corners rc, bottom corners rb
+        const H = sheetH(i), rc = c.rc, rb = c.rb;
+        $(".pb-folio2__clip", svg).setAttribute("d", `M0 ${rc} A${rc} ${rc} 0 0 1 ${rc} 0 H${W - rc} A${rc} ${rc} 0 0 1 ${W} ${rc} V${H - rb} A${rb} ${rb} 0 0 1 ${W - rb} ${H} H${rb} A${rb} ${rb} 0 0 1 0 ${H - rb} Z`);
+        at[i].x = at[i].to = slotX(order.indexOf(i));
+        draw(i);
+      });
+    };
+    let raf = 0, t0 = 0;
+    const DUR = 700;
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / DUR), e = folioEase(t);
+      sheets.forEach((_, i) => { at[i].x = at[i].from + (at[i].to - at[i].from) * e; draw(i); });
+      raf = t < 1 ? requestAnimationFrame(tick) : 0;
+    };
+    const place = (animate) => {
+      order.forEach((i, slot) => {
+        const s = sheets[i], front = slot === n - 1;
+        s.style.setProperty("--slot", slot);
+        s.style.zIndex = slot + 1;
+        s.classList.toggle("is-front", front);
+        s.classList.toggle("is-right", kind === "file" && slot % 2 === 1);
+        tabs[i].setAttribute("aria-selected", String(front));
+        tabs[i].tabIndex = front ? 0 : -1;
+        at[i].from = at[i].x;
+        at[i].to = slotX(slot);
+      });
+      if (!animate || reduced) { sheets.forEach((_, i) => { at[i].x = at[i].to; draw(i); }); return; }
+      t0 = performance.now();
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    if (kind === "file") {
+      // One click is one planned move, so several sheets dropping never retarget each other: the
+      // sheets in front of the one picked fall as a staggered cascade, everything behind glides
+      // forward the whole way in a single motion, and each fallen sheet comes back in at the back,
+      // straight into its final place. Clicks during a move are ignored.
+      const FALL = 950, FADE = 260, BACK = 420, STAGGER = 110; // ms
+      let moving = false;
+      const mark = () => order.forEach((i, slot) => {
+        const front = slot === n - 1;
+        sheets[i].classList.toggle("is-front", front);
+        tabs[i].setAttribute("aria-selected", String(front));
+      });
+      const settle = () => order.forEach((i, slot) => {
+        const s = sheets[i];
+        s.style.setProperty("--slot", slot);
+        s.style.zIndex = slot + 2;
+      });
+      const cycle = (count) => {
+        if (moving || count < 1) return;
+        moving = true;
+        const fallen = order.slice(n - count).reverse(); // front first
+        order = order.slice(n - count).concat(order.slice(0, n - count)); // the fallen end up at the back
+        mark();
+        if (reduced) { settle(); moving = false; return; }
+        // the rest: straight to their new slots, one smooth glide, above anything coming back in
+        order.forEach((i, slot) => {
+          if (fallen.includes(i)) return;
+          sheets[i].style.setProperty("--slot", slot);
+          sheets[i].style.zIndex = slot + 2;
+        });
+        const fall = innerHeight + stage.offsetHeight; // well down the page, over whatever is below
+        let pending = fallen.length;
+        const finish = () => {
+          settle();
+          // hand back to the stylesheet's slot transform without it gliding again
+          fallen.forEach((i) => {
+            const s = sheets[i];
+            s.style.transition = "none";
+            s.style.translate = s.style.transform = s.style.opacity = "";
+            void s.offsetWidth;
+            s.style.transition = "";
+          });
+          moving = false;
+        };
+        fallen.forEach((i, k) => {
+          const s = sheets[i], from = (n - 1 - k) * c.step, to = order.indexOf(i);
+          const tilt = (k % 2 ? 1 : -1) * (Math.random() < 0.5 ? -1 : 1) * (7 + Math.random() * 5); // 7–12°
+          s.style.zIndex = n + 10 - k; // the front one stays in front as they fall
+          s.classList.add("is-dropping");
+          // the fall runs on the separate translate property with transform cleared, so the tilt turns the
+          // card about its own centre and it only ever moves straight down
+          s.style.transition = "none";
+          s.style.transform = "none";
+          s.style.translate = `0 ${from}px`;
+          void s.offsetWidth;
+          // gravity: starts slow and gathers speed; fully solid all the way, fading only at the very end, far down the page
+          const delay = k * STAGGER;
+          // the tilt has its own curve (the separate rotate property): it waits a beat, then builds as the sheet
+          // gathers speed, so it is barely tipped near the stack and well tipped by the time it is far down
+          s.style.transition = `translate ${FALL}ms cubic-bezier(0.55, 0, 0.85, 0.35) ${delay}ms, rotate ${FALL * 0.75}ms cubic-bezier(0.45, 0, 0.7, 0.6) ${delay + FALL * 0.25}ms, opacity ${FADE}ms linear ${delay + FALL - FADE}ms`;
+          s.style.translate = `0 ${from + fall}px`;
+          s.style.rotate = `${tilt.toFixed(2)}deg`;
+          s.style.opacity = "0";
+          // It comes back as soon as it has fallen out of view (or when the fall ends, whichever is first)
+          let back = false;
+          const comeBack = () => {
+            if (back) return;
+            back = true;
+            // back in behind the stack: from a step above its final slot, settling into it
+            s.classList.remove("is-dropping");
+            s.style.transition = "none";
+            s.style.rotate = "";
+            s.style.zIndex = to + 2;
+            s.style.setProperty("--slot", to);
+            s.style.translate = `0 ${(to - 1) * c.step}px`;
+            void s.offsetWidth;
+            s.style.transition = `translate ${BACK}ms var(--l-ease), opacity ${BACK * 0.7}ms var(--l-ease)`;
+            s.style.translate = `0 ${to * c.step}px`;
+            s.style.opacity = "1";
+            setTimeout(() => { if (--pending === 0) finish(); }, BACK);
+          };
+          const watch = () => {
+            if (back) return;
+            if (s.getBoundingClientRect().top > innerHeight) comeBack();
+            else requestAnimationFrame(watch);
+          };
+          setTimeout(() => requestAnimationFrame(watch), delay + 120);
+          setTimeout(comeBack, delay + FALL);
+        });
+      };
+      // the front sheet drops itself; a sheet further back drops every sheet in front of it
+      tabs.forEach((t, i) => t.addEventListener("click", () => cycle(Math.max(1, n - 1 - order.indexOf(i)))));
+      stage.addEventListener("keydown", (e) => {
+        if (!["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"].includes(e.key)) return;
+        cycle(1);
+        e.preventDefault();
+      });
+      stage.classList.add("is-instant");
+      layout();
+      mark();
+      settle();
+      setTimeout(() => stage.classList.remove("is-instant"), 60);
+      new ResizeObserver(layout).observe(stage);
+      return;
+    }
+    const bring = (i) => { order = order.filter((k) => k !== i).concat(i); place(true); };
+    let picked = false, rotate = 0;
+    const pick = (i) => { picked = true; clearInterval(rotate); bring(i); };
+    tabs.forEach((t, i) => t.addEventListener("click", () => pick(i)));
+    stage.addEventListener("keydown", (e) => {
+      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!step) return;
+      const i = (order[n - 1] + step + n) % n;
+      pick(i);
+      tabs[i].focus();
+      e.preventDefault();
+    });
+    stage.classList.add("is-instant");
+    layout();
+    place(false);
+    setTimeout(() => stage.classList.remove("is-instant"), 60);
+    new ResizeObserver(layout).observe(stage);
+    if (!reduced && "IntersectionObserver" in window) {
+      new IntersectionObserver(([entry]) => {
+        clearInterval(rotate);
+        rotate = 0;
+        if (entry.isIntersecting && !picked) rotate = setInterval(() => bring(order[0]), 7000);
+      }).observe(stage);
+    }
+  });
+  }
+
   // ---------- Placeholder links don't jump to the top ----------
   $$('a[href="#"]').forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
 
