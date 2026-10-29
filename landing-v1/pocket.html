@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kamino — Pocket</title>
+  <meta name="description" content="Pocket: a Swiss-grid exploration of the Kamino home page. Panels set against each other on black.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+  <!-- Pocket is self-contained: its own CSS and JS, nothing shared with the landing's stylesheets -->
+  <link rel="stylesheet" href="css/pocket.css?v=1">
+</head>
+<body class="pk">
+<!--
+  Pocket — an exploration of the Kamino home in a Swiss grid.
+  Every section is a row of panels on a 12-column grid, set 2px apart on black, so the page reads as
+  black line work. Rounded panel corners leave a small black star wherever four panels meet. The page
+  has a black margin all round. Cells take their span from --s (desktop) and --sm (phone).
+-->
+
+<a class="pk-skip" href="#main">Skip to content</a>
+
+<!-- ============ Nav ============ -->
+<header class="pk-nav">
+  <div class="pk-cell pk-nav__bar">
+    <a class="pk-nav__logo" href="#top" aria-label="Kamino home"><img src="assets/logos/kamino.svg" alt="Kamino" width="95" height="22"></a>
+    <nav class="pk-nav__links" aria-label="Main">
+      <a href="#products">Products</a>
+      <a href="#platform">Enterprise</a>
+      <a href="#record">Record</a>
+      <a href="#build">Build</a>
+      <a href="#news">News</a>
+    </nav>
+    <div class="pk-nav__actions">
+      <a class="pk-link" href="#build">Build with us</a>
+      <a class="pk-btn" href="#">Open Kamino</a>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="pk-page">
+
+  <!-- ============ 00 Hero: the wordmark, the statement, the line drawing ============ -->
+  <section class="pk-sec" id="top" aria-labelledby="pk-hero-title">
+    <div class="pk-cell pk-mark" style="--s:12" aria-hidden="true">
+      <span class="pk-mark__word" data-fit>Kamino</span>
+    </div>
+
+    <div class="pk-cell pk-hero__lead" style="--s:8">
+      <h1 class="pk-h1" id="pk-hero-title">Connecting the dots between onchain finance and global capital.</h1>
+    </div>
+    <div class="pk-cell pk-hero__side" style="--s:4">
+      <span class="pk-label">00 — Kamino</span>
+      <div class="pk-actions">
+        <a class="pk-btn" href="#build">Build with us</a>
+        <a class="pk-link" href="#">Open Kamino <span class="pk-arrow" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+
+    <div class="pk-cell pk-hero__art" style="--s:8" aria-hidden="true">
+      <svg class="pk-iso" viewBox="0 0 600 460" data-iso="hero"></svg>
+    </div>
+    <div class="pk-cell pk-hero__note" style="--s:4">
+      <p class="pk-small">The credit and liquidity layer for a new generation of financial infrastructure. Lend, borrow, earn and build on one set of markets — every position onchain, every rate live, every vault allocated under a manager’s mandate.</p>
+    </div>
+  </section>
+
+  <!-- ============ Trusted by: one text panel and eight logo panels ============ -->
+  <section class="pk-sec pk-logos" aria-labelledby="pk-logos-title">
+    <div class="pk-cell pk-logos__intro" style="--s:4; --r:2">
+      <span class="pk-label">01 — Partners</span>
+      <h2 class="pk-h3" id="pk-logos-title">Trusted by the biggest names in onchain finance.</h2>
+    </div>
+    <div class="pk-cell pk-logo" style="--s:2; --sm:6"><img src="assets/logos/binance-black.svg" alt="Binance"></div>
+    <div class="pk-cell pk-logo" style="--s:2; --sm:6"><img src="assets/logos/kraken-black.svg" alt="Kraken"></div>
+    <div class="pk-cell pk-logo" style="--s:2; --sm:6"><img src="assets/logos/okx.svg" alt="OKX"></div>
+    <div class="pk-cell pk-logo" style="--s:2; --sm:6"><img src="assets/logos/anchorage.svg" alt="Anchorage Digital"></div>
+    <div class="pk-cell pk-logo" style="--s:2; --sm:6"><img src="assets/logos/gauntlet.svg" alt="Gauntlet"></div>
+    <div class="pk-cell pk-logo" style="--s:2; --sm:6"><img src="assets/logos/phantom.svg" alt="Phantom"></div>
+    <div class="pk-cell pk-logo" style="--s:2; --sm:6"><img src="assets/logos/chainlink.svg" alt="Chainlink"></div>
+    <div class="pk-cell pk-logo" style="--s:2; --sm:6"><img src="assets/logos/steakhouse.svg" alt="Steakhouse Financial"></div>
+  </section>
+
+  <!-- ============ 02 Products: a statement, then four product panels with their own drawings ============ -->
+  <section class="pk-sec" id="products" aria-labelledby="pk-products-title">
+    <div class="pk-cell pk-sec__head" style="--s:8">
+      <span class="pk-label">02 — Products</span>
+      <h2 class="pk-h2" id="pk-products-title">Buy, sell, earn, borrow — build your portfolio and grow your wealth with Kamino’s integrated product suite.</h2>
+    </div>
+    <div class="pk-cell pk-sec__aside" style="--s:4">
+      <span class="pk-count">4</span>
+      <p class="pk-small">Four products, one set of markets. Each one opens straight into the Kamino app.</p>
+    </div>
+
+    <article class="pk-cell pk-product" style="--s:3; --sm:12">
+      <header><span class="pk-label">2.1</span><h3 class="pk-h3">Earn</h3></header>
+      <svg class="pk-iso pk-product__art" viewBox="0 0 300 200" data-iso="earn" aria-hidden="true"></svg>
+      <footer>
+        <p class="pk-small">Lending Vaults deploy funds across Kamino Lend Markets, rebalancing automatically for optimised yield.</p>
+        <a class="pk-link" href="#">Open Earn <span class="pk-arrow" aria-hidden="true">↗</span></a>
+      </footer>
+    </article>
+    <article class="pk-cell pk-product" style="--s:3; --sm:12">
+      <header><span class="pk-label">2.2</span><h3 class="pk-h3">Borrow</h3></header>
+      <svg class="pk-iso pk-product__art" viewBox="0 0 300 200" data-iso="borrow" aria-hidden="true"></svg>
+      <footer>
+        <p class="pk-small">Borrow against your assets, with live health and liquidation levels as you size the loan.</p>
+        <a class="pk-link" href="#">Open Borrow <span class="pk-arrow" aria-hidden="true">↗</span></a>
+      </footer>
+    </article>
+    <article class="pk-cell pk-product" style="--s:3; --sm:12">
+      <header><span class="pk-label">2.3</span><h3 class="pk-h3">Swap</h3></header>
+      <svg class="pk-iso pk-product__art" viewBox="0 0 300 200" data-iso="swap" aria-hidden="true"></svg>
+      <footer>
+        <p class="pk-small">Trade any token on the best route, with limit and recurring orders built in.</p>
+        <a class="pk-link" href="#">Open Swap <span class="pk-arrow" aria-hidden="true">↗</span></a>
+      </footer>
+    </article>
+    <article class="pk-cell pk-product" style="--s:3; --sm:12">
+      <header><span class="pk-label">2.4</span><h3 class="pk-h3">Multiply</h3></header>
+      <svg class="pk-iso pk-product__art" viewBox="0 0 300 200" data-iso="multiply" aria-hidden="true"></svg>
+      <footer>
+        <p class="pk-small">Loop a position in one click to amplify yield, with leverage you can dial up or down at any time.</p>
+        <a class="pk-link" href="#">Open Multiply <span class="pk-arrow" aria-hidden="true">↗</span></a>
+      </footer>
+    </article>
+  </section>
+
+  <!-- ============ 03 One platform: the statement down the left, four capabilities in a 2×2 ============ -->
+  <section class="pk-sec" id="platform" aria-labelledby="pk-platform-title">
+    <div class="pk-cell pk-platform__intro" style="--s:4; --r:2">
+      <span class="pk-label">03 — Enterprise</span>
+      <h2 class="pk-h2" id="pk-platform-title">One platform to onboard assets, create credit markets, manage liquidity, build yield vaults, and get distribution.</h2>
+    </div>
+    <article class="pk-cell pk-cap" style="--s:4; --sm:12">
+      <span class="pk-label">3.1</span>
+      <div><h3 class="pk-h3">Credit</h3><p class="pk-small">Offer fixed, variable, and bespoke credit. Run lending strategies, multi-asset portfolios, and permissioned products through Kamino Vaults.</p><a class="pk-link" href="#">Explore Credit <span class="pk-arrow" aria-hidden="true">→</span></a></div>
+    </article>
+    <article class="pk-cell pk-cap" style="--s:4; --sm:12">
+      <span class="pk-label">3.2</span>
+      <div><h3 class="pk-h3">Yield</h3><p class="pk-small">Turn idle assets into yield. Build vaults that rebalance across Kamino markets and pay optimised returns automatically.</p><a class="pk-link" href="#">Explore Yield <span class="pk-arrow" aria-hidden="true">→</span></a></div>
+    </article>
+    <article class="pk-cell pk-cap" style="--s:4; --sm:12">
+      <span class="pk-label">3.3</span>
+      <div><h3 class="pk-h3">Liquidity</h3><p class="pk-small">Deep liquidity for any onchain asset. Launch markets, set risk parameters, and tap Kamino’s lending pools from day one.</p><a class="pk-link" href="#">Explore Liquidity <span class="pk-arrow" aria-hidden="true">→</span></a></div>
+    </article>
+    <article class="pk-cell pk-cap" style="--s:4; --sm:12">
+      <span class="pk-label">3.4</span>
+      <div><h3 class="pk-h3">Curation</h3><p class="pk-small">Curate risk and reach users. Set parameters, publish strategies, and get distribution to Kamino’s depositors and partners.</p><a class="pk-link" href="#">Explore Curation <span class="pk-arrow" aria-hidden="true">→</span></a></div>
+    </article>
+  </section>
+
+  <!-- ============ 04 Record: the big number, the claim, three figures, the auditors ============ -->
+  <section class="pk-sec" id="record" aria-labelledby="pk-record-title">
+    <div class="pk-cell pk-big" style="--s:6; --r:2">
+      <span class="pk-label">04 — Record</span>
+      <div>
+        <strong class="pk-big__num">$<span data-count="615">615</span>B</strong>
+        <p class="pk-small">Processed through Kamino smart contracts.</p>
+      </div>
+    </div>
+    <div class="pk-cell pk-record__claim" style="--s:6">
+      <h2 class="pk-h2" id="pk-record-title">A record institutions can build on.</h2>
+      <p class="pk-small">Live credit markets run on Kamino’s contracts, Kamino Scope prices their assets, liquidation systems resolve unhealthy positions, and Kamino Vaults allocate capital under each manager’s mandate.</p>
+    </div>
+    <div class="pk-cell pk-stat" style="--s:2; --sm:4"><span class="pk-label">Active loans</span><strong data-count="99914">99,914</strong></div>
+    <div class="pk-cell pk-stat" style="--s:2; --sm:4"><span class="pk-label">Audits</span><strong><span data-count="30">30</span>+</strong></div>
+    <div class="pk-cell pk-stat" style="--s:2; --sm:4"><span class="pk-label">Commodity APY</span><strong>8.0%</strong></div>
+
+    <div class="pk-cell pk-audits__label" style="--s:2; --sm:12"><span class="pk-label">Audited by</span></div>
+    <div class="pk-cell pk-logo pk-logo--audit" style="--s:2; --sm:6"><img src="assets/logos/audit-1.svg" alt="Certora"></div>
+    <div class="pk-cell pk-logo pk-logo--audit" style="--s:2; --sm:6"><img src="assets/logos/audit-2.svg" alt="Informal Systems"></div>
+    <div class="pk-cell pk-logo pk-logo--audit" style="--s:2; --sm:6"><img src="assets/logos/audit-3.svg" alt="OtterSec"></div>
+    <div class="pk-cell pk-logo pk-logo--audit" style="--s:2; --sm:6"><img src="assets/logos/audit-4.svg" alt="Sec3"></div>
+    <div class="pk-cell pk-logo pk-logo--audit" style="--s:2; --sm:12"><img src="assets/logos/audit-5.svg" alt="Ackee Blockchain Security"></div>
+  </section>
+
+  <!-- ============ 05 Commodity yield: the photograph and the offer ============ -->
+  <section class="pk-sec" id="commodity" aria-labelledby="pk-commodity-title">
+    <figure class="pk-cell pk-photo" style="--s:8">
+      <img src="assets/commodity.jpg" alt="" loading="lazy">
+    </figure>
+    <div class="pk-cell pk-commodity" style="--s:4">
+      <span class="pk-label">05 — Institutional</span>
+      <div>
+        <h2 class="pk-h3" id="pk-commodity-title">Institutional Commodity Yield</h2>
+        <p class="pk-small">Generate USD returns powered by real-world commodity trade financing activity.</p>
+      </div>
+      <div class="pk-commodity__apy"><span class="pk-label">Current APY</span><strong>8.0<small>%</small></strong></div>
+      <a class="pk-link" href="#">Watch ‘Understanding Commodity Yield’ <span class="pk-arrow" aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <!-- ============ 06 Partner voices: the quote, who said it, and four logo tabs to switch ============ -->
+  <section class="pk-sec pk-voices" id="partners" aria-labelledby="pk-voices-title">
+    <h2 class="pk-sr" id="pk-voices-title">Partner voices</h2>
+    <div class="pk-cell pk-quote" style="--s:8" aria-live="polite">
+      <span class="pk-label">06 — Voices</span>
+      <blockquote class="pk-quote__text"><p data-quote>“The performance of Kamino speaks for itself – the product has significantly increased our users yields and has a flawless track record for security and risk management.”</p></blockquote>
+    </div>
+    <div class="pk-cell pk-quote__who" style="--s:4">
+      <img class="pk-quote__logo" data-quote-logo src="assets/logos/binance-black.svg" alt="">
+      <p class="pk-small"><strong data-quote-name>Peter Welinder</strong><br><span data-quote-role>VP of Product and Partnerships, Binance</span></p>
+    </div>
+    <div class="pk-voices__tabs" role="tablist" aria-label="Partners">
+      <button class="pk-cell pk-tab" type="button" role="tab" aria-selected="true" style="--s:3; --sm:6"
+        data-name="Peter Welinder" data-role="VP of Product and Partnerships, Binance" data-logo="assets/logos/binance-black.svg"
+        data-text="“The performance of Kamino speaks for itself – the product has significantly increased our users yields and has a flawless track record for security and risk management.”">
+        <span class="pk-label">6.1</span><img src="assets/logos/binance-black.svg" alt="Binance">
+      </button>
+      <button class="pk-cell pk-tab" type="button" role="tab" aria-selected="false" style="--s:3; --sm:6"
+        data-name="Name Surname" data-role="Title, Kraken" data-logo="assets/logos/kraken-black.svg"
+        data-text="“The cleanest way we’ve found to put onchain credit to work for our users.”">
+        <span class="pk-label">6.2</span><img src="assets/logos/kraken-black.svg" alt="Kraken">
+      </button>
+      <button class="pk-cell pk-tab" type="button" role="tab" aria-selected="false" style="--s:3; --sm:6"
+        data-name="Name Surname" data-role="Title, Anchorage Digital" data-logo="assets/logos/anchorage.svg"
+        data-text="“Institutional-grade risk controls, with the transparency only onchain can offer.”">
+        <span class="pk-label">6.3</span><img src="assets/logos/anchorage.svg" alt="Anchorage Digital">
+      </button>
+      <button class="pk-cell pk-tab" type="button" role="tab" aria-selected="false" style="--s:3; --sm:6"
+        data-name="Name Surname" data-role="Title, OKX" data-logo="assets/logos/okx.svg"
+        data-text="“Kamino is the liquidity layer we build on, not around.”">
+        <span class="pk-label">6.4</span><img src="assets/logos/okx.svg" alt="OKX">
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ 07 Build: the pitch, then API, SDK, CLI and Custom side by side ============ -->
+  <section class="pk-sec" id="build" aria-labelledby="pk-build-title">
+    <div class="pk-cell pk-build__intro" style="--s:4">
+      <span class="pk-label">07 — Build</span>
+      <div>
+        <h2 class="pk-h2" id="pk-build-title">Build on Kamino</h2>
+        <p class="pk-small">Plug into a trusted foundation of products. Earn, lend or borrow programmatically, and use our APIs to read market data and user positions.</p>
+      </div>
+      <a class="pk-btn" href="#">Explore Kamino Docs <span aria-hidden="true">↗</span></a>
+    </div>
+    <article class="pk-cell pk-way" style="--s:2; --sm:12">
+      <span class="pk-label">API · REST</span>
+      <pre class="pk-code"><i>GET /v2/markets/main/</i><i>    reserves/metrics</i><i> </i><i>[{</i><i>  <span class="k">"symbol"</span>: <span class="s">"USDC"</span>,</i><i>  <span class="k">"supplyApy"</span>: 0.0712,</i><i>  <span class="k">"borrowApy"</span>: 0.0894,</i><i>  <span class="k">"utilization"</span>: 0.7304,</i><i>  <span class="k">"maxLtv"</span>: 0.80</i><i>}, …]</i></pre>
+      <span class="pk-way__big" aria-hidden="true">API</span>
+    </article>
+    <article class="pk-cell pk-way" style="--s:2; --sm:12">
+      <span class="pk-label">SDK · TypeScript</span>
+      <pre class="pk-code"><i><span class="k">const</span> market = <span class="k">await</span></i><i>  KaminoMarket.load(</i><i>    connection, MAIN);</i><i> </i><i><span class="k">const</span> usdc = market</i><i>  .getReserveBySymbol(</i><i>    <span class="s">"USDC"</span>);</i><i> </i><i>usdc.totalSupplyAPY();</i></pre>
+      <span class="pk-way__big" aria-hidden="true">SDK</span>
+    </article>
+    <article class="pk-cell pk-way" style="--s:2; --sm:12">
+      <span class="pk-label">CLI</span>
+      <pre class="pk-code"><i><span class="c">$</span> kamino markets list</i><i>main   28   $2.94B</i><i>jlp     6   $214.6M</i><i> </i><i><span class="c">$</span> kamino deposit \</i><i>    1000 USDC</i><i><span class="k">✓</span> deposited 1,000.00</i></pre>
+      <span class="pk-way__big" aria-hidden="true">CLI</span>
+    </article>
+    <article class="pk-cell pk-way pk-way--custom" style="--s:2; --sm:12">
+      <span class="pk-label">Custom · On-chain</span>
+      <p class="pk-way__pitch">Big ideas need a custom integration. Let’s build it together.</p>
+      <span class="pk-way__big" aria-hidden="true">Custom</span>
+    </article>
+  </section>
+
+  <!-- ============ 08 What's new: the featured article and the index; a row swaps into the feature ============ -->
+  <section class="pk-sec" id="news" aria-labelledby="pk-news-title">
+    <div class="pk-cell pk-sec__head pk-news__head" style="--s:12">
+      <span class="pk-label">08 — News</span>
+      <h2 class="pk-h2" id="pk-news-title">What’s new at Kamino</h2>
+    </div>
+    <article class="pk-cell pk-feature" style="--s:6" aria-live="polite">
+      <a class="pk-feature__media" href="#" tabindex="-1" aria-hidden="true"><img data-feature-img src="assets/news/still-coins.jpg" alt="" loading="lazy"></a>
+      <div class="pk-feature__copy" data-feature-copy>
+        <span class="pk-label" data-feature-meta>RWA · Sep 08 2026</span>
+        <h3 class="pk-h3" data-feature-title>Brazilian Credit Card Receivables Are Now Collateral</h3>
+        <p class="pk-small" data-feature-text>A $1.68 trillion credit market, onchain for the first time. Originated by Agora Data, structured by Figure Forge and issued by Hastra.</p>
+        <a class="pk-link" href="#">Read article <span class="pk-arrow" aria-hidden="true">↗</span></a>
+      </div>
+    </article>
+    <div class="pk-cell pk-index" style="--s:6">
+      <ul class="pk-index__list">
+        <li><button type="button" class="pk-index__row" data-title="Zcash Joins Solana Credit Markets" data-meta="Markets · Sep 07 2026" data-image="assets/news/onre-dark.jpg" data-text="Bridged ZEC can now be supplied and borrowed against on Kamino, in a market with its own risk settings."><span>Zcash Joins Solana Credit Markets</span><span class="pk-label">Markets</span><span class="pk-label">Sep 07</span></button></li>
+        <li><button type="button" class="pk-index__row" data-title="Midas Brings Fasanara’s $5B Private Credit Onchain" data-meta="Private credit · Aug 20 2026" data-image="assets/build-column.jpg" data-text="A tokenised share of an institutional private credit book, held onchain and usable as collateral."><span>Midas Brings Fasanara’s $5B Private Credit Onchain</span><span class="pk-label">Private credit</span><span class="pk-label">Aug 20</span></button></li>
+        <li><button type="button" class="pk-index__row" data-title="Solana Mobile Brings Onchain USDC Yield to Seeker" data-meta="Fintechs · Aug 19 2026" data-image="assets/news/onre-sky.jpg" data-text="Seeker owners can earn on USDC from the wallet on their phone, with Kamino running underneath."><span>Solana Mobile Brings Onchain USDC Yield to Seeker</span><span class="pk-label">Fintechs</span><span class="pk-label">Aug 19</span></button></li>
+        <li><button type="button" class="pk-index__row" data-title="Invesco’s Short-Duration Treasury Fund Comes Onchain" data-meta="Treasuries · Aug 17 2026" data-image="assets/news/onre-blue.jpg" data-text="Short-duration Treasuries, tokenised and usable as collateral on Kamino."><span>Invesco’s Short-Duration Treasury Fund Comes Onchain</span><span class="pk-label">Treasuries</span><span class="pk-label">Aug 17</span></button></li>
+        <li><button type="button" class="pk-index__row" data-title="AUTO is Now Live: Tokenized U.S. Auto Loans on Solana" data-meta="RWA · Aug 04 2026" data-image="assets/build-machine.webp" data-text="A pool of U.S. auto loans, tokenised and brought to Kamino as a new source of real-world yield."><span>AUTO is Now Live: Tokenized U.S. Auto Loans on Solana</span><span class="pk-label">RWA</span><span class="pk-label">Aug 04</span></button></li>
+        <li><button type="button" class="pk-index__row" data-title="Tokenized Gold on Kamino, PAXG Now Live" data-meta="Commodities · Jul 28 2026" data-image="assets/hero-studio.webp" data-text="Gold, held in a vault and tokenised as PAXG, now works as collateral on Kamino."><span>Tokenized Gold on Kamino, PAXG Now Live</span><span class="pk-label">Commodities</span><span class="pk-label">Jul 28</span></button></li>
+      </ul>
+      <a class="pk-link pk-index__all" href="#">Read all articles <span class="pk-arrow" aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <!-- ============ 09 Newsletter ============ -->
+  <section class="pk-sec" id="newsletter" aria-labelledby="pk-news-letter-title">
+    <div class="pk-cell pk-letter" style="--s:8">
+      <span class="pk-label">09 — Letters</span>
+      <h2 class="pk-h1" id="pk-news-letter-title">Sign here for alpha.</h2>
+    </div>
+    <form class="pk-cell pk-form" style="--s:4" action="#" novalidate>
+      <p class="pk-small">Monthly updates on Kamino products, markets, and the onchain credit ecosystem.</p>
+      <label class="pk-field"><span class="pk-label">First name</span><input type="text" name="name" autocomplete="given-name"></label>
+      <label class="pk-field"><span class="pk-label">Email</span><input type="email" name="email" autocomplete="email"></label>
+      <label class="pk-check"><input type="checkbox" name="consent"> <span class="pk-small">Yes, send me the Kamino newsletter.</span></label>
+      <button class="pk-btn" type="submit">Sign</button>
+      <p class="pk-form__done pk-small" role="status" hidden>Signed. Thank you.</p>
+    </form>
+  </section>
+
+  <!-- ============ Footer ============ -->
+  <footer class="pk-sec pk-foot">
+    <div class="pk-cell pk-foot__brand" style="--s:4">
+      <img src="assets/logos/kamino.svg" alt="Kamino" width="95" height="22">
+      <p class="pk-label">© 2026 Kamino · All rights reserved</p>
+    </div>
+    <nav class="pk-cell pk-foot__col" style="--s:2; --sm:6" aria-label="Products"><span class="pk-label">Products</span><a href="#">Earn</a><a href="#">Borrow</a><a href="#">Swap</a><a href="#">Multiply</a></nav>
+    <nav class="pk-cell pk-foot__col" style="--s:2; --sm:6" aria-label="Company"><span class="pk-label">Company</span><a href="#">Careers</a><a href="#">Contact</a><a href="#">Helpdesk</a><a href="#">Success Stories</a><a href="#news">News</a></nav>
+    <nav class="pk-cell pk-foot__col" style="--s:2; --sm:6" aria-label="Social"><span class="pk-label">Follow</span><a href="#">X</a><a href="#">LinkedIn</a><a href="#">Telegram</a></nav>
+    <nav class="pk-cell pk-foot__col" style="--s:2; --sm:6" aria-label="Legal"><span class="pk-label">Legal</span><a href="#">Terms of Use</a><a href="#">Privacy Policy</a></nav>
+  </footer>
+</main>
+
+<script src="js/pocket.js?v=1"></script>
+</body>
+</html>

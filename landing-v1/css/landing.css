@@ -465,7 +465,7 @@ html { overflow-x: clip; }
 
 .l-page.is-serif :is(
   .l-hero__title, .l-headline, .l-display, .l-commodity h2, .l-record .l-split h2,
-  .l-build__list, .platform__title, .card__title, .newsletter .title,
+  .l-build__list, .platform__title, .card__title, .l-sign__title,
   .l-products[data-layout="row"] .l-product__copy h3
 ) {
   font-family: "Serrif", Georgia, serif;
@@ -475,7 +475,6 @@ html { overflow-x: clip; }
 /* The Studio headline and the APY story headline are Serrif by default; in Sans mode they
    follow the switch too */
 .l-page:not(.is-serif) .l-hero__title--serif,
-.l-page:not(.is-serif) .newsletter .title,
 .l-page:not(.is-serif) :is(.apy__headline h2, .apy__headline p) {
   font-family: "Aeonik", "Inter", system-ui, sans-serif;
   font-weight: 400;
@@ -836,6 +835,23 @@ html { overflow-x: clip; }
 /* The blue is its own layer that crossfades (opacity only, so no repaint while it fades) */
 .l-acc__item::before { content: ""; position: absolute; inset: 0; background: var(--l-mist); opacity: 0; transition: opacity var(--a-dur) var(--l-ease); }
 .l-acc__item.is-open::before { opacity: 1; }
+/* The company's icon, big and faint in white, riding the open panel's right edge and bleeding off it
+   (Figma 5060:39898; files in assets/trust/*-icon.svg). It's anchored to the right, so it travels
+   with the edge as the panel widens, and fades up once the panel is most of the way open. */
+.l-acc__mark {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--h) * -0.2);
+  width: calc(var(--h) * 0.82);
+  height: auto;
+  max-width: none;
+  filter: brightness(0) invert(1);
+  opacity: 0;
+  transform: translateY(-50%) scale(0.96);
+  transition: opacity 0.3s var(--l-ease), transform var(--a-dur) var(--l-ease);
+  pointer-events: none;
+}
+.l-acc__item.is-open .l-acc__mark { opacity: 0.36; transform: translateY(-50%); transition: opacity 0.6s var(--l-ease) 0.2s, transform var(--a-dur) var(--l-ease); }
 /* The whole panel is the button; the story's link sits above it once open */
 .l-acc__hit { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; border-radius: inherit; background: none; cursor: pointer; text-align: left; }
 .l-acc__item.is-open .l-acc__hit { cursor: default; }
@@ -890,9 +906,10 @@ html { overflow-x: clip; }
   .l-acc__item.is-open .l-acc__logo { top: var(--pad); }
   .l-acc__story { width: auto; right: var(--pad); }
   .l-acc__story blockquote { font-size: 22px; }
+  .l-acc__mark { top: 46%; right: -18%; width: 72%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .l-acc__item, .l-acc__item::before, .l-acc__logo, .l-acc__story { transition: none; }
+  .l-acc__item, .l-acc__item::before, .l-acc__logo, .l-acc__story, .l-acc__mark { transition: none; }
 }
 
 /* ---------- Commodity ---------- */
@@ -913,7 +930,7 @@ html { overflow-x: clip; }
   margin: 0 auto;
   padding: 101px var(--l-pad) 110px;
 }
-.l-commodity h2 { margin: 0; max-width: 8em; font-size: 44px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; }
+.l-commodity h2 { margin: 0; max-width: 8em; font-size: 64px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; }
 .l-commodity p { margin: 16px 0 30px; font-size: 18px; line-height: 1.25; letter-spacing: -0.04em; }
 .l-commodity__stat { align-self: flex-end; display: grid; gap: 10px; }
 .l-commodity__stat .l-mono { font-size: 14px; }
@@ -1223,11 +1240,15 @@ html { overflow-x: clip; }
   transform: translateY(calc(var(--slot, 0) * var(--step, 44px) - var(--lift, 0px)));
   transition: transform 0.7s var(--l-ease);
 }
-.l-folio__sheet:not(.is-front):has(.l-folio__tab:hover) { --lift: 5px; }
+.l-folio__sheet:not(.is-front):has(:is(.l-folio__tab, .l-folio__fill):hover) { --lift: 5px; }
 /* Sheets overlap each other's tab rows when the step is tighter than a tab, so only the tabs and
    the open page take clicks; the sheet boxes themselves are click-through */
 .l-folio__sheet { pointer-events: none; }
 .l-folio__tab, .l-folio__page { pointer-events: auto; }
+/* A sheet further back also takes clicks anywhere on the band of it that shows: its painted shape
+   (SVG hit-testing follows the path and its clip, so the empty notch beside a tab stays click-through
+   to the sheet behind). js/landing.js forwards the click to the sheet's tab. */
+.l-folio__sheet:not(.is-front):not(.is-dropping) .l-folio__fill { pointer-events: visiblePainted; cursor: pointer; }
 .l-folio__shape {
   position: absolute;
   inset: 0;
@@ -1305,10 +1326,47 @@ html { overflow-x: clip; }
 .l-folio__sheet[data-sheet="custom"] .l-folio__code .s { color: #c6f4ff; }
 .l-folio__sheet[data-sheet="custom"] .l-folio__tab:focus-visible { outline-color: var(--ink); }
 
+/* Hovering the open sheet pops a small CTA up into its bottom-right corner (docs, or Contact us on
+   Custom), level with the big label on the left. Always shown on touch screens. */
+.l-folio__go {
+  position: absolute;
+  right: 30px;
+  bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 4px;
+  background: #000;
+  color: #fff !important;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0;
+  translate: 0 10px;
+  transition: opacity 0.2s ease, translate 0.3s var(--l-ease), background-color 0.2s;
+}
+.l-folio__go-arrow { display: inline-block; transition: translate 0.25s var(--l-ease); }
+.l-folio__go:hover .l-folio__go-arrow { translate: 2px -2px; }
+.l-folio__go[data-contact-open]:hover .l-folio__go-arrow { translate: 3px 0; }
+.l-folio__go:focus-visible { outline: 2px solid #000; outline-offset: 3px; }
+.l-folio__sheet.is-front:is(:hover, :focus-within) .l-folio__go { opacity: 1; translate: 0 0; }
+.l-folio__sheet[data-sheet="custom"] .l-folio__go { background: var(--ink); color: #1b1b1b !important; }
+.l-folio__sheet[data-sheet="custom"] .l-folio__go:focus-visible { outline-color: var(--ink); }
+@media (hover: none) { .l-folio__go { opacity: 1; translate: 0 0; } }
+@media (max-width: 960px) { .l-folio__go { right: 18px; bottom: 18px; } }
+@media (prefers-reduced-motion: reduce) { .l-folio__go, .l-folio__go-arrow { transition: opacity 0.2s; } }
+
 /* "file": tabs all on the left with section 1's lips, square corners. A dropped sheet falls on down
    over the page below, solid until it is far down, then comes back in at the back. */
 .l-folio__stage.is-instant .l-folio__sheet { transition: none; } /* first paint: no slide-in */
 .l-folio--file .l-folio__sheet.is-dropping { pointer-events: none; }
+.l-folio--file .l-folio__sheet { transition-duration: 0.49s; } /* the sheets behind step forward 30% quicker too, in time with the quicker drop */
 .l-folio--file .l-folio__sheet.is-dropping .l-folio__page { opacity: 1; visibility: visible; transition: none; } /* it falls with its page showing */
 .l-folio--file .l-folio__tab { padding: 0 22px; font-family: "Roboto Mono", ui-monospace, monospace; font-size: 14px; font-weight: 400; letter-spacing: 0.04em; }
 /* The way to build again, large in the page's bottom-left corner; on desktop the code moves to the right half */
@@ -1317,6 +1375,47 @@ html { overflow-x: clip; }
   .l-folio--file .l-folio__code { width: 50%; margin-left: 50%; font-size: 11.5px; }
   .l-folio--file .l-folio__pitch { width: 50%; margin-left: 50%; padding-right: 8px; font-size: 14px; }
   .l-folio--file .l-folio__big { display: block; position: absolute; left: 30px; bottom: 24px; font-family: "MD Thermochrome", "Aeonik", "Inter", system-ui, sans-serif; font-size: 64px; font-weight: 300; line-height: 0.9; letter-spacing: 0; text-transform: uppercase; }
+}
+
+/* "low" (sketch, Oct 29): the rule drops to the foot of the page. The code (or Custom's pitch) fills the
+   right half under its endpoint line; the kind (API · REST) sits bottom-left above the rule; under it
+   the big label on the left and an outline CTA, always showing, on the right. Desktop only; the meta
+   header is unwrapped (display: contents) so its two labels land in their own cells. Take the
+   l-folio--low class off the section to go back to the rule-on-top layout. */
+@media (min-width: 961px) {
+  .l-folio--low .l-folio__page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+    grid-template-areas: ". path" ". code" "kind code" "rule rule" "big go";
+    padding: 30px 30px 26px;
+  }
+  .l-folio--low .l-folio__meta { display: contents; }
+  .l-folio--low .l-folio__meta .l-mono { grid-area: kind; align-self: end; }
+  .l-folio--low .l-folio__meta .l-mono + .l-mono { grid-area: path; align-self: start; text-align: left; }
+  .l-folio--low :is(.l-folio__code, .l-folio__pitch) { grid-area: code; width: auto; min-height: 0; margin: 16px 0 0; padding-right: 0; }
+  /* Custom's invitation: set tighter and centred in the space the code fills on the other sheets */
+  .l-folio--low .l-folio__pitch { align-self: center; margin-top: 0; line-height: 1.2; }
+  .l-folio--low .l-folio__pitch i + i { margin-top: 0; } /* one block at 120%, no gap between the sentences */
+  .l-folio--low .l-folio__code { -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); mask-image: linear-gradient(180deg, #000 70%, transparent); }
+  .l-folio--low .l-folio__page::after { content: ""; grid-area: rule; height: 1px; margin: 10px 0 14px; background: var(--rule); }
+  .l-folio--low .l-folio__big { grid-area: big; position: static; align-self: end; font-size: 56px; line-height: 0.64; } /* caps ~36px against the 40px button, bottoms level */
+  .l-folio--low .l-folio__go {
+    grid-area: go;
+    position: static;
+    justify-self: end;
+    align-self: end;
+    height: 40px;
+    padding: 0 18px;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: #000 !important;
+    opacity: 1;
+    translate: none;
+  }
+  .l-folio--low .l-folio__go:hover { background: #000; border-color: #000; color: #fff !important; }
+  .l-folio--low .l-folio__sheet[data-sheet="custom"] .l-folio__go { background: transparent; color: var(--ink) !important; }
+  .l-folio--low .l-folio__sheet[data-sheet="custom"] .l-folio__go:hover { background: var(--ink); border-color: var(--ink); color: #1b1b1b !important; }
 }
 
 @media (max-width: 960px) {
@@ -1412,123 +1511,228 @@ html { overflow-x: clip; }
   .l-feed__media img.is-in, .l-feed__feature.is-in *, .l-feed__row.is-in > * { animation: none !important; }
 }
 
-/* ---------- What's new, second take: full-width index (Figma 5040:38599) ---------- */
-/* Pale blue, rising into a folder tab over the first column. Rows are 64px: title, category, date, arrow,
-   ruled in 10% black. Hovering a row nudges its text across; clicking it (js/landing.js toggles .is-open)
-   opens it: the row grows, a short preview and a Read article link rise under the title, the
-   image settles from 110% across the right, and the + turns to a −. */
+/* ---------- Sign-up: thermal print card ---------- */
 
-.l-index { --ix-bg: var(--l-mist); --ix-rule: rgba(0, 0, 0, 0.1); --ix-ease: cubic-bezier(0.3, 0, 0.12, 1); position: relative; margin-top: 36px; padding: 102px 0 120px; background: var(--ix-bg); color: #0d0d0d; }
-/* the folder tab: the Build folio tab's profile (36px tall, curved shoulders 24 / 40px), from column 1 */
-.l-index__tab { position: absolute; left: max(var(--l-pad), calc((100% - var(--l-max)) / 2 + var(--l-pad))); bottom: calc(100% - 1px); width: 312px; height: 37px; fill: var(--ix-bg); }
-.l-index__head { display: flex; align-items: flex-start; justify-content: space-between; }
-.l-index__heading { margin: 0; font-size: 44px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; color: #000; }
-.l-index__icon { width: 25px; height: 38px; margin-top: 3px; }
-.l-index__list { margin: 84px 0 0; padding: 0; list-style: none; border-bottom: 1px solid var(--ix-rule); }
-.l-index__item { border-top: 1px solid var(--ix-rule); cursor: pointer; }
-.l-index__row {
-  display: grid;
-  grid-template-columns: minmax(0, 760fr) minmax(0, 200fr) minmax(0, 244fr) 12px;
-  column-gap: 40px;
-  max-width: var(--l-max);
+/* Centred. The first step (title, lede, first name) sits over a sheet of tractor-feed thermal paper lying
+   flat, hinged at its foot. Continue swings the sheet up to face you (js/landing.js adds .is-lifted),
+   over the first step; everything printed on it is mono, like a receipt. The paper is drawn: a light grey
+   sheet with square corners, sprocket holes punched right through both margins (a mask), the tear
+   perforations inside them, and a faint grain. */
+.l-sign { --sign-paper: var(--l-sky); /* the signature sky blue, #c6f4ff (was light grey #ececea) */ --sign-print: #161616; --sign-ease: cubic-bezier(0.2, 0.8, 0.16, 1); padding: 110px var(--l-pad) 70px; overflow: hidden; }
+.l-sign__stage {
+  --card-w: 500px;
+  --card-h: 640px;
+  --card-top: -60px;  /* lifted, the sheet reaches up into the section's top padding */
+  --rest-y: -100px;   /* lying flat, its hinge (the foot) sits this far above where it ends up: just under the field */
+  --lift-y: -36px;
+  --rest-tilt: 80deg; /* with the eye a little above the table, it reads as a flat trapezoid, its far edge ~60% as wide */
+  position: relative;
+  height: calc(var(--card-h) + var(--card-top));
+  max-width: 760px;
   margin: 0 auto;
-  padding: 0 var(--l-pad);
+  perspective: 1050px;
+  perspective-origin: 50% 57%;
 }
-/* The header line is the button: it shares the row's columns */
-.l-index__toggle {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
-  align-items: center;
-  height: 63px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.l-index__toggle:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
-.l-index__title { font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; transition: translate 0.18s cubic-bezier(0.2, 0, 0, 1); }
-.l-index__cat, .l-index__date { font-family: "Aeonik Fono", "Roboto Mono", ui-monospace, monospace; font-size: 12px; line-height: 1; color: #000; }
-.l-index__cat { letter-spacing: 0.06em; }
-.l-index__date { letter-spacing: 0.03em; }
-.l-index__cat, .l-index__date { transition: translate 0.18s cubic-bezier(0.2, 0, 0, 1); } /* hover nudge: quick out, soft landing */
-/* + / −: two 1.25px bars; the upright one turns flat as the row opens */
-.l-index__pm { position: relative; width: 12px; height: 12px; }
-.l-index__pm::before, .l-index__pm::after { content: ""; position: absolute; left: 0; top: 50%; width: 12px; height: 1.25px; margin-top: -0.625px; border-radius: 1px; background: #0d0d0d; transition: rotate 0.38s var(--ix-ease); }
-.l-index__pm::after { rotate: 90deg; }
-.l-index__item.is-open .l-index__pm::after { rotate: 0deg; }
-/* The preview: a grid row that grows from 0fr to 1fr, so the height eases without measuring */
-.l-index__more { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: 0fr; cursor: auto; transition: grid-template-rows 0.38s var(--ix-ease); }
-.l-index__more-in {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
-  column-gap: 40px;
-  min-height: 0;
-  overflow: hidden;
-}
-.l-index__text {
-  grid-column: 1;
-  align-self: stretch;
+
+/* ---- Step one ---- */
+.l-sign__intro {
+  position: relative;
+  z-index: 3;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  max-width: 30em;
-  padding: 4px 0 28px;
-  font-size: 16px;
-  line-height: 1.3;
-  color: rgba(0, 0, 0, 0.62);
-  opacity: 0;
-  translate: 0 12px;
-  transition: opacity 0.22s ease, translate 0.38s var(--ix-ease);
+  align-items: center;
+  padding-top: 24px;
+  text-align: center;
+  transition: opacity 0.4s ease, translate 0.7s var(--sign-ease), filter 0.4s ease;
 }
-.l-index__blurb { margin: 0; }
-.l-index__read { display: inline-flex; align-items: center; margin-top: 18px; font-size: 16px; line-height: 1.2; color: #000; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: rgba(0, 0, 0, 0.35); transition: text-decoration-color 0.2s; }
-.l-index__read:hover { text-decoration-color: #000; }
-/* the external arrow, tucked out of sight in a small clipped box, slides up and out of the corner on hover */
-.l-index__read-arrow { display: inline-block; width: 11px; height: 11px; margin-left: 8px; overflow: hidden; }
-.l-index__read-arrow img { display: block; width: 11px; height: 11px; translate: -110% 110%; transition: translate 0.22s cubic-bezier(0.2, 0, 0, 1); }
-.l-index__read:is(:hover, :focus-visible) .l-index__read-arrow img { translate: 0 0; }
-.l-index__read:focus-visible { outline: 2px solid #000; outline-offset: 3px; }
-.l-index__media { grid-column: 2 / 4; position: relative; aspect-ratio: 12 / 5; margin: 4px 0 28px; overflow: hidden; border-radius: 4px; background: #c8d6dd; opacity: 0; transition: opacity 0.22s ease; }
-.l-index__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1.1; transition: scale 0.6s var(--l-ease); }
-.l-index__item.is-open .l-index__more { grid-template-rows: 1fr; }
-.l-index__item.is-open .l-index__text { opacity: 1; translate: 0 0; transition-delay: 0.06s, 0.03s; }
-.l-index__item.is-open .l-index__media { opacity: 1; transition-delay: 0.03s; }
-.l-index__item.is-open .l-index__media img { scale: 1; }
-.l-index__item:hover .l-index__title, .l-index__item.is-open .l-index__title { translate: 6px 0; }
-.l-index__item:hover :is(.l-index__cat, .l-index__date), .l-index__item.is-open :is(.l-index__cat, .l-index__date) { translate: 4px 0; }
-@media (max-width: 960px) {
-  .l-index { padding: 72px 0 80px; }
-  .l-index__tab { width: 200px; height: 32px; }
-  .l-index__heading { font-size: 34px; }
-  .l-index__icon { width: 19px; height: 29px; margin-top: 2px; }
-  .l-index__list { margin-top: 48px; }
-  .l-index__row { grid-template-columns: minmax(0, 1fr); }
-  .l-index__toggle { grid-template-columns: minmax(0, 1fr) auto 12px; grid-template-rows: auto auto; column-gap: 16px; row-gap: 10px; height: auto; padding: 16px 0; }
-  .l-index__title { grid-column: 1 / 3; }
-  .l-index__pm { grid-column: 3; grid-row: 1; }
-  .l-index__cat { grid-column: 1; grid-row: 2; }
-  .l-index__date { grid-column: 2 / 4; grid-row: 2; text-align: right; }
-  .l-index__more-in { grid-template-columns: 1fr; }
-  .l-index__text { grid-column: 1; padding: 0 0 14px; font-size: 15px; }
-  .l-index__read { margin-top: 14px; }
-  .l-index__media { grid-column: 1; aspect-ratio: 16 / 9; margin: 0 0 16px; }
-  .l-index__item:is(:hover, .is-open) :is(.l-index__title, .l-index__cat, .l-index__date) { translate: none; }
+.l-sign.is-lifted .l-sign__intro { opacity: 0; translate: 0 -18px; filter: blur(3px); }
+.l-sign__title { margin: 0; font-size: clamp(40px, 4.2vw, 64px); font-weight: 400; line-height: 1; letter-spacing: -0.045em; }
+.l-sign__lede { max-width: 25em; margin: 18px 0 0; font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; color: rgba(0, 0, 0, 0.55); }
+.l-sign__start { display: flex; gap: 8px; margin-top: 34px; }
+.l-sign__name {
+  width: 230px;
+  height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  border-radius: 2px;
+  background: var(--l-mist);
+  font: 400 15px/1 "Aeonik", "Inter", sans-serif;
+  color: #000;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.l-sign__name::placeholder { color: rgba(0, 0, 0, 0.42); }
+.l-sign__name:hover { border-color: rgba(0, 0, 0, 0.35); }
+.l-sign__name:focus { border-color: #000; }
+.l-sign__name[aria-invalid="true"] { border-color: #c4321f; animation: l-sign-nudge 0.4s; }
+@keyframes l-sign-nudge { 25% { translate: -4px 0; } 50% { translate: 4px 0; } 75% { translate: -2px 0; } }
+.l-sign__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 2px;
+  background: #000;
+  color: #f2f2f2;
+  font: 500 14px/1 "Aeonik", "Inter", sans-serif;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s var(--l-ease);
+}
+.l-sign__go:hover { opacity: 0.85; }
+.l-sign__go:active { transform: scale(0.97); }
+.l-sign__go span { transition: translate 0.25s var(--l-ease); }
+.l-sign__go:hover span { translate: 3px 0; }
+
+/* ---- The sheet ---- */
+.l-sign__card {
+  position: absolute;
+  left: 50%;
+  top: var(--card-top);
+  z-index: 2;
+  width: var(--card-w);
+  height: var(--card-h);
+  margin-left: calc(var(--card-w) / -2);
+  transform-origin: 50% 100%;
+  transform: translateY(var(--rest-y)) rotateX(var(--rest-tilt));
+  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.06)) drop-shadow(1px 1px 0.5px rgba(0, 0, 0, 0.14)); /* a crisp edge, 1px over and down */
+  cursor: pointer;
+  /* going down, it drops behind the first step only once it's most of the way flat */
+  transition: transform 1s var(--sign-ease), filter 1s var(--sign-ease), z-index 0s 0.55s;
+}
+.l-sign.is-lifted .l-sign__card {
+  z-index: 4;
+  transform: translateY(var(--lift-y)); /* stands up, and rises a little past where it was hinged */
+  cursor: auto;
+  filter: drop-shadow(0 0 0 transparent) drop-shadow(0 0 0 transparent); /* no shadow once it's up */
+  transition: transform 0.9s var(--sign-ease), filter 0.9s var(--sign-ease), z-index 0s;
+}
+.l-sign__paper {
+  position: absolute;
+  inset: 0;
+  background:
+    /* hairline tear perforations just inside the sprocket holes */
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0 2px, transparent 2px 5px) 39px 0 / 0.5px 100% no-repeat,
+    repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0 2px, transparent 2px 5px) calc(100% - 39px) 0 / 0.5px 100% no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.072 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    linear-gradient(172deg, #d6f8ff 0%, var(--sign-paper) 45%, #b8eaf7 100%);
+  -webkit-mask:
+    radial-gradient(circle 5px at 19px 50%, transparent 95%, #000) 0 0 / 100% 42px repeat-y,
+    radial-gradient(circle 5px at calc(100% - 19px) 50%, transparent 95%, #000) 0 0 / 100% 42px repeat-y;
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle 5px at 19px 50%, transparent 95%, #000) 0 0 / 100% 42px repeat-y,
+    radial-gradient(circle 5px at calc(100% - 19px) 50%, transparent 95%, #000) 0 0 / 100% 42px repeat-y;
+  mask-composite: intersect;
+}
+
+/* ---- Printed on it ---- */
+.l-sign__form {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 62px 28px;
+  font-family: "Roboto Mono", ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--sign-print);
+}
+.l-sign__head { display: flex; justify-content: space-between; align-items: flex-start; }
+.l-sign__back { padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; text-transform: inherit; color: inherit; opacity: 0.55; cursor: pointer; transition: opacity 0.2s; }
+.l-sign__back:hover { opacity: 1; }
+.l-sign.is-done .l-sign__back { visibility: hidden; }
+.l-sign__label { display: block; margin: 0; font-size: 11px; }
+/* ALPHA printed in MD Thermochrome, top left of the slip */
+.l-sign__mark { font-family: "MD Thermochrome", "Aeonik", "Inter", system-ui, sans-serif; font-size: 44px; font-weight: 300; line-height: 0.9; letter-spacing: 0; }
+.l-sign__form > .l-sign__label { margin-top: 82px; }
+/* The signing line: 3px dashes. The name hangs off its baseline, a little above the line, scaled to fit */
+.l-sign__sig { position: relative; height: 104px; background: linear-gradient(90deg, var(--sign-print) 50%, transparent 0) 0 100% / 6px 1px repeat-x; }
+.l-sign__ink {
+  position: absolute;
+  left: var(--offset, 6px);
+  bottom: 9px;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  height: 51px;
+  margin-bottom: -21px; /* the glyphs' baseline is 30px down their 51px box: this puts it on bottom: 9px */
+  transform-origin: 0 30px;
+  scale: var(--fit, 1.6);
+}
+.l-sign__ink .glyph path { stroke: #1b2a6b; stroke-width: calc(1.7 / var(--fit, 1.6)); }
+.l-sign__field { display: block; margin-top: 34px; }
+.l-sign__email {
+  display: block;
+  width: 100%;
+  height: 36px;
+  margin-top: 4px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(90deg, var(--sign-print) 50%, transparent 0) 0 100% / 6px 1px repeat-x;
+  font: 400 15px/1 "Roboto Mono", ui-monospace, monospace;
+  color: var(--sign-print);
+  outline: none;
+}
+.l-sign__email::placeholder { color: rgba(22, 22, 22, 0.32); }
+.l-sign__email:focus { background: linear-gradient(var(--sign-print), var(--sign-print)) 0 100% / 100% 1px no-repeat; }
+.l-sign__email[aria-invalid="true"] { background: linear-gradient(#b3261e, #b3261e) 0 100% / 100% 1px no-repeat; }
+.l-sign__consent { position: relative; display: flex; align-items: flex-start; gap: 10px; margin-top: 22px; cursor: pointer; }
+.l-sign__check { position: absolute; left: 0; width: 14px; height: 14px; margin: 0; opacity: 0; }
+.l-sign__box { display: grid; place-items: center; flex: none; width: 14px; height: 14px; margin-top: 1px; border: 1px solid var(--sign-print); color: var(--sign-paper); transition: background-color 0.15s; }
+.l-sign__box svg { width: 12px; height: 12px; opacity: 0; transition: opacity 0.15s; }
+.l-sign__check:checked + .l-sign__box { background: var(--sign-print); }
+.l-sign__check:checked + .l-sign__box svg { opacity: 1; }
+.l-sign__check:focus-visible + .l-sign__box { outline: 2px solid var(--sign-print); outline-offset: 2px; }
+.l-sign__consent.is-invalid .l-sign__box { border-color: #b3261e; }
+.l-sign__foot { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 34px; }
+.l-sign__submit {
+  height: 40px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--sign-print);
+  color: #ecece8;
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s var(--l-ease);
+}
+.l-sign__submit:hover { background: #000; }
+.l-sign__submit:active { transform: scale(0.97); }
+.l-sign__submit:disabled { cursor: default; opacity: 0.6; }
+.l-sign__submit:focus-visible, .l-sign__back:focus-visible { outline: 2px solid var(--sign-print); outline-offset: 3px; }
+/* "Witnessed by", with today's date in red, once the box is ticked */
+.l-sign__witness { display: grid; justify-items: end; gap: 5px; opacity: 0; translate: 0 4px; transition: opacity 0.4s var(--l-ease), translate 0.4s var(--l-ease); }
+.l-sign.is-witnessed .l-sign__witness { opacity: 1; translate: 0 0; }
+.l-sign__witness .l-sign__label { font-size: 9px; }
+.l-sign__witness img { display: block; }
+.l-sign__stamp { font-size: 9px; color: #900000; }
+.l-sign__status { min-height: 1.45em; margin: 14px 0 0; font-size: 11px; text-transform: none; }
+.l-sign__status.is-error { color: #b3261e; }
+.l-sign__fine { margin: auto 0 0; font-size: 8.5px; line-height: 1.5; opacity: 0.5; }
+.l-sign__fine a { color: inherit; }
+.l-sign.is-done :is(.l-sign__field, .l-sign__consent) { opacity: 0.45; pointer-events: none; transition: opacity 0.3s; }
+
+@media (max-width: 720px) {
+  .l-sign { padding-top: 110px; padding-bottom: 50px; }
+  .l-sign__stage { --card-w: min(420px, calc(100vw - 32px)); --card-h: 600px; --card-top: -70px; --rest-y: -105px; perspective: 900px; }
+  .l-sign__title { font-size: 40px; }
+  .l-sign__lede { font-size: 16px; }
+  .l-sign__start { width: 100%; max-width: 360px; }
+  .l-sign__name { flex: 1; width: auto; min-width: 0; }
+  .l-sign__form { padding: 28px 50px 24px; }
+  .l-sign__mark { font-size: 38px; }
+  .l-sign__form > .l-sign__label { margin-top: 74px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .l-index__more, .l-index__text, .l-index__media, .l-index__media img, .l-index__title, .l-index__cat, .l-index__date, .l-index__pm::after, .l-index__read-arrow img { transition: none !important; }
+  .l-sign__intro, .l-sign__card, .l-sign.is-lifted .l-sign__card { transition-duration: 0.01s; transition-delay: 0s; }
 }
-
-/* ---------- Newsletter: page-level adjustments only ---------- */
-
-.newsletter { min-height: 0; }
-.l-page .newsletter__media { border-radius: 4px; } /* the landing's 4px corners (the standalone sign-up keeps 16px) */
-.newsletter__inner { padding-top: 120px; padding-bottom: 120px; }
 
 /* ---------- Footer ---------- */
 
@@ -1585,6 +1789,7 @@ html { overflow-x: clip; }
   .l-products[data-layout="row"] .l-product { grid-template-columns: 1fr; min-height: 0; }
   .l-product__copy { gap: 30px; }
   .l-commodity__stat { align-self: flex-start; }
+  .l-commodity h2 { font-size: 42px; } /* 64px would push "Institutional" past a phone's edge */
   .l-bento__big strong { font-size: 64px; }
   .l-footer__base { flex-direction: column; align-items: flex-start; gap: 24px; margin-top: 80px; }
 }

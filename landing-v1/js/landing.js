@@ -1,5 +1,5 @@
-/* Landing v1 interactions. The card stack (section-card-lock/js/stack.js) and the
-   newsletter (kamino-sign-here/js/*) run their own scripts; this file covers the rest
+/* Landing v1 interactions. The card stack (section-card-lock/js/stack.js) runs its own script, and
+   the sign-up borrows kamino-sign-here's handwriting pen (glyphs.js, signature.js); this file covers the rest
    and lazy-loads the three.js pieces built into this folder (npm run build). */
 (function () {
   const here = document.currentScript.src;
@@ -143,8 +143,8 @@
   // switch it off (e.g. headers it doesn't suit); look() gives the dot colour and strength.
   // Used by the header and the commodity section.
   const DOTS_WHITE = { color: "#fff", alpha: 1 };
-  // Dash: black on the light page, a longer-lingering pool, and hairlines that trace from dot to dot
-  const DOTS_DASH = { color: "#000", alpha: 0.42, lines: true, hold: 500, fade: 3200 };
+  // Dash: black on the light page, a longer-lingering pool (the dot-to-dot hairlines, lines: true, are off: too busy)
+  const DOTS_DASH = { color: "#000", alpha: 0.26, hold: 500, fade: 3200 }; // lighter grey (was 0.42)
   function mountDots(host, dotCanvas, active = () => true, look = () => DOTS_WHITE) {
     if (!host || !dotCanvas || reduced) return;
     const SPACING = 11;          // grid pitch
@@ -960,6 +960,12 @@
   $("[data-modal-close]")?.addEventListener("click", () => modal.close());
   modal?.addEventListener("click", (e) => { if (e.target === modal) modal.close(); });
 
+  // ---------- Contact modal (placeholder until the form is built) ----------
+  const contact = $("[data-contact]");
+  $$("[data-contact-open]").forEach((b) => b.addEventListener("click", () => contact?.showModal()));
+  $("[data-contact-close]")?.addEventListener("click", () => contact.close());
+  contact?.addEventListener("click", (e) => { if (e.target === contact) contact.close(); });
+
   // ---------- Stories carousel: arrows + drag ----------
   const list = $("[data-stories]");
   if (list) {
@@ -1061,30 +1067,111 @@
     }));
   }
 
-  // ---------- What's new index (second take) ----------
-  // Hover only nudges a row's text (CSS). Clicking a row opens it and closes any other; clicking
-  // an open row's header closes it. The Read article link inside follows as a normal link, and
-  // clicks inside the open preview (to select text, say) leave it open. Closed previews are inert,
-  // so their links stay out of the tab order.
-  const index = $(".l-index__list");
-  if (index) {
-    const items = $$(".l-index__item", index);
-    const setOpen = (it, on) => {
-      it.classList.toggle("is-open", on);
-      $(".l-index__toggle", it).setAttribute("aria-expanded", String(on));
-      $(".l-index__more", it).inert = !on;
+  // ---------- Sign-up (thermal print card) ----------
+  // The sheet lies flat under the first step. Continue (with a first name) swings it up over that
+  // step; as it lands, the name writes itself onto the signing line (kamino-sign-here's pen), as large
+  // as fits. The email, consent box and Sign button are printed on the sheet; ticking the box brings
+  // in the "Witnessed by" stamp. ↑ Change name lays it back down. Clicking the flat sheet lifts it too
+  // (or asks for the name first). Demo mode unless the form has a data-endpoint.
+  const sign = $(".l-sign");
+  if (sign) {
+    const start = $("[data-sign-start]", sign), nameIn = $("#sign-name"), intro = $(".l-sign__intro", sign);
+    const card = $("[data-sign-card]", sign), form = $("#sign-form"), ink = $(".l-sign__ink", sign), line = $(".l-sign__sig", sign);
+    const email = form.elements.email, consent = form.elements.consent;
+    const status = $(".l-sign__status", sign), submit = $(".l-sign__submit", sign), label = $("[data-sign-label]", sign);
+    const pen = window.Signature ? new window.Signature(ink) : null;
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const LANDS = reduced ? 0 : 300; // ms into the lift when the pen starts (the sheet is still settling)
+    const pad = (n) => String(n).padStart(2, "0");
+    const today = () => { const d = new Date(); return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`; };
+    // As large as fits on the line (up to 2.05×), measuring the ink itself since swashes run outside
+    // their letter boxes. Both measurements are on screen, so a sheet still settling doesn't skew it.
+    const fit = () => {
+      const paths = $$("path", ink);
+      if (!paths.length) return;
+      ink.style.setProperty("--fit", "1");
+      ink.style.setProperty("--offset", "0px");
+      const box = ink.getBoundingClientRect(), lineBox = line.getBoundingClientRect();
+      const k = lineBox.width / line.offsetWidth || 1; // on-screen px per layout px
+      let l = Infinity, r = -Infinity;
+      paths.forEach((p) => { const b = p.getBoundingClientRect(); l = Math.min(l, b.left); r = Math.max(r, b.right); });
+      const inkL = (l - box.left) / k, inkR = (r - box.left) / k;
+      const scale = Math.min(2.05, (line.offsetWidth - 6) / (inkR - Math.min(0, inkL)));
+      ink.style.setProperty("--fit", scale.toFixed(3));
+      ink.style.setProperty("--offset", `${Math.max(2, -inkL * scale + 2).toFixed(1)}px`);
     };
-    items.forEach((item) => item.addEventListener("click", (e) => {
-      if (e.target.closest("a")) return;
-      const more = $(".l-index__more", item);
-      if (item.classList.contains("is-open") && more.contains(e.target)) return;
-      const on = !item.classList.contains("is-open");
-      items.forEach((it) => setOpen(it, on && it === item));
-    }));
-    index.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape") return;
-      const item = e.target.closest(".l-index__item");
-      if (item?.classList.contains("is-open")) { setOpen(item, false); $(".l-index__toggle", item).focus(); }
+    let writeTimer = 0;
+    const lift = (on) => {
+      sign.classList.toggle("is-lifted", on);
+      form.inert = !on;
+      intro.inert = on;
+      clearTimeout(writeTimer);
+      if (on) {
+        pen?.set("");
+        writeTimer = setTimeout(() => {
+          pen?.set(nameIn.value.trim());
+          fit();
+          email.focus({ preventScroll: true });
+        }, LANDS);
+      } else {
+        nameIn.focus({ preventScroll: true });
+      }
+    };
+    const ask = () => {
+      const ok = !!nameIn.value.trim();
+      nameIn.setAttribute("aria-invalid", String(!ok));
+      if (ok) lift(true);
+      else nameIn.focus();
+    };
+    start.addEventListener("submit", (e) => { e.preventDefault(); ask(); });
+    nameIn.addEventListener("input", () => nameIn.removeAttribute("aria-invalid"));
+    card.addEventListener("click", () => { if (!sign.classList.contains("is-lifted")) ask(); });
+    $("[data-sign-back]", sign).addEventListener("click", (e) => { e.stopPropagation(); lift(false); }); // not on to the card, which would lift it again
+    addEventListener("resize", () => { if (sign.classList.contains("is-lifted")) fit(); });
+
+    const setStatus = (msg, error) => { status.textContent = msg; status.classList.toggle("is-error", !!error); };
+    consent.addEventListener("change", () => {
+      $("[data-sign-stamp]", sign).textContent = today();
+      sign.classList.toggle("is-witnessed", consent.checked);
+      consent.closest(".l-sign__consent").classList.remove("is-invalid");
+      if (consent.checked && status.classList.contains("is-error")) setStatus("");
+    });
+    email.addEventListener("input", () => {
+      if (email.getAttribute("aria-invalid") !== "true" || !EMAIL_RE.test(email.value.trim())) return;
+      email.removeAttribute("aria-invalid");
+      setStatus("");
+    });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const okEmail = EMAIL_RE.test(email.value.trim());
+      email.setAttribute("aria-invalid", String(!okEmail));
+      consent.closest(".l-sign__consent").classList.toggle("is-invalid", !consent.checked);
+      if (!okEmail) { setStatus("Enter a valid email address.", true); email.focus(); return; }
+      if (!consent.checked) { setStatus("Tick the box to receive the newsletter.", true); consent.focus(); return; }
+      setStatus("");
+      submit.disabled = true;
+      label.textContent = "Signing…";
+      try {
+        const endpoint = form.dataset.endpoint;
+        if (endpoint) {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ firstName: nameIn.value.trim(), email: email.value.trim(), consent: true }),
+          });
+          if (!res.ok) throw new Error("Request failed: " + res.status);
+        } else {
+          await new Promise((r) => setTimeout(r, 700)); // demo mode
+        }
+        sign.classList.add("is-done");
+        label.textContent = "Signed";
+        setStatus(`Thanks, ${nameIn.value.trim()}. You’re on the list for alpha.`);
+      } catch (err) {
+        console.error(err);
+        submit.disabled = false;
+        label.textContent = "Sign";
+        setStatus("Something went wrong. Please try again.", true);
+      }
     });
   }
 
@@ -1128,6 +1215,11 @@
         `<clipPath id="${uid}-c${i}" clip-path="url(#${uid}-k${i})"><path/></clipPath></defs>` +
         `<g clip-path="url(#${uid}-k${i})"><path class="l-folio__fill"/></g>` +
         `<rect class="l-folio__grain" clip-path="url(#${uid}-c${i})" filter="url(#${uid}-g${i})"/>`;
+    });
+    // a click anywhere on a back sheet's showing band counts as a click on its tab
+    stage.addEventListener("click", (e) => {
+      const s = e.target.closest?.(".l-folio__fill")?.closest(".l-folio__sheet");
+      if (s && !s.classList.contains("is-front")) tabs[sheets.indexOf(s)].click();
     });
     let c = null, W = 0;
     let order = sheets.map((_, i) => i); // order[slot] = sheet; the last slot is the front
@@ -1197,7 +1289,7 @@
       // sheets in front of the one picked fall as a staggered cascade, everything behind glides
       // forward the whole way in a single motion, and each fallen sheet comes back in at the back,
       // straight into its final place. Clicks during a move are ignored.
-      const FALL = 950, FADE = 260, BACK = 420, STAGGER = 110; // ms
+      const FALL = 665, FADE = 180, BACK = 295, STAGGER = 77; // ms (30% quicker than the first cut: 950 / 260 / 420 / 110)
       let moving = false;
       const mark = () => order.forEach((i, slot) => {
         const front = slot === n - 1;
@@ -1328,7 +1420,7 @@
 
   // ---------- Gentle reveal for section content ----------
   if (!reduced && "IntersectionObserver" in window) {
-    const targets = $$(".l-products .l-headline, .l-product, .l-partners .l-headline, .l-acc, .l-record .l-split, .l-audits, .l-stories .l-split, .l-folio__head, .l-feed__title, .l-feed__grid, .l-index__head");
+    const targets = $$(".l-products .l-headline, .l-product, .l-partners .l-headline, .l-acc, .l-record .l-split, .l-audits, .l-stories .l-split, .l-folio__head, .l-feed__title, .l-feed__grid");
     targets.forEach((el, i) => {
       el.classList.add("l-reveal");
       el.style.transitionDelay = `${(i % 4) * 70}ms`;

@@ -647,3 +647,125 @@ span.l-tcard__mark { background: #fff; -webkit-mask-size: 100% 100%; mask-size: 
   .pb-folio2__sheet.is-front .pb-folio2__code i { animation: none; }
 }
 .pb-entry .pb-folio2 { padding-top: 40px; }
+
+/* ================= What's new, second take (cut 29 Oct 2026): full-width index (Figma 5040:38599) ================= */
+
+/* ---------- What's new, second take: full-width index (Figma 5040:38599) ---------- */
+/* Pale blue, rising into a folder tab over the first column. Rows are 64px: title, category, date, arrow,
+   ruled in 10% black. Hovering a row nudges its text across; clicking it (js/landing.js toggles .is-open)
+   opens it: the row grows, a short preview and a Read article link rise under the title, the
+   image settles from 110% across the right, and the + turns to a −. */
+
+.pb-index { --ix-bg: var(--l-mist); --ix-rule: rgba(0, 0, 0, 0.1); --ix-ease: cubic-bezier(0.3, 0, 0.12, 1); position: relative; margin-top: 36px; padding: 102px 0 120px; background: var(--ix-bg); color: #0d0d0d; }
+/* the folder tab: the Build folio tab's profile (36px tall, curved shoulders 24 / 40px), from column 1 */
+.pb-index__tab { position: absolute; left: max(var(--l-pad), calc((100% - var(--l-max)) / 2 + var(--l-pad))); bottom: calc(100% - 1px); width: 312px; height: 37px; fill: var(--ix-bg); }
+.pb-index__head { display: flex; align-items: flex-start; justify-content: space-between; }
+.pb-index__heading { margin: 0; font-size: 44px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; color: #000; }
+.pb-index__icon { width: 25px; height: 38px; margin-top: 3px; }
+.pb-index__list { margin: 84px 0 0; padding: 0; list-style: none; border-bottom: 1px solid var(--ix-rule); }
+.pb-index__item { border-top: 1px solid var(--ix-rule); cursor: pointer; }
+.pb-index__row {
+  display: grid;
+  grid-template-columns: minmax(0, 760fr) minmax(0, 200fr) minmax(0, 244fr) 12px;
+  column-gap: 40px;
+  max-width: var(--l-max);
+  margin: 0 auto;
+  padding: 0 var(--l-pad);
+}
+/* The header line is the button: it shares the row's columns */
+.pb-index__toggle {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+  height: 63px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.pb-index__toggle:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+.pb-index__title { font-size: 20px; line-height: 1.1; letter-spacing: -0.02em; transition: translate 0.18s cubic-bezier(0.2, 0, 0, 1); }
+.pb-index__cat, .pb-index__date { font-family: "Aeonik Fono", "Roboto Mono", ui-monospace, monospace; font-size: 12px; line-height: 1; color: #000; }
+.pb-index__cat { letter-spacing: 0.06em; }
+.pb-index__date { letter-spacing: 0.03em; }
+.pb-index__cat, .pb-index__date { transition: translate 0.18s cubic-bezier(0.2, 0, 0, 1); } /* hover nudge: quick out, soft landing */
+/* + / −: two 1.25px bars; the upright one turns flat as the row opens */
+.pb-index__pm { position: relative; width: 12px; height: 12px; }
+.pb-index__pm::before, .pb-index__pm::after { content: ""; position: absolute; left: 0; top: 50%; width: 12px; height: 1.25px; margin-top: -0.625px; border-radius: 1px; background: #0d0d0d; transition: rotate 0.38s var(--ix-ease); }
+.pb-index__pm::after { rotate: 90deg; }
+.pb-index__item.is-open .pb-index__pm::after { rotate: 0deg; }
+/* The preview: a grid row that grows from 0fr to 1fr, so the height eases without measuring */
+.pb-index__more { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: 0fr; cursor: auto; transition: grid-template-rows 0.38s var(--ix-ease); }
+.pb-index__more-in {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  column-gap: 40px;
+  min-height: 0;
+  overflow: hidden;
+}
+.pb-index__text {
+  grid-column: 1;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 30em;
+  padding: 4px 0 28px;
+  font-size: 16px;
+  line-height: 1.3;
+  color: rgba(0, 0, 0, 0.62);
+  opacity: 0;
+  translate: 0 12px;
+  transition: opacity 0.22s ease, translate 0.38s var(--ix-ease);
+}
+.pb-index__blurb { margin: 0; }
+.pb-index__read { display: inline-flex; align-items: center; margin-top: 18px; font-size: 16px; line-height: 1.2; color: #000; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; text-decoration-color: rgba(0, 0, 0, 0.35); transition: text-decoration-color 0.2s; }
+.pb-index__read:hover { text-decoration-color: #000; }
+/* the external arrow, tucked out of sight in a small clipped box, slides up and out of the corner on hover */
+.pb-index__read-arrow { display: inline-block; width: 11px; height: 11px; margin-left: 8px; overflow: hidden; }
+.pb-index__read-arrow img { display: block; width: 11px; height: 11px; translate: -110% 110%; transition: translate 0.22s cubic-bezier(0.2, 0, 0, 1); }
+.pb-index__read:is(:hover, :focus-visible) .pb-index__read-arrow img { translate: 0 0; }
+.pb-index__read:focus-visible { outline: 2px solid #000; outline-offset: 3px; }
+.pb-index__media { grid-column: 2 / 4; position: relative; aspect-ratio: 12 / 5; margin: 4px 0 28px; overflow: hidden; border-radius: 4px; background: #c8d6dd; opacity: 0; transition: opacity 0.22s ease; }
+.pb-index__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; scale: 1.1; transition: scale 0.6s var(--l-ease); }
+.pb-index__item.is-open .pb-index__more { grid-template-rows: 1fr; }
+.pb-index__item.is-open .pb-index__text { opacity: 1; translate: 0 0; transition-delay: 0.06s, 0.03s; }
+.pb-index__item.is-open .pb-index__media { opacity: 1; transition-delay: 0.03s; }
+.pb-index__item.is-open .pb-index__media img { scale: 1; }
+.pb-index__item:hover .pb-index__title, .pb-index__item.is-open .pb-index__title { translate: 6px 0; }
+.pb-index__item:hover :is(.pb-index__cat, .pb-index__date), .pb-index__item.is-open :is(.pb-index__cat, .pb-index__date) { translate: 4px 0; }
+@media (max-width: 960px) {
+  .pb-index { padding: 72px 0 80px; }
+  .pb-index__tab { width: 200px; height: 32px; }
+  .pb-index__heading { font-size: 34px; }
+  .pb-index__icon { width: 19px; height: 29px; margin-top: 2px; }
+  .pb-index__list { margin-top: 48px; }
+  .pb-index__row { grid-template-columns: minmax(0, 1fr); }
+  .pb-index__toggle { grid-template-columns: minmax(0, 1fr) auto 12px; grid-template-rows: auto auto; column-gap: 16px; row-gap: 10px; height: auto; padding: 16px 0; }
+  .pb-index__title { grid-column: 1 / 3; }
+  .pb-index__pm { grid-column: 3; grid-row: 1; }
+  .pb-index__cat { grid-column: 1; grid-row: 2; }
+  .pb-index__date { grid-column: 2 / 4; grid-row: 2; text-align: right; }
+  .pb-index__more-in { grid-template-columns: 1fr; }
+  .pb-index__text { grid-column: 1; padding: 0 0 14px; font-size: 15px; }
+  .pb-index__read { margin-top: 14px; }
+  .pb-index__media { grid-column: 1; aspect-ratio: 16 / 9; margin: 0 0 16px; }
+  .pb-index__item:is(:hover, .is-open) :is(.pb-index__title, .pb-index__cat, .pb-index__date) { translate: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-index__more, .pb-index__text, .pb-index__media, .pb-index__media img, .pb-index__title, .pb-index__cat, .pb-index__date, .pb-index__pm::after, .pb-index__read-arrow img { transition: none !important; }
+}
+.pb-entry .pb-index { margin-top: 80px; } /* room for the folder tab above the section */
+
+/* ================= Sign-up, photo version (cut 29 Oct 2026): runs on kamino-sign-here/css; the landing's page adjustments ================= */
+
+.pb-page .newsletter { min-height: 0; }
+.pb-page .newsletter__media { border-radius: 4px; }
+.pb-page .newsletter__inner { padding-top: 60px; padding-bottom: 120px; }
+.pb-page:not(.is-serif) .newsletter .title { font-family: "Aeonik", "Inter", system-ui, sans-serif; font-weight: 400; letter-spacing: -0.045em; }

@@ -829,6 +829,35 @@
   });
   }
 
+  // ================= What's new, second take (cut 29 Oct 2026) =================
+
+  // ---------- What's new index (second take) ----------
+  // Hover only nudges a row's text (CSS). Clicking a row opens it and closes any other; clicking
+  // an open row's header closes it. The Read article link inside follows as a normal link, and
+  // clicks inside the open preview (to select text, say) leave it open. Closed previews are inert,
+  // so their links stay out of the tab order.
+  const pbIndex = $(".pb-index__list");
+  if (pbIndex) {
+    const items = $$(".pb-index__item", pbIndex);
+    const setOpen = (it, on) => {
+      it.classList.toggle("is-open", on);
+      $(".pb-index__toggle", it).setAttribute("aria-expanded", String(on));
+      $(".pb-index__more", it).inert = !on;
+    };
+    items.forEach((item) => item.addEventListener("click", (e) => {
+      if (e.target.closest("a")) return;
+      const more = $(".pb-index__more", item);
+      if (item.classList.contains("is-open") && more.contains(e.target)) return;
+      const on = !item.classList.contains("is-open");
+      items.forEach((it) => setOpen(it, on && it === item));
+    }));
+    pbIndex.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      const item = e.target.closest(".pb-index__item");
+      if (item?.classList.contains("is-open")) { setOpen(item, false); $(".pb-index__toggle", item).focus(); }
+    });
+  }
+
   // ---------- Placeholder links don't jump to the top ----------
   $$('a[href="#"]').forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
 

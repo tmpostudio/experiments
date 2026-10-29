@@ -1,0 +1,260 @@
+/* Landing v1, dark mode (dark.html). Loaded after landing.css and only ever applies under
+   body.l-dark, so index.html is untouched. The page goes to true black so the sections that were
+   already black (commodity, record, the APY story's WebGL scene) run on without a seam; panels
+   step up in a few near-black greys, and the light-blue surfaces turn into neutral greys.
+   Text is warm off-white, never pure white. Line art drawn in black on canvas (the Dash dots,
+   the One platform cards) is flipped with an invert filter rather than touching landing.js.
+   The one dark card in a light set (Curation, the Custom folio sheet) becomes the light one. */
+
+@font-face {
+  font-family: "Aeonik";
+  src: local("Aeonik Medium"), local("Aeonik-Medium"), url("../assets/fonts/aeonik-medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+.l-dark {
+  --d-ink: #ededea;          /* titles, primary text */
+  --d-text: #cacaca;         /* body copy */
+  --d-soft: #9c9c9c;         /* secondary copy */
+  --d-faint: #727272;        /* muted half of the two-tone headlines */
+  --d-line: rgba(255, 255, 255, 0.12);
+  --d-hair: rgba(255, 255, 255, 0.07);
+  --d-s1: #101010;           /* cards */
+  --d-s2: #181818;           /* raised: fields, menus */
+  --d-s3: #232323;           /* pressed / selected */
+  --d-blue1: #121212;        /* was mist #e2edf2 */
+  --d-blue2: #1b1b1b;        /* was blue #bcdeec */
+
+  --bg: #000;
+  --l-ink: var(--d-ink);
+  --l-text: var(--d-text);
+  --l-muted: var(--d-faint);
+  --l-mist: var(--d-blue1);
+  --l-pale: #131313;
+  --l-blue: var(--d-blue2);
+  --l-line: var(--d-line);
+  color-scheme: dark;
+}
+.l-dark ::selection { background: var(--l-sky); color: #000; }
+
+/* ---------- Titles: Aeonik Medium (Serrif mode keeps its light serif) ---------- */
+
+.l-dark:not(.is-serif) :is(
+  .l-hero__title, .l-headline, .l-display, .l-commodity h2, .l-record .l-split h2,
+  .newsletter .title, .l-products[data-layout="row"] .l-product__copy h3
+),
+.l-dark :is(.l-product__copy h3, .l-pcard h3, .l-record__audits, .l-feed__title, .l-feed__copy h3,
+  .l-folio__head h2) {
+  font-family: "Aeonik", "Inter", system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+.l-dark:not(.is-serif) .l-hero__copy--dash .l-hero__title { letter-spacing: -0.04em; }
+
+/* ---------- Base type ---------- */
+
+.l-dark .l-muted { color: var(--d-soft); }
+.l-dark .l-headline { color: var(--d-faint); }
+.l-dark .l-ink { color: var(--d-ink); }
+
+/* ---------- Buttons: the dark button turns light ---------- */
+
+.l-dark .l-btn--dark { background: var(--d-ink); color: #000 !important; }
+.l-dark .l-btn--dark:hover { opacity: 1; background: #fff; }
+.l-dark .l-btn--outline { border-color: rgba(237, 237, 234, 0.8); color: var(--d-ink); }
+.l-dark .l-btn--outline:hover { background: var(--d-ink); border-color: var(--d-ink); color: #000 !important; }
+.l-dark.l-page :is(a, button, .l-btn):focus-visible { outline-color: var(--d-ink); }
+
+/* ---------- Nav + menus ---------- */
+
+.l-dark .l-nav__logo img, .l-dark .l-footer__logo { filter: brightness(0) invert(0.93); }
+.l-dark .l-menu__button { color: var(--d-ink); }
+.l-dark .l-menu__button img { filter: invert(0.93); }
+.l-dark .l-menu__button:hover, .l-dark .l-menu.is-open .l-menu__button { background: rgba(255, 255, 255, 0.08); }
+.l-dark .l-menu__panel { background: var(--d-s2); color: var(--d-ink); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--d-hair); }
+.l-dark .l-hero .l-menu__panel { color: var(--d-ink); }
+.l-dark .l-menu__panel a:hover { background: var(--d-s3); }
+.l-dark .l-menu__panel span { color: var(--d-soft); }
+.l-dark .l-menu__switch { border-top-color: var(--d-hair); }
+.l-dark .l-menu__switch .l-mono { color: var(--d-soft); }
+.l-dark .l-menu__switch button { border-color: var(--d-line); background: var(--d-s1); color: var(--d-ink); }
+.l-dark .l-menu__switch button[aria-pressed="true"] { background: var(--d-ink); border-color: var(--d-ink); color: #000; }
+
+/* Floating nav: smoked glass instead of frosted white */
+.l-dark .l-nav.is-floating::before { background: rgba(0, 0, 0, 0.62); border-bottom-color: var(--d-hair); }
+.l-dark .l-hero .l-nav.is-floating .l-nav__logo img { filter: brightness(0) invert(0.93); }
+.l-dark .l-hero .l-nav.is-floating .l-menu__button img { filter: invert(0.93); }
+.l-dark .l-hero .l-nav.is-floating :is(.l-menu__button, .l-nav__actions .l-link) { color: var(--d-ink); }
+.l-dark .l-hero .l-nav.is-floating :is(.l-menu__button:hover, .l-menu.is-open .l-menu__button) { background: rgba(255, 255, 255, 0.08); }
+.l-dark .l-hero .l-nav.is-floating .l-btn--dark { background: var(--d-ink); color: #000 !important; }
+
+/* Hiring tab: the black page it pulls out turns light */
+.l-dark .l-hire { color: #000; }
+.l-dark .l-hire__page { background: #e4e4e1; }
+.l-dark .l-hire__tab { fill: #e4e4e1; }
+
+/* ---------- Hero ---------- */
+
+.l-dark .l-hero { background: var(--bg); }
+.l-dark .l-hero__lede { color: rgba(237, 237, 234, 0.62); }
+.l-dark .l-hero__copy--dash .l-hero__lede { color: rgba(237, 237, 234, 0.64); }
+/* The Dash dots are drawn black; flipped to white (still at the shader's 42% alpha) */
+.l-dark .l-hero[data-hero="dash"] .l-hero__dots { filter: invert(1); opacity: 0.8; }
+/* The app shot keeps its light UI; on black its drop shadow is lost, so a hairline edge and a faint
+   glow stand in */
+.l-dark .l-hero__dash-screen { box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 30px 80px -30px rgba(255, 255, 255, 0.12); }
+.l-dark .l-hero__dash-screen::after { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 0 0 0.5px rgba(255, 255, 255, 0.12); }
+.l-dark .l-hero__copy--half .l-hero__lede { color: var(--d-text); }
+
+/* The photo headers keep their original light-mode treatment over their photos */
+.l-dark .l-hero[data-hero="studio"] { background: #e6e4e3; color: #000; }
+.l-dark .l-hero[data-hero="studio"] :is(.l-nav__logo img, .l-menu__button img) { filter: none; }
+.l-dark .l-hero[data-hero="studio"] .l-menu__button { color: #000; }
+.l-dark .l-hero[data-hero="studio"] .l-btn--dark { background: #000; color: #f2f2f2 !important; }
+.l-dark .l-hero[data-hero="studio"] .l-btn--outline { border-color: #000; color: #000; }
+.l-dark .l-hero[data-hero="app"] { background: #10161f; }
+.l-dark .l-hero[data-hero="app"] .l-btn--dark { background: #fff; }
+
+/* ---------- Product suite ---------- */
+
+.l-dark .l-product { border-color: var(--d-hair); box-shadow: none; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .l-dark .l-products .l-product:hover { box-shadow: 0 24px 40px -24px rgba(0, 0, 0, 0.9), 0 0 0 1px var(--d-line); }
+}
+.l-dark .l-product__copy { background: var(--d-s1); color: var(--d-ink); }
+.l-dark .l-product__copy p { color: var(--d-text); }
+.l-dark .l-product__demo { background: var(--d-blue1); }
+
+/* Widget kit, in its dark theme */
+.l-dark .w {
+  --w-fg: #efefed;
+  --w-primary: #ededea;
+  --w-muted: #929292;
+  --w-field: #1a1a1a;
+  --w-border: #2e2e2e;
+  --w-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+.l-dark .w img { filter: invert(0.92); }
+.l-dark .w-tabs { background: #0c0c0c; }
+.l-dark .w-tab.is-on { background: #262626; }
+.l-dark :is(.w-icon, .w-tool):hover { background: rgba(255, 255, 255, 0.07); }
+.l-dark :is(.w-token, .w-xs) { background: #222; color: var(--w-fg) !important; }
+.l-dark .w-xs:hover { border-color: #505050; }
+.l-dark .w-amount:placeholder-shown, .l-dark output.w-amount:empty { color: rgba(146, 146, 146, 0.7); }
+.l-dark .w-badge { color: #000; }
+.l-dark .w-flipwrap { background: var(--d-blue1); }
+.l-dark .w-flip { background: #222; }
+.l-dark .w-flip:hover { background: #2c2c2c; }
+.l-dark .w-cta { border-color: transparent; color: #000 !important; box-shadow: none; }
+.l-dark .w-cta:hover { background: #fff; }
+.l-dark .w-cta.is-done { background: #2b8a5a; color: #fff !important; }
+.l-dark .w-range::-webkit-slider-thumb { background: #121212; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.l-dark .w-range::-moz-range-thumb { background: #121212; }
+.l-dark .w-dots i.is-on { background: var(--w-fg); }
+.l-dark .w-dots i.is-dim { background: #333; }
+
+/* ---------- One platform cards ---------- */
+/* The three white cards go near-black and Curation (the black one) goes light. The line art is one
+   WebGL canvas over all four, drawn black (white on Curation), so inverting it swaps both. */
+.l-dark .l-pcard__face { background: var(--d-s1); border-color: var(--d-hair); box-shadow: none; }
+.l-dark .l-pcard p { color: var(--d-soft); }
+.l-dark .l-pcard::before { background: rgba(255, 255, 255, 0.06); }
+.l-dark .l-prow__art { filter: invert(1); }
+.l-dark .l-pcard--dark .l-pcard__face { background: #e9e9e6; color: #000; }
+.l-dark .l-pcard--dark p { color: #4f5153; }
+.l-dark .l-pcard--dark .l-pcard__cta .l-btn { border-color: #000; color: #000; }
+.l-dark .l-pcard--dark .l-pcard__cta .l-btn:hover { background: #000; color: #fff !important; }
+
+/* ---------- Partners accordion ---------- */
+
+.l-dark .l-acc__item { border-color: var(--d-hair); box-shadow: none; }
+.l-dark .l-acc__item::before { background: var(--d-blue2); } /* the open panel */
+.l-dark .l-acc__logo { filter: invert(0.93); }
+.l-dark :is(.l-acc__story blockquote, .l-acc__by) { color: var(--d-ink); }
+
+/* ---------- Commodity, record ---------- */
+
+.l-dark .l-commodity::after { background: linear-gradient(transparent, var(--bg)); }
+.l-dark .l-record { background: var(--bg); color: var(--d-ink); }
+.l-dark .l-record .l-split p { color: var(--d-text); }
+
+/* ---------- APY story ---------- */
+/* The flood fades to black instead of off-white; the stats panel is inverted wholesale so the
+   numbers js tints black→grey come out white→grey on black */
+.l-dark .apy { background: var(--bg); }
+.l-dark .apy__flood::after { background: #000; }
+.l-dark .apy__stats { background: #fff; filter: invert(1); }
+
+/* ---------- Partner stories (flip carousel) ---------- */
+
+.l-dark .l-fcard__face { background: var(--d-blue2); border-color: var(--d-hair); }
+.l-dark .l-fcard__face::after { background: linear-gradient(90deg, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0.4)); }
+.l-dark .l-fcard__logo { filter: brightness(0) invert(0.93); }
+.l-dark .l-fcard__body p { color: var(--d-ink); }
+.l-dark .l-fcard__cta { color: var(--d-ink); }
+.l-dark .l-round { border-color: rgba(237, 237, 234, 0.7); background: transparent; }
+.l-dark .l-round img { filter: invert(0.93); }
+.l-dark .l-round:hover { background: rgba(255, 255, 255, 0.1); }
+.l-dark .l-round:disabled { background: transparent; }
+.l-dark .l-story__text { color: var(--d-text); }
+
+/* ---------- Build folios ---------- */
+/* Sheets in three greys; Custom (the black sheet) becomes the pale sky one with dark ink */
+.l-dark .l-folio__head p { color: var(--d-text); }
+.l-dark .l-folio__cta { border-color: rgba(237, 237, 234, 0.8); }
+.l-dark .l-folio__cta:hover { background: var(--d-ink); color: #000 !important; }
+.l-dark .l-folio__stage { --rule: rgba(255, 255, 255, 0.14); }
+.l-dark .l-folio__sheet[data-sheet="api"] { --paper: #151515; }
+.l-dark .l-folio__sheet[data-sheet="cli"] { --paper: #1e1e1e; }
+.l-dark .l-folio__sheet[data-sheet="sdk"] { --paper: #282828; }
+.l-dark .l-folio__sheet:not([data-sheet="custom"]) :is(.l-folio__tab, .l-folio__page) { color: var(--d-ink); }
+.l-dark .l-folio__sheet:not([data-sheet="custom"]) .l-folio__meta .l-mono { color: rgba(237, 237, 234, 0.55); }
+.l-dark .l-folio__sheet:not([data-sheet="custom"]) .l-folio__tab:focus-visible { outline-color: var(--d-ink); }
+.l-dark .l-folio__code { color: #dbe6ec; }
+.l-dark .l-folio__code .c { color: rgba(219, 230, 236, 0.42); }
+.l-dark .l-folio__code .k { color: #8fd6ff; }
+.l-dark .l-folio__code .s { color: #9fdcbc; }
+.l-dark .l-folio__sheet[data-sheet="custom"] { --paper: #cff3fd; --ink: #0b1a24; --rule: rgba(11, 26, 36, 0.18); }
+.l-dark .l-folio__grain { opacity: 0.12; mix-blend-mode: screen; }
+
+/* ---------- What's new (feature + index) ---------- */
+
+.l-dark .l-feed__media { background: var(--d-s2); }
+.l-dark .l-feed__copy h3 { color: var(--d-ink); }
+.l-dark .l-feed__copy p { color: var(--d-text); }
+.l-dark .l-feed__row { border-top-color: rgba(237, 237, 234, 0.55); color: var(--d-ink); }
+.l-dark .l-feed__meta { color: var(--d-ink); }
+.l-dark .l-feed__meta time { opacity: 0.5; }
+.l-dark .l-feed__arrow { filter: invert(0.93); }
+.l-dark .l-feed__all { color: rgba(237, 237, 234, 0.45); }
+.l-dark .l-feed__all:hover { color: var(--d-ink); }
+
+/* ---------- Newsletter (kamino-sign-here's own tokens, re-pointed) ---------- */
+
+.l-dark .newsletter { min-height: 0; }
+.l-dark .newsletter__media { border-radius: 4px; }
+.l-dark .newsletter__inner { padding-top: 120px; padding-bottom: 120px; }
+.l-dark:not(.is-serif) .newsletter .title { font-family: "Aeonik", "Inter", system-ui, sans-serif; letter-spacing: -0.035em; }
+
+.l-dark .newsletter {
+  --ink: var(--d-ink);
+  --ink-70: rgba(237, 237, 234, 0.7);
+  --ink-50: rgba(237, 237, 234, 0.55);
+  --ink-45: rgba(237, 237, 234, 0.45);
+  --ink-44: rgba(237, 237, 234, 0.45);
+  --ink-20: rgba(237, 237, 234, 0.2);
+  --field: rgba(255, 255, 255, 0.06);
+  color: var(--d-ink);
+}
+.l-dark .newsletter .input:hover { border-color: rgba(237, 237, 234, 0.4); }
+.l-dark .newsletter .input:focus { background: rgba(255, 255, 255, 0.09); }
+.l-dark .newsletter :is(.input--name, .input--name:focus) { background: var(--d-blue2); }
+.l-dark .newsletter .button { color: #000; }
+.l-dark .newsletter .consent__box { color: #000; }
+
+/* ---------- Footer ---------- */
+
+.l-dark .l-footer { color: var(--d-ink); }
+.l-dark .l-footer__base p { color: var(--d-soft); }

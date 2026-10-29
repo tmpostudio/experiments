@@ -9,9 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1030b">
-  <link rel="stylesheet" href="css/landing.css?v=1030b">
-  <link rel="stylesheet" href="css/pasteboard.css?v=1030b">
+  <link rel="stylesheet" href="../kamino-sign-here/css/v2.css?v=1023">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1032r">
+  <link rel="stylesheet" href="css/landing.css?v=1032r">
+  <link rel="stylesheet" href="css/pasteboard.css?v=1032r">
 </head>
 <body class="l-page pb-page">
   <!-- Sections cut from landing-v1, and versions set aside along the way, kept working so they
@@ -24,6 +25,261 @@
     <h1 class="l-display">Sections cut from the landing, and versions set aside, kept for later.</h1>
     <p>Each entry runs as it did on the page, with its own styles and script. Newest first. <a href="index.html">Back to the landing →</a></p>
   </header>
+
+  <article class="pb-entry" id="cut-newsletter-photo">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Cut · 29 Oct 2026</span>
+      <h2>Sign-up — signature on the photographed paper</h2>
+      <p>Copy and the form on the left; on the right a photo of tractor-feed paper, where your first name writes itself onto the dotted line as you type and a “Witnessed by” stamp appears when you tick the box. Runs on the kamino-sign-here experiment’s own CSS and scripts. Replaced by the thermal-print card that lifts.</p>
+    </header>
+  <!-- ============ Newsletter (kamino-sign-here, v2): the signature writes onto the paper in the photo ============ -->
+    <section class="newsletter" aria-labelledby="newsletter-title">
+      <div class="newsletter__inner">
+        <div class="newsletter__content">
+          <div class="copy">
+            <h2 class="title" id="newsletter-title">Sign here for alpha.</h2>
+            <p class="lede">Monthly updates on Kamino products, markets, and the onchain credit ecosystem.</p>
+          </div>
+
+          <!-- Set data-endpoint to your ESP / API URL to POST signups as JSON. Empty = demo mode. -->
+          <form class="form" id="newsletter-form" data-endpoint="" novalidate>
+            <div class="field-row">
+              <label class="visually-hidden" for="first-name">First name</label>
+              <input class="input input--name" id="first-name" name="firstName" type="text"
+                     placeholder="First Name" autocomplete="given-name" maxlength="20" required>
+
+              <label class="visually-hidden" for="email">Email</label>
+              <input class="input input--email" id="email" name="email" type="email"
+                     placeholder="you@company.com" autocomplete="email" required>
+
+              <button class="button" type="submit">
+                <span class="button__label">Sign</span>
+              </button>
+            </div>
+
+            <div class="legal">
+              <label class="consent">
+                <input class="consent__input" type="checkbox" name="consent" required>
+                <span class="consent__box" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M4 8.2 6.8 11 12 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+                <span class="consent__text">Yes, send me the Kamino newsletter.</span>
+              </label>
+              <p class="fineprint">By subscribing you agree to our <a href="#">Privacy Policy</a> and consent to receive marketing emails from Kamino. Unsubscribe at any time.</p>
+            </div>
+
+            <p class="status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div class="newsletter__media">
+          <!-- Stage is laid out at the Figma frame size (650×518) and scaled to fit, so the line and signature stay locked to the paper -->
+          <div class="stage">
+            <img class="stage__image" src="../kamino-sign-here/assets/hero-v4.webp" alt="" width="1120" height="893">
+            <div class="stage__line" aria-hidden="true"></div>
+            <p class="stage__label" aria-hidden="true">Signed by</p>
+            <div class="signature" aria-hidden="true">
+              <div class="signature__line"></div>
+            </div>
+            <!-- Appears once the consent box is ticked (kamino-sign-here/js/v2.js) -->
+            <div class="witness" aria-hidden="true">
+              <p class="witness__label">Witnessed by</p>
+              <img class="witness__logo" src="../kamino-sign-here/assets/kamino-logo.svg" alt="" width="59" height="14">
+              <p class="witness__date"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </article>
+
+  <article class="pb-entry" id="cut-news-index">
+    <header class="pb-entry__head l-wrap">
+      <span class="l-mono">Cut · 29 Oct 2026</span>
+      <h2>What’s New — full-width index (second take)</h2>
+      <p>A pale-blue section rising into a folder tab: every article as one ruled row (title, category, date, +). Hover nudges the row; clicking opens a short preview, a Read article link and the image across the right. Shown under the featured-article take to compare, then archived.</p>
+    </header>
+  <!-- ============ What's new, second take (Figma 5040:38599): a full-width index on pale blue that
+       rises into a folder tab over the first column, drawn like the Build folio tabs. Hovering a row nudges its text across; clicking opens it to a short
+       preview, a Read article link and an image (js/pasteboard.js "What's new index"). Preview copy is placeholder. ============ -->
+  <section class="pb-index" id="pb-news-index" aria-labelledby="pb-news-index-title">
+    <svg class="pb-index__tab" viewBox="0 0 312 37" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 37V36C12 36 12 0 24 0H272C292 0 292 36 312 36V37Z"/></svg>
+    <div class="pb-index__head l-wrap">
+      <h2 class="pb-index__heading" id="pb-news-index-title">What’s new at Kamino</h2>
+      <img class="pb-index__icon" src="assets/ui/doc-dots.svg" alt="" width="25" height="38">
+    </div>
+    <ul class="pb-index__list">
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-1">
+              <span class="pb-index__title">Brazilian Credit Card Receivables Are Now Collateral</span>
+              <span class="pb-index__cat">RWA</span>
+              <time class="pb-index__date">SEP 08 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-1" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">A $1.68 trillion credit market, onchain for the first time. Originated by Agora Data, structured by Figure Forge and issued by Hastra.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/news/still-coins.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-2">
+              <span class="pb-index__title">Zcash Joins Solana Credit Markets</span>
+              <span class="pb-index__cat">MARKETS</span>
+              <time class="pb-index__date">SEP 07 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-2" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">Bridged ZEC can now be supplied and borrowed against on Kamino, in a market with its own risk settings.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/news/onre-dark.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-3">
+              <span class="pb-index__title">Midas Brings Fasanara’s $5B Private Credit Onchain</span>
+              <span class="pb-index__cat">PRIVATE CREDIT</span>
+              <time class="pb-index__date">AUG 20 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-3" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">A tokenised share of an institutional private credit book, held onchain and usable as collateral.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/build-column.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-4">
+              <span class="pb-index__title">Solana Mobile Brings Onchain USDC Yield to Seeker</span>
+              <span class="pb-index__cat">FINTECHS</span>
+              <time class="pb-index__date">AUG 19 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-4" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">Seeker owners can earn on USDC from the wallet on their phone, with Kamino running underneath.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/news/onre-sky.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-5">
+              <span class="pb-index__title">Invesco’s Short-Duration Treasury Fund Comes Onchain</span>
+              <span class="pb-index__cat">TREASURIES</span>
+              <time class="pb-index__date">AUG 17 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-5" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">Short-duration Treasuries, tokenised and usable as collateral on Kamino.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/news/onre-blue.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-6">
+              <span class="pb-index__title">AUTO is Now Live: Tokenized U.S. Auto Loans on Solana</span>
+              <span class="pb-index__cat">RWA</span>
+              <time class="pb-index__date">AUG 04 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-6" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">A pool of U.S. auto loans, tokenised and brought to Kamino as a new source of real-world yield.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/build-machine.webp" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-7">
+              <span class="pb-index__title">Introducing Kamino Institutional Commodity Yield</span>
+              <span class="pb-index__cat">PRODUCT</span>
+              <time class="pb-index__date">AUG 03 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-7" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">Yield on commodity exposure for institutions, with the custody and reporting they already expect.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/commodity.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-8">
+              <span class="pb-index__title">Obligate Brings Institutional Trade Finance Yield to Solana</span>
+              <span class="pb-index__cat">TRADE FINANCE</span>
+              <time class="pb-index__date">JUL 31 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-8" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">Short-dated trade finance notes, issued onchain and open to Kamino lenders.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/build-bg.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-9">
+              <span class="pb-index__title">Hyperliquid’s Native Token Now Has a Credit Market</span>
+              <span class="pb-index__cat">MARKETS</span>
+              <time class="pb-index__date">JUL 28 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-9" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">HYPE holders can borrow against their position without selling it, in an isolated market.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/hero-studio-coin.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-10">
+              <span class="pb-index__title">Tokenized Gold on Kamino, PAXG Now Live</span>
+              <span class="pb-index__cat">COMMODITIES</span>
+              <time class="pb-index__date">JUL 28 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-10" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">Gold, held in a vault and tokenised as PAXG, now works as collateral on Kamino.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/hero-studio.webp" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-11">
+              <span class="pb-index__title">The First Tokenized STRC Lending Market on Solana</span>
+              <span class="pb-index__cat">TOKENIZED EQUITIES</span>
+              <time class="pb-index__date">MAY 28 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-11" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">A lending market for tokenised STRC, the first of its kind on Solana.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/build-api.webp" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+        <li class="pb-index__item">
+          <div class="pb-index__row">
+            <button class="pb-index__toggle" type="button" aria-expanded="false" aria-controls="pbix-12">
+              <span class="pb-index__title">Galaxy Brings a NASDAQ-Listed Public Equity Onchain</span>
+              <span class="pb-index__cat">TOKENIZED EQUITIES</span>
+              <time class="pb-index__date">MAR 31 2026</time>
+              <span class="pb-index__pm" aria-hidden="true"></span>
+            </button>
+            <div class="pb-index__more" id="pbix-12" inert><div class="pb-index__more-in">
+              <div class="pb-index__text"><p class="pb-index__blurb">A listed public equity, issued onchain by Galaxy and held directly by its owners.</p><a class="pb-index__read" href="#">Read article<span class="pb-index__read-arrow" aria-hidden="true"><img src="assets/ui/arrow-up-right.svg" alt="" width="11" height="11"></span></a></div>
+              <div class="pb-index__media"><img src="assets/story-rockaway.jpg" alt="" loading="lazy"></div>
+            </div></div>
+          </div>
+        </li>
+    </ul>
+  </section>
+  </article>
 
   <article class="pb-entry" id="aside-build-steps">
     <header class="pb-entry__head l-wrap">
@@ -450,6 +706,11 @@
   </section>
   </article>
 
-  <script src="js/pasteboard.js?v=1030b"></script>
+  <!-- The archived sign-up runs on the kamino-sign-here experiment's own scripts -->
+  <script src="../kamino-sign-here/js/glyphs.js?v=1023"></script>
+  <script src="../kamino-sign-here/js/signature.js?v=1023"></script>
+  <script src="../kamino-sign-here/js/main.js?v=1023"></script>
+  <script src="../kamino-sign-here/js/v2.js?v=1023"></script>
+  <script src="js/pasteboard.js?v=1032r"></script>
 </body>
 </html>
