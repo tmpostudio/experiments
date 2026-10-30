@@ -58,12 +58,12 @@
   const apy = $("#apy");
   whenNear(apy, () => load("apy-story.js").then((m) => m.mountApy(apy)).catch((e) => console.warn("[apy story]", e)), "800px 0px");
 
-  // ---------- Floating nav: past the header it pops up as a glass pill; back in the header it slides away ----------
+  // ---------- Floating nav: past the header a glass bar hides on the way down and slides back in on the way up; back in the header it slides away ----------
   const nav = $(".l-nav");
   const navHero = $(".l-hero");
   if (nav && navHero) {
     const slot = document.createElement("div"); // keeps the header's layout while the nav is lifted out
-    let floating = false, ticking = false, leaving = 0;
+    let floating = false, ticking = false, leaving = 0, lastY = scrollY;
     const pastHeader = () => scrollY > navHero.offsetTop + navHero.offsetHeight;
     const setShown = (v) => nav.classList.toggle("is-shown", v);
     function float(on) {
@@ -73,10 +73,7 @@
         nav.before(slot);
         nav.classList.add("is-floating", "no-anim"); // starts out of view, no slide
         setShown(false);
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-          nav.classList.remove("no-anim");
-          setShown(pastHeader());
-        }));
+        requestAnimationFrame(() => requestAnimationFrame(() => nav.classList.remove("no-anim")));
       } else {
         nav.classList.remove("is-floating", "is-shown", "no-anim");
         slot.remove();
@@ -84,14 +81,16 @@
     }
     function update() {
       ticking = false;
-      const past = pastHeader();
-      if (past) {
+      const y = scrollY, dy = y - lastY;
+      lastY = y;
+      if (pastHeader()) {
         clearTimeout(leaving);
         leaving = 0;
-        if (floating) setShown(true);
-        else float(true);
+        if (!floating) float(true);
+        else if (dy > 6 && !$(".l-menu.is-open", nav)) setShown(false);
+        else if (dy < -6) setShown(true);
       } else if (floating && !leaving) {
-        // Slide the pill away, then put the nav back in the header (scrolled out of sight by then)
+        // Slide the bar away, then put the nav back in the header (scrolled out of sight by then)
         setShown(false);
         leaving = setTimeout(() => { leaving = 0; float(false); }, 380);
       }
@@ -159,13 +158,14 @@
   // switch it off (e.g. headers it doesn't suit); look() gives the dot colour and strength.
   // Used by the header and the commodity section.
   const DOTS_WHITE = { color: "#fff", alpha: 1 };
-  // Dash: black on the light page, a longer-lingering pool (the dot-to-dot hairlines, lines: true, are off: too busy)
-  const DOTS_DASH = { color: "#000", alpha: 0.26, hold: 500, fade: 3200 }; // lighter grey (was 0.42)
+  // Dash: black on the light page, lighter grey (was 0.42); the pool fades at the normal pace so the ripples show through it
+  // (the dot-to-dot hairlines, lines: true, are off: too busy)
+  const DOTS_DASH = { color: "#000", alpha: 0.26 };
   function mountDots(host, dotCanvas, active = () => true, look = () => DOTS_WHITE) {
     if (!host || !dotCanvas || reduced) return;
-    const SPACING = 11;          // grid pitch
-    const DOT_MIN = 0.7;         // dot radius when barely lit…
-    const DOT_MAX = 2.1;         // …and at full brightness
+    const SPACING = 8;           // grid pitch
+    const DOT_MIN = 0.5;         // dot radius when barely lit…
+    const DOT_MAX = 1.4;         // …and at full brightness
     const REACH = 150;           // pool of light around the pointer
     const HOLD_MS = 120;         // how long the pool stays at full brightness
     const FADE_MS = 1300;        // then how long it takes to disappear

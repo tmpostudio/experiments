@@ -48,7 +48,7 @@ html { overflow-x: clip; }
 .l-headline {
   max-width: 14.8em;
   margin: 0;
-  font-size: clamp(30px, 3vw, 45px);
+  font-size: clamp(30px, 3vw, 44px);
   font-weight: 400;
   line-height: 1.07;
   letter-spacing: -0.04em;
@@ -71,7 +71,7 @@ html { overflow-x: clip; }
   gap: 40px;
 }
 .l-split h2 { margin: 0; }
-.l-split p { max-width: 430px; margin: 0; font-size: 18px; line-height: 1.28; letter-spacing: -0.01em; }
+.l-split p { max-width: 430px; margin: 0; font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; }
 
 /* ---------- Buttons ---------- */
 
@@ -115,9 +115,9 @@ html { overflow-x: clip; }
 /* Desktop: the nav alone runs the full screen width, outside the page's columns */
 @media (min-width: 721px) { .l-nav { max-width: none; padding-left: 32px; padding-right: 32px; } }
 .l-nav [hidden] { display: none; }
-/* Floating nav (js/landing.js): once you've scrolled past the header the nav pops down as a
-   frosted glass pill with a little margin from the top. Back in the header it slides away and
-   the nav returns to its place there. */
+/* Floating nav (js/landing.js): past the header the nav becomes a frosted glass bar with a little
+   margin from the top, hidden while you scroll down and sliding back in when you scroll up. Back
+   in the header it slides away and the nav returns to its place there. */
 .l-nav.is-floating {
   position: fixed;
   top: 12px;
@@ -132,9 +132,10 @@ html { overflow-x: clip; }
   transition: transform 0.38s var(--l-ease);
 }
 .l-nav.is-floating.is-shown { transform: translate(-50%, 0); }
-.l-nav.is-floating :is(.l-menu__button, .l-btn) { border-radius: 999px; }
-/* The menu links are gone at this width: logo and button at the pill's two ends */
+/* The menu links are gone at this width: logo and button at the bar's two ends */
 @media (max-width: 1100px) { .l-nav.is-floating { width: min(440px, calc(100vw - 24px)); } }
+/* Phones: runs a little past the page margins instead of riding them */
+@media (max-width: 720px) { .l-nav.is-floating { width: calc(100vw - 16px); max-width: none; } }
 .l-nav.is-floating.no-anim { transition: none; }
 .l-nav.is-floating::before {
   content: "";
@@ -142,7 +143,7 @@ html { overflow-x: clip; }
   inset: 0;
   z-index: -1;
   border: 0.5px solid rgba(0, 0, 0, 0.08);
-  border-radius: 999px;
+  border-radius: 8px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
   background: rgba(250, 250, 250, 0.72);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
@@ -232,7 +233,7 @@ html { overflow-x: clip; }
   line-height: 1;
   letter-spacing: -0.045em;
 }
-.l-hero__lede { max-width: 25em; margin: 26px 0 0; font-size: 18px; line-height: 1.22; letter-spacing: -0.02em; color: rgba(0, 0, 0, 0.62); }
+.l-hero__lede { max-width: 25em; margin: 26px 0 0; font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; color: rgba(0, 0, 0, 0.62); }
 .l-hero__actions { display: flex; gap: 13px; margin-top: 34px; }
 
 /* ---------- Header B: "Studio" ---------- */
@@ -248,7 +249,7 @@ html { overflow-x: clip; }
   font-size: clamp(44px, 4.25vw, 64px);
   letter-spacing: -0.04em;
 }
-.l-hero__copy--studio .l-hero__lede { max-width: 22em; margin-top: 24px; color: #000; letter-spacing: -0.02em; line-height: 1.2; }
+.l-hero__copy--studio .l-hero__lede { max-width: 22em; margin-top: 24px; color: #000; letter-spacing: -0.02em; }
 .l-hero__copy--studio .l-hero__actions { margin-top: 32px; }
 
 /* Dark photo headers (App screen): white type, inverted buttons, logos in white */
@@ -385,7 +386,7 @@ html { overflow-x: clip; }
 
 /* Concept switch in the Resources menu */
 .l-menu__switch { display: flex; align-items: center; gap: 4px; margin-top: 6px; padding: 10px 12px 4px; border-top: 1px solid rgba(0, 0, 0, 0.08); }
-.l-menu__switch .l-mono { margin-right: auto; font-size: 10px; color: #737373; }
+.l-menu__switch .l-mono { margin-right: auto; font-size: 12px; color: #737373; }
 .l-menu__switch button { height: 26px; padding: 0 10px; border: 0.5px solid #e5e5e5; border-radius: 6px; background: #fff; font: 500 12px/1 "Aeonik", "Inter", sans-serif; cursor: pointer; opacity: 0.55; transition: opacity 0.2s, background-color 0.2s; }
 .l-menu__switch button:hover { opacity: 0.85; }
 .l-menu__switch button[aria-pressed="true"] { opacity: 1; background: #262626; color: #fafafa; border-color: #262626; }
@@ -403,7 +404,7 @@ html { overflow-x: clip; }
 .l-hero[data-hero="app"] + .l-marquee { margin-top: -76px; padding-bottom: 20px; }
 .l-hero__copy--app { bottom: auto; top: calc(50% + 21px); transform: translateY(-50%); }
 .l-hero__copy--app .l-hero__title { max-width: 12.35em; color: #fff; font-size: clamp(36px, 3.05vw, 46px); letter-spacing: -0.04em; }
-.l-hero__copy--app .l-hero__lede { max-width: 395px; margin-top: 13px; color: rgba(255, 255, 255, 0.93); line-height: 1.2; }
+.l-hero__copy--app .l-hero__lede { max-width: 395px; margin-top: 13px; color: rgba(255, 255, 255, 0.93); }
 .l-hero__copy--app .l-hero__actions { margin-top: 35px; }
 .l-hero__app {
   position: absolute;
@@ -441,7 +442,7 @@ html { overflow-x: clip; }
    pin offset into a 180px shove) */
 .l-hero .l-hero__copy--dash { position: sticky; padding-bottom: 0; }
 .l-hero__copy--dash .l-hero__title { max-width: 15.3em; font-size: clamp(34px, 3.05vw, 46px); letter-spacing: -0.05em; }
-.l-hero__copy--dash .l-hero__lede { max-width: 22em; margin-top: 24px; line-height: 1.2; color: rgba(0, 0, 0, 0.65); }
+.l-hero__copy--dash .l-hero__lede { max-width: 22em; margin-top: 24px; color: rgba(0, 0, 0, 0.65); }
 .l-hero__copy--dash .l-hero__actions { margin-top: 38px; justify-content: center; }
 /* The screen rides above the pinned copy and slides up over it with the page */
 .l-hero__dash-stage { position: relative; z-index: 2; width: min(78.3%, 1184px); margin-top: 62px; animation: l-dash-rise 1.2s var(--l-ease) 0.15s both; }
@@ -557,7 +558,7 @@ html { overflow-x: clip; }
 
 .l-products[data-layout="row"] .l-product__copy { padding: 40px 36px; }
 .l-products[data-layout="row"] .l-product__copy h3 { font-size: 44px; }
-.l-products[data-layout="row"] .l-product__copy p { max-width: 15em; font-size: 18px; }
+.l-products[data-layout="row"] .l-product__copy p { max-width: 17em; }
 .l-products[data-layout="row"] .l-product:nth-child(1) { order: 3; } /* Swap */
 .l-products[data-layout="row"] .l-product:nth-child(2) { order: 1; } /* Earn */
 .l-products[data-layout="row"] .l-product:nth-child(3) { order: 2; } /* Borrow */
@@ -861,7 +862,7 @@ html { overflow-x: clip; }
 .l-acc__hit { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; border-radius: inherit; background: none; cursor: pointer; text-align: left; }
 .l-acc__item.is-open .l-acc__hit { cursor: default; }
 .l-acc__hit:focus-visible { outline-offset: -3px; }
-.l-acc__index { position: absolute; left: 14px; top: 14px; font-size: 10px; color: var(--l-muted); transition: opacity 0.3s var(--l-ease); }
+.l-acc__index { position: absolute; left: 14px; top: 14px; color: var(--l-muted); transition: opacity 0.3s var(--l-ease); }
 .l-acc__item.is-open .l-acc__index { opacity: 0; }
 /* The logo is one element in both states: standing along the strip with its foot at the bottom
    (turned about its top-left corner), or lying at the top-left. Moving the corner and turning it
@@ -920,7 +921,7 @@ html { overflow-x: clip; }
 
 /* ---------- Commodity ---------- */
 
-.l-commodity { position: relative; height: 890px; max-height: 100svh; min-height: 640px; overflow: hidden; background: #000; color: #fff; }
+.l-commodity { position: relative; height: 100svh; min-height: 640px; overflow: hidden; background: #000; color: #fff; }
 .l-commodity__bg { pointer-events: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* Same hover dot grid as the header, over the video (js/landing.js mountDots) */
 .l-commodity__dots { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -934,13 +935,12 @@ html { overflow-x: clip; }
   height: 100%;
   max-width: var(--l-max); /* same columns as every other section (was 1245px, which indented the copy) */
   margin: 0 auto;
-  padding: 101px var(--l-pad) 110px;
+  padding: var(--l-pad); /* the same visible margin all round: the two negative margins below trim the line boxes down to the letters */
 }
-.l-commodity h2 { margin: 0; max-width: 8em; font-size: 64px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; }
-.l-commodity p { margin: 16px 0 30px; font-size: 18px; line-height: 1.25; letter-spacing: -0.04em; }
+.l-commodity h2 { margin: -0.15em 0 0; max-width: 8em; font-size: 64px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; }
+.l-commodity p { margin: 16px 0 30px; font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; }
 .l-commodity__stat { align-self: flex-end; display: grid; gap: 10px; }
-.l-commodity__stat .l-mono { font-size: 14px; }
-.l-commodity__stat strong { font-weight: 400; font-size: clamp(110px, 12.6vw, 190px); line-height: 1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.l-commodity__stat strong { margin-bottom: -0.144em; font-weight: 400; font-size: clamp(110px, 12.6vw, 190px); line-height: 1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
 
 .l-modal { border: 0; padding: 0; background: transparent; }
 .l-modal::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
@@ -951,14 +951,26 @@ html { overflow-x: clip; }
 
 .l-record { padding: 105px 0 60px; background: #000; color: #fff; }
 .l-record .l-split h2 { max-width: 8.5em; font-size: 44px; font-weight: 400; line-height: 1.1; letter-spacing: -0.03em; }
-.l-record .l-split p { max-width: 545px; font-size: 16px; line-height: 1.45; }
+.l-record .l-split p { max-width: 545px; }
 .l-bento { display: grid; grid-template-columns: 640fr 328fr 328fr; grid-template-rows: 206px 203px; gap: 16px; margin-top: 55px; }
-.l-bento > div { position: relative; padding: 26px 24px; border-radius: 8px; background: var(--l-sky); color: #000; overflow: hidden; transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1); will-change: transform; }
+.l-bento > div { position: relative; padding: 16px; /* on the dot strip's 16px inset */ border-radius: 8px; background: var(--l-sky); color: #000; overflow: hidden; transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1); will-change: transform; }
 .l-bento > div:hover { transform: translateY(-3px); }
+/* The API cards' paper grain: the same noise at the same strength, tiled */
+.l-bento > div::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.05 0 0 0 0 0.2 0 0 0 0 0.28 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E") 0 0 / 300px 300px;
+  opacity: 0.3;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+/* Small margins trim each line box down to its letters, so the text sits exactly on that 16px */
+.l-bento .l-mono { margin-top: -0.3em; }
 .l-bento__big { grid-row: span 2; display: flex; flex-direction: column; justify-content: space-between; }
-.l-bento__big strong { font-weight: 400; font-size: clamp(90px, 11vw, 176px); line-height: 0.85; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+.l-bento__big strong { margin-bottom: 0.034em; font-weight: 400; font-size: clamp(90px, 11vw, 176px); line-height: 0.85; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
 .l-bento__tile { display: flex; flex-direction: column; justify-content: space-between; }
-.l-bento__tile strong { font-weight: 400; font-size: 44px; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.l-bento__tile strong { margin-bottom: -0.134em; font-weight: 400; font-size: 44px; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
 /* Vertical dot strip: same 16px inset top, bottom and right, whatever the card height */
 .l-bento__dots { position: absolute; right: 16px; top: 16px; height: calc(100% - 32px); width: auto; filter: invert(1); opacity: 0.9; }
 .l-record__audits { margin: 60px 0 30px; font-size: 32px; font-weight: 400; letter-spacing: -0.03em; }
@@ -1016,7 +1028,7 @@ html { overflow-x: clip; }
 .l-pcard h3 { margin: 0; font-size: 28px; font-weight: 400; line-height: 0.95; letter-spacing: -0.04em; }
 /* The art box runs the card's full width so wide pieces aren't clipped at the padding */
 .l-pcard__art { flex: 1 0 0; min-height: 0; margin: 0 -16px; transition: transform 0.45s var(--l-ease); }
-.l-pcard p { max-width: 282px; margin: 0; font-size: 15px; line-height: 1.1; color: #4f5153; }
+.l-pcard p { max-width: 282px; margin: 0; font-size: 16px; line-height: 1.2; color: #4f5153; }
 /* Copy + CTA pinned to the bottom of the card. On hover the button slides up from below and
    pushes the copy up with it (over the empty foot of the art box, which keeps its size so the
    line art never rescales). */
@@ -1092,7 +1104,7 @@ html { overflow-x: clip; }
 }
 .apy__number { font-size: clamp(60px, min(19vh, 14vw), 215px); letter-spacing: -0.05em; line-height: 0.98; font-variant-numeric: tabular-nums; }
 /* Label as a superscript, hung off the top right of the number */
-.apy__label { margin: 0.95em 0 0 0.7em; font-family: "Roboto Mono", ui-monospace, monospace; font-size: clamp(10px, 0.95vw, 15px); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+.apy__label { margin: 0.95em 0 0 0.7em; font-family: "Roboto Mono", ui-monospace, monospace; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
 .apy__hint { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); }
 
 /* ---------- Stories ---------- */
@@ -1181,7 +1193,7 @@ html { overflow-x: clip; }
 .l-fcard__logo { width: auto; height: 30px; filter: brightness(0); align-self: flex-start; pointer-events: none; }
 
 .l-fcard__body { display: grid; gap: 22px; }
-.l-fcard__body p { margin: 0; font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; color: #000; }
+.l-fcard__body p { margin: 0; font-size: 16px; line-height: 1.2; letter-spacing: -0.02em; color: #000; }
 .l-fcard__cta { justify-self: start; font-weight: 500; font-size: 15px; text-decoration: none; }
 .l-fcard__cta:hover { text-decoration: underline; text-underline-offset: 3px; }
 .l-fcard:not(.is-front) .l-fcard__cta { pointer-events: none; }
@@ -1235,7 +1247,7 @@ html { overflow-x: clip; }
 .l-folio__inner { display: grid; grid-template-columns: minmax(280px, 400px) minmax(0, 760px); justify-content: space-between; gap: 72px; align-items: start; }
 .l-folio__head h2 { font-size: clamp(30px, 3vw, 44px); line-height: 1.05; letter-spacing: -0.04em; }
 @media (min-width: 961px) { .l-folio__head h2 { margin-top: -0.18em; } } /* cap height meets the top edge of the folder */
-.l-folio__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.38; letter-spacing: -0.01em; color: rgba(0, 0, 0, 0.8); }
+.l-folio__head p { margin: 20px 0 0; font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; color: rgba(0, 0, 0, 0.8); }
 .l-folio__cta { margin-top: 32px; gap: 34px; border-color: #000; background: transparent; }
 .l-folio__cta:hover { background: #000; color: #fff !important; }
 .l-folio__stage { --paper: var(--l-blue); --rule: rgba(0, 0, 0, 0.16); position: relative; height: var(--stage-h, 600px); }
@@ -1293,7 +1305,7 @@ html { overflow-x: clip; }
 .l-folio__page { position: absolute; left: 0; right: 0; top: var(--th, 32px); bottom: 0; padding: 26px 30px 0; overflow: hidden; opacity: 0; visibility: hidden; transition: opacity 0.25s var(--l-ease), visibility 0s 0.25s; }
 .l-folio__sheet.is-front .l-folio__page { opacity: 1; visibility: visible; transition: opacity 0.5s var(--l-ease) 0.3s, visibility 0s; }
 .l-folio__meta { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--rule); }
-.l-folio__meta .l-mono { font-size: 11px; color: rgba(0, 0, 0, 0.55); }
+.l-folio__meta .l-mono { color: rgba(0, 0, 0, 0.55); }
 .l-folio__meta .l-mono + .l-mono { text-align: right; opacity: 0.8; }
 .l-folio__code {
   margin: 20px 0 0;
@@ -1437,6 +1449,10 @@ html { overflow-x: clip; }
   .l-folio__meta .l-mono + .l-mono { display: none; }
   .l-folio__code { font-size: 11px; }
   .l-folio__pitch { font-size: 13px; }
+  /* Custom's pitch as on desktop: one block at 120%, centred between the rule and the button */
+  .l-folio--low [data-sheet="custom"] .l-folio__page { display: flex; flex-direction: column; padding-bottom: 52px; } /* clears the button */
+  .l-folio--low .l-folio__pitch { margin: auto 0; line-height: 1.2; }
+  .l-folio--low .l-folio__pitch i + i { margin-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .l-folio__sheet, .l-folio__page { transition: none; }
@@ -1461,7 +1477,7 @@ html { overflow-x: clip; }
    comes in at 110% and settles to 100% as it fades up; the copy rises into place. */
 
 .l-feed { padding-top: 96px; padding-bottom: 120px; background: var(--bg, #fafafa); }
-.l-feed__title { margin: 0; font-size: clamp(40px, 4.2vw, 64px); }
+.l-feed__title { margin: 0; font-size: clamp(40px, 4.24vw, 64px); }
 .l-feed__grid { display: grid; grid-template-columns: minmax(0, 657fr) minmax(0, 653fr); gap: 28px; margin-top: 52px; align-items: start; }
 .l-feed__feature { display: flex; flex-direction: column; align-items: flex-start; gap: 25px; }
 .l-feed__media { position: relative; display: block; width: 100%; aspect-ratio: 657 / 363; overflow: hidden; border-radius: 4px; background: #c9c5bd; }
@@ -1513,7 +1529,7 @@ html { overflow-x: clip; }
   .l-feed__copy h3 { font-size: 26px; line-height: 1.1; }
   .l-feed__row { min-height: 88px; }
   .l-feed__row-title { font-size: 20px; }
-  .l-feed__meta { gap: 16px; font-size: 11px; }
+  .l-feed__meta { gap: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .l-feed__media img.is-in, .l-feed__feature.is-in *, .l-feed__row.is-in > * { animation: none !important; }
@@ -1529,7 +1545,7 @@ html { overflow-x: clip; }
 .l-sign { --sign-paper: var(--l-sky); /* the signature sky blue, #c6f4ff */ --sign-print: #161616; --sign-ease: cubic-bezier(0.2, 0.8, 0.16, 1); padding: 110px var(--l-pad) 70px; overflow: hidden; }
 .l-sign__stage {
   --card-w: 500px;
-  --card-h: 640px;
+  --card-h: 540px;
   --card-top: -60px;  /* lifted, the sheet reaches up into the section's top padding */
   --rest-y: -100px;   /* lying flat, its hinge (the foot) sits this far above where it ends up: just under the field */
   --lift-y: -36px;
@@ -1554,7 +1570,7 @@ html { overflow-x: clip; }
   transition: opacity 0.4s ease, translate 0.7s var(--sign-ease), filter 0.4s ease;
 }
 .l-sign.is-lifted .l-sign__intro { opacity: 0; translate: 0 -18px; filter: blur(3px); }
-.l-sign__title { margin: 0; font-size: clamp(40px, 4.2vw, 64px); font-weight: 400; line-height: 1; letter-spacing: -0.045em; }
+.l-sign__title { margin: 0; font-size: clamp(40px, 4.24vw, 64px); font-weight: 400; line-height: 1; letter-spacing: -0.045em; }
 .l-sign__lede { max-width: 25em; margin: 18px 0 0; font-size: 18px; line-height: 1.25; letter-spacing: -0.02em; color: rgba(0, 0, 0, 0.55); }
 .l-sign__start { display: flex; gap: 8px; margin-top: 34px; }
 .l-sign__name {
@@ -1584,7 +1600,7 @@ html { overflow-x: clip; }
   border-radius: 4px;
   background: #000;
   color: #f2f2f2;
-  font: 500 14px/1 "Aeonik", "Inter", sans-serif;
+  font: 500 13px/1 "Aeonik", "Inter", sans-serif;
   cursor: pointer;
   transition: opacity 0.2s, transform 0.2s var(--l-ease);
 }
@@ -1656,7 +1672,7 @@ html { overflow-x: clip; }
 .l-sign__label { display: block; margin: 0; font-size: 11px; }
 /* ALPHA printed in MD Thermochrome, top left of the slip */
 .l-sign__mark { font-family: "MD Thermochrome", "Aeonik", "Inter", system-ui, sans-serif; font-size: 44px; font-weight: 300; line-height: 0.9; letter-spacing: 0; }
-.l-sign__form > .l-sign__label { margin-top: 82px; }
+.l-sign__form > .l-sign__label { margin-top: 40px; }
 /* The signing line: 3px dashes. The name hangs off its baseline, a little above the line, scaled to fit */
 .l-sign__sig { position: relative; height: 104px; background: linear-gradient(90deg, var(--sign-print) 50%, transparent 0) 0 100% / 6px 1px repeat-x; }
 .l-sign__ink {
@@ -1707,7 +1723,8 @@ html { overflow-x: clip; }
   color: #ecece8;
   font: inherit;
   font-size: 12px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s var(--l-ease);
 }
@@ -1723,20 +1740,19 @@ html { overflow-x: clip; }
 .l-sign__stamp { font-size: 9px; color: #900000; }
 .l-sign__status { min-height: 1.45em; margin: 14px 0 0; font-size: 11px; text-transform: none; }
 .l-sign__status.is-error { color: #b3261e; }
-.l-sign__fine { margin: auto 0 0; font-size: 8.5px; line-height: 1.5; opacity: 0.5; }
+.l-sign__fine { margin: auto 0 0; font-size: 9px; line-height: 1.5; opacity: 0.5; }
 .l-sign__fine a { color: inherit; }
 .l-sign.is-done :is(.l-sign__field, .l-sign__consent) { opacity: 0.45; pointer-events: none; transition: opacity 0.3s; }
 
 @media (max-width: 720px) {
   .l-sign { padding-top: 110px; padding-bottom: 50px; }
-  .l-sign__stage { --card-w: min(420px, calc(100vw - 32px)); --card-h: 600px; --card-top: -70px; --rest-y: -105px; perspective: 900px; }
+  .l-sign__stage { --card-w: min(420px, calc(100vw - 32px)); --card-h: 572px; --card-top: -70px; --rest-y: -105px; perspective: 900px; }
   .l-sign__title { font-size: 40px; }
-  .l-sign__lede { font-size: 16px; }
   .l-sign__start { width: 100%; max-width: 360px; }
   .l-sign__name { flex: 1; width: auto; min-width: 0; }
   .l-sign__form { padding: 28px 50px 24px; }
   .l-sign__mark { font-size: 38px; }
-  .l-sign__form > .l-sign__label { margin-top: 74px; }
+  .l-sign__form > .l-sign__label { margin-top: 36px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .l-sign__intro, .l-sign__card, .l-sign.is-lifted .l-sign__card { transition-duration: 0.01s; transition-delay: 0s; }
@@ -1808,21 +1824,23 @@ html { overflow-x: clip; }
   .l-products[data-layout="row"] .l-product__copy { padding: 20px 18px 28px; }
   .l-products[data-layout="row"] .l-product__copy h3 { font-size: 30px; }
   .l-products[data-layout="row"] .l-product__copy p { max-width: none; font-size: 15px; }
+  .l-pcard p, .l-fcard__body p { font-size: 15px; }
   .l-product__demo { grid-template-columns: minmax(0, 1fr); min-width: 0; padding: 24px 16px; }
   .w-dots { gap: 0; } /* the 58 dot columns share whatever width there is */
   .w-dots__col { flex: 1 1 0; min-width: 0; align-items: center; }
   .l-product__copy { gap: 30px; }
-  /* Institutional Commodity Yield fills the screen, the APY sitting at its foot */
+  /* Institutional Commodity Yield fills the screen, title and APY the same distance from its top and foot */
   .l-commodity { height: var(--l-screen, 100svh); min-height: 0; max-height: none; }
-  .l-commodity__inner { padding-bottom: 28px; }
+  .l-commodity__inner { padding-top: 48px; padding-bottom: 48px; }
   .l-commodity__stat { align-self: flex-start; }
   /* Proof in partners: cards closer under the arrows, less air before the next section */
   .l-stories2 { padding-bottom: 60px; }
-  .l-stories2 .l-display, .l-folio__head h2, .l-products .l-headline, .l-prow .l-headline, .l-partners .l-headline { font-size: 40px; } /* same as What's New */
+  .l-stories2 .l-display, .l-folio__head h2, .l-products .l-headline, .l-prow .l-headline, .l-partners .l-headline, .l-record .l-split h2 { font-size: 40px; } /* same as What's New */
   .l-flip { height: calc(var(--h) + 70px); margin-top: 12px; }
   .l-flip__stage { top: 24px; }
-  .l-commodity h2 { font-size: 42px; } /* 64px would push "Institutional" past a phone's edge */
+  .l-commodity h2 { font-size: 40px; }
   .l-bento__big strong { font-size: 64px; }
+  .l-bento__tile strong { font-size: 32px; }
   .l-footer__base { flex-direction: column; align-items: flex-start; gap: 24px; margin-top: 80px; }
 }
 
