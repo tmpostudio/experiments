@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kamino — One Platform Cards</title>
+    <style>
+      /* Mirrors experiments/landing-v1's "One platform" row (Figma 4895:29650),
+         reduced to just that section so the lab animations can be auditioned in-card. */
+      * { box-sizing: border-box; }
+      html { overflow-x: clip; }
+      body {
+        --l-ink: #000;
+        --l-muted: #939393;
+        --l-pad: clamp(20px, 5.8vw, 88px);
+        --l-max: 1512px;
+        --l-ease: cubic-bezier(0.22, 1, 0.36, 1);
+        margin: 0;
+        background: #fafafa;
+        color: var(--l-ink);
+        font-family: "Aeonik", "Inter", system-ui, -apple-system, sans-serif;
+      }
+      a { color: inherit; }
+      .l-wrap { max-width: var(--l-max); margin: 0 auto; padding: 0 var(--l-pad); }
+
+      .l-headline {
+        max-width: 22.6em;
+        margin: 0;
+        font-size: clamp(30px, 3vw, 45px);
+        font-weight: 400;
+        line-height: 1.07;
+        letter-spacing: -0.04em;
+        color: var(--l-muted);
+      }
+      .l-ink { color: var(--l-ink); }
+
+      .l-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 36px;
+        padding: 0 16px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        font: 500 13px/1 "Aeonik", "Inter", sans-serif;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.2s var(--l-ease), background-color 0.2s, color 0.2s, opacity 0.2s;
+      }
+      .l-btn:active { transform: scale(0.97); }
+      .l-btn--outline { border-color: #000; background: transparent; }
+      .l-btn--outline:hover { background: #000; color: #fff !important; }
+
+      .l-intro { padding-top: 90px; }
+      .l-intro .l-headline { max-width: 24.5em; }
+      .l-prow { padding-top: 64px; padding-bottom: 90px; }
+      .l-prow__scroller { margin: 52px calc(-1 * var(--l-pad)) -26px; padding: 12px var(--l-pad) 32px; overflow-x: auto; scrollbar-width: none; }
+      .l-prow__scroller::-webkit-scrollbar { display: none; }
+      .l-prow__track { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+      .l-prow__track + .l-prow__track { margin-top: 24px; }
+
+      .l-pcard { position: relative; height: 514px; }
+      .l-pcard::before {
+        content: "";
+        position: absolute;
+        inset: 14px 4px -2px;
+        border-radius: 9px;
+        background: rgba(0, 0, 0, 0.16);
+        filter: blur(6px);
+        opacity: 0;
+        transform: scale(0.97);
+        transition: opacity 0.35s var(--l-ease), transform 0.35s var(--l-ease);
+        pointer-events: none;
+      }
+      .l-pcard__face {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 34px;
+        height: 100%;
+        padding: 24px 16px;
+        border: 0.5px solid rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 1px 0 1px rgba(0, 0, 0, 0.07);
+        transition: transform 0.35s var(--l-ease), background-color 0.35s var(--l-ease);
+        overflow: hidden;
+      }
+      @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+        .l-pcard:hover .l-pcard__face { transform: translateY(-5px); }
+        .l-pcard:not(.l-pcard--dark):hover .l-pcard__face { background: #bcdeec; }
+        .l-pcard:hover::before { opacity: 1; transform: none; }
+      }
+      .l-pcard h3 { margin: 0; font-size: 28px; font-weight: 400; line-height: 0.95; letter-spacing: -0.04em; }
+      .l-pcard__art { flex: 1 0 0; min-height: 0; margin: 0 -16px 64px; }
+      .l-pcard__art canvas { display: block; width: 100%; height: 100%; }
+      .l-pcard p { max-width: 282px; margin: 0; font-size: 15px; line-height: 1.1; color: #4f5153; }
+      .l-pcard__foot { position: absolute; left: 16px; right: 16px; bottom: 24px; }
+      .l-pcard__cta { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s var(--l-ease); }
+      .l-pcard__cta > div { min-height: 0; overflow: hidden; }
+      .l-pcard__cta .l-btn { margin-top: 18px; opacity: 0; transform: translateY(14px); transition: opacity 0.3s, transform 0.45s var(--l-ease); }
+      .l-pcard:is(:hover, :focus-within) .l-pcard__cta { grid-template-rows: 1fr; }
+      .l-pcard:is(:hover, :focus-within) .l-pcard__cta .l-btn { opacity: 1; transform: none; transition: opacity 0.35s 0.08s, transform 0.45s var(--l-ease); }
+      @media (hover: none) {
+        .l-pcard__cta { grid-template-rows: 1fr; }
+        .l-pcard__cta .l-btn { opacity: 1; transform: none; }
+      }
+      .l-pcard--dark .l-pcard__face { background: #0f0f0f; color: #fff; }
+      .l-pcard--dark p { color: #d0d0d0; }
+      .l-pcard--dark .l-pcard__cta .l-btn { border-color: rgba(255, 255, 255, 0.85); color: #fff; }
+      .l-pcard--dark .l-pcard__cta .l-btn:hover { background: #fff; color: #000 !important; }
+      @media (max-width: 1180px) {
+        .l-prow__track { grid-template-columns: repeat(4, min(316px, 78vw)); width: max-content; gap: 16px; }
+      }
+
+      .lab-note {
+        padding: 24px var(--l-pad) 0;
+        font-family: "Roboto Mono", ui-monospace, monospace;
+        font-size: 11px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: #939393;
+      }
+      .lab-note a { color: #555; }
+    </style>
+    <script type="module" crossorigin src="./assets/platformCards-BFKCuU26.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="modulepreload" crossorigin href="./assets/instrument2-BuC8FPZa.js">
+  </head>
+  <body>
+    <p class="lab-note">Directions lab — instrument pieces in the “one platform” card row · <a href="./directions.html">back to lab</a></p>
+
+    <section class="l-intro l-wrap">
+      <h1 class="l-headline"><span class="l-ink">Illustrations of Kamino’s key concepts</span> in a minimalistic, almost retro format you might see for a figure in a textbook.</h1>
+    </section>
+
+    <section class="l-prow l-wrap" id="platform-row">
+      <div class="l-prow__scroller" id="card-rows"></div>
+    </section>
+
+  </body>
+</html>

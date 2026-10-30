@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kamino — Directions Lab</title>
+    <style>
+      #stage canvas { display: block; }
+      .direction-desc {
+        font-size: 11px;
+        line-height: 1.55;
+        color: var(--muted);
+        letter-spacing: 0.01em;
+      }
+      a.ghost { display: block; text-align: center; text-decoration: none; }
+    </style>
+    <script type="module" crossorigin src="./assets/directions-B_A2oBr1.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="modulepreload" crossorigin href="./assets/instrument2-BuC8FPZa.js">
+    <link rel="stylesheet" crossorigin href="./assets/style-B2Pa0Pwn.css">
+  </head>
+  <body>
+    <div id="app">
+      <div id="stage"></div>
+      <aside id="panel">
+        <header>
+          <img src="./kamino-logo.webp" alt="Kamino" class="logo" />
+          <p class="sub">directions lab</p>
+          <p class="version">V0.1</p>
+        </header>
+        <select id="direction-select" aria-label="Direction"></select>
+        <p class="direction-desc" id="direction-desc"></p>
+        <select id="piece-select" class="param-select" aria-label="Artwork"></select>
+        <div id="controls"></div>
+        <footer>
+          <button id="reset">Reset</button>
+          <a href="./index.html" class="ghost">&larr; Main tool</a>
+        </footer>
+      </aside>
+    </div>
+  </body>
+</html>

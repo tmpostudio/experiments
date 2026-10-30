@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="100%" height="100%">
+  <g fill="none" stroke="#000000" stroke-width="1" stroke-linejoin="round" stroke-linecap="round">
+    
+    <!-- Top Card -->
+    <path d="M 224 342 
+             L 630 141 
+             A 36 36 0 0 1 680 165 
+             L 696 232 
+             Z" />
+
+    <!-- Middle Card -->
+    <path d="M 294 342 
+             L 761 233 
+             A 36 36 0 0 1 806 268 
+             V 342 
+             Z" />
+
+    <!-- Wallet Body -->
+    <path d="M 184 359 
+             H 845 
+             A 70 70 0 0 1 915 429 
+             V 559 
+             A 14 14 0 0 1 901 573 
+             H 781 
+             A 66 66 0 0 0 715 639 
+             V 674 
+             A 66 66 0 0 0 781 740 
+             H 901 
+             A 14 14 0 0 1 915 754 
+             V 878 
+             A 70 70 0 0 1 845 948 
+             H 184 
+             A 70 70 0 0 1 114 878 
+             V 429 
+             A 70 70 0 0 1 184 359 
+             Z" />
+
+    <!-- Clasp -->
+    <rect x="731" y="590" width="213" height="133" rx="22" ry="22" 
+          d="M 779 590 
+             H 922 
+             A 22 22 0 0 1 944 612 
+             V 701 
+             A 22 22 0 0 1 922 723 
+             H 779 
+             A 48 48 0 0 1 731 675 
+             V 638 
+             A 48 48 0 0 1 779 590 
+             Z" />
+
+    <!-- Clasp Button -->
+    <circle cx="795" cy="656.5" r="26.5" />
+    
+  </g>
+</svg>
