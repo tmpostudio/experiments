@@ -9,6 +9,18 @@
   const fmt = (n, d = 0) => n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const usd = (n) => "$" + fmt(Math.round(n));
 
+  // Phones: the screen-tall sections take their height from --l-screen, held in px and re-measured
+  // only when the width changes (rotation). Sized in vh they shrink when a keyboard takes up the
+  // screen, the page gets ~2800px shorter above the sign-up and the reader lands back at Build.
+  let screenWidth = 0;
+  const holdScreen = () => {
+    if (innerWidth === screenWidth) return;
+    screenWidth = innerWidth;
+    document.documentElement.style.setProperty("--l-screen", `${innerHeight}px`);
+  };
+  holdScreen();
+  addEventListener("resize", holdScreen);
+
   // The CSS cubic-bezier(x1, y1, x2, y2) timing function as a function of progress 0–1
   function cubicBezier(x1, y1, x2, y2) {
     const at = (t, a, b) => (((1 - 3 * b + 3 * a) * t + (3 * b - 6 * a)) * t + 3 * a) * t;
@@ -46,13 +58,14 @@
   const apy = $("#apy");
   whenNear(apy, () => load("apy-story.js").then((m) => m.mountApy(apy)).catch((e) => console.warn("[apy story]", e)), "800px 0px");
 
-  // ---------- Floating nav: hides on the way down, slides back in (on glass) on the way up ----------
+  // ---------- Floating nav: past the header it pops up as a glass pill; back in the header it slides away ----------
   const nav = $(".l-nav");
   const navHero = $(".l-hero");
   if (nav && navHero) {
     const slot = document.createElement("div"); // keeps the header's layout while the nav is lifted out
-    let floating = false, shown = false, lastY = scrollY, ticking = false;
-    const setShown = (v) => { shown = v; nav.classList.toggle("is-shown", v); };
+    let floating = false, ticking = false, leaving = 0;
+    const pastHeader = () => scrollY > navHero.offsetTop + navHero.offsetHeight;
+    const setShown = (v) => nav.classList.toggle("is-shown", v);
     function float(on) {
       floating = on;
       if (on) {
@@ -60,7 +73,10 @@
         nav.before(slot);
         nav.classList.add("is-floating", "no-anim"); // starts out of view, no slide
         setShown(false);
-        requestAnimationFrame(() => requestAnimationFrame(() => nav.classList.remove("no-anim")));
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          nav.classList.remove("no-anim");
+          setShown(pastHeader());
+        }));
       } else {
         nav.classList.remove("is-floating", "is-shown", "no-anim");
         slot.remove();
@@ -68,17 +84,17 @@
     }
     function update() {
       ticking = false;
-      const y = scrollY;
-      const pastHeader = y > navHero.offsetTop + navHero.offsetHeight;
-      if (!floating && pastHeader) float(true);
-      else if (floating && y <= 0) float(false); // back at the very top: home in the header
-      if (floating) {
-        const dy = y - lastY;
-        const menuOpen = !!$(".l-menu.is-open", nav);
-        if (dy > 6 && !menuOpen) setShown(false);
-        else if (dy < -6) setShown(true);
+      const past = pastHeader();
+      if (past) {
+        clearTimeout(leaving);
+        leaving = 0;
+        if (floating) setShown(true);
+        else float(true);
+      } else if (floating && !leaving) {
+        // Slide the pill away, then put the nav back in the header (scrolled out of sight by then)
+        setShown(false);
+        leaving = setTimeout(() => { leaving = 0; float(false); }, 380);
       }
-      lastY = y;
     }
     window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
     update();
@@ -1242,7 +1258,7 @@
       if (!W) return;
       const small = W < 560;
       c = kind === "file"
-        ? { th: small ? 31 : 36, step: small ? 40 : 48, h: small ? 400 : 480, sL: small ? 14 : 24, sR: small ? 22 : 40, rc: 0, rb: 4, lead: small ? 10 : 18 }
+        ? { th: small ? 31 : 36, step: small ? 40 : 48, h: small ? 400 : 480, sL: small ? 14 : 24, sR: small ? 22 : 40, rc: 4, rb: 4, lead: small ? 10 : 18 }
         : { th: small ? 28 : 32, step: 24, h: small ? 440 : 480, sL: small ? 8 : 14, sR: small ? 14 : 28, rc: 6, rb: 6 };
       c.tw = kind === "file" ? W * (small ? 0.5 : 0.36) : W / n;
       stage.style.setProperty("--th", `${c.th}px`);

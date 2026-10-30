@@ -112,33 +112,38 @@ html { overflow-x: clip; }
   margin: 0 auto;
   padding: 34px var(--l-pad) 0;
 }
-/* Floating nav (js/landing.js): once you've scrolled past the header the nav pins to the top,
-   hidden while you scroll down and sliding back in, on frosted glass, when you scroll up. It goes
-   back to its place in the header when you return to the very top. */
+/* Desktop: the nav alone runs the full screen width, outside the page's columns */
+@media (min-width: 721px) { .l-nav { max-width: none; padding-left: 32px; padding-right: 32px; } }
+.l-nav [hidden] { display: none; }
+/* Floating nav (js/landing.js): once you've scrolled past the header the nav pops down as a
+   frosted glass pill with a little margin from the top. Back in the header it slides away and
+   the nav returns to its place there. */
 .l-nav.is-floating {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 12px;
+  left: 50%;
   z-index: 60;
-  padding-top: 14px;
-  padding-bottom: 14px;
-  transform: translateY(-110%);
+  gap: 40px;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  margin: 0;
+  padding: 7px 7px 7px 22px;
+  transform: translate(-50%, calc(-100% - 24px));
   transition: transform 0.38s var(--l-ease);
 }
-.l-nav.is-floating.is-shown { transform: none; }
+.l-nav.is-floating.is-shown { transform: translate(-50%, 0); }
+.l-nav.is-floating :is(.l-menu__button, .l-btn) { border-radius: 999px; }
+/* The menu links are gone at this width: logo and button at the pill's two ends */
+@media (max-width: 1100px) { .l-nav.is-floating { width: min(440px, calc(100vw - 24px)); } }
 .l-nav.is-floating.no-anim { transition: none; }
-/* The glass spans the full screen width, behind the centred nav */
 .l-nav.is-floating::before {
   content: "";
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 100vw;
-  transform: translateX(-50%);
+  inset: 0;
   z-index: -1;
-  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
   background: rgba(250, 250, 250, 0.72);
   -webkit-backdrop-filter: blur(16px) saturate(1.4);
   backdrop-filter: blur(16px) saturate(1.4);
@@ -164,7 +169,7 @@ html { overflow-x: clip; }
   height: 36px;
   padding: 0 14px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 8px;
   background: transparent;
   font: 500 14px/21px "Aeonik", "Inter", sans-serif;
   cursor: pointer;
@@ -180,7 +185,7 @@ html { overflow-x: clip; }
   display: grid;
   min-width: 260px;
   padding: 8px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: #fff;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
   opacity: 0;
@@ -407,7 +412,7 @@ html { overflow-x: clip; }
   height: min(64%, 35.85vw);
   aspect-ratio: 1050 / 542;
   overflow: hidden;
-  border-radius: 9px;
+  border-radius: 8px;
   background: #fff;
   box-shadow: 3px 4px 10.9px rgba(0, 0, 0, 0.29);
 }
@@ -444,7 +449,7 @@ html { overflow-x: clip; }
   position: relative;
   aspect-ratio: 16 / 10; /* a desktop screen; the app shot is cropped from the top */
   overflow: hidden;
-  border-radius: 9px;
+  border-radius: 8px;
   background: #fff;
   box-shadow: 3px 4px 10.9px rgba(0, 0, 0, 0.29);
 }
@@ -563,7 +568,7 @@ html { overflow-x: clip; }
   grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr);
   min-height: 436px;
   border: 1px solid rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.04);
 }
@@ -898,11 +903,12 @@ html { overflow-x: clip; }
 .l-acc__by > span { opacity: 0.6; }
 @media (max-width: 720px) {
   /* Stacked: thin bars with the logo lying in them; the open one grows downwards */
-  .l-acc { flex-direction: column; --off: 72px; --h: 400px; --pad: 20px; }
+  .l-acc { flex-direction: column; --off: 60px; --h: 400px; --pad: 20px; }
   .l-acc__item { width: 100%; height: var(--off); transition: height var(--a-dur) var(--l-ease); }
   .l-acc__item.is-open { width: 100%; height: var(--h); }
   .l-acc__index { display: none; }
-  .l-acc__logo { left: var(--pad); top: calc((var(--off) - var(--logo-h, 28px)) / 2); transform: none; }
+  /* Logos at three quarters of their desktop size, centred in the bar */
+  .l-acc__logo { height: calc(var(--logo-h, 28px) * 0.75); left: var(--pad); top: calc((var(--off) - var(--logo-h, 28px) * 0.75) / 2); transform: none; }
   .l-acc__item.is-open .l-acc__logo { top: var(--pad); }
   .l-acc__story { width: auto; right: var(--pad); }
   .l-acc__story blockquote { font-size: 22px; }
@@ -947,7 +953,7 @@ html { overflow-x: clip; }
 .l-record .l-split h2 { max-width: 8.5em; font-size: 44px; font-weight: 400; line-height: 1.1; letter-spacing: -0.03em; }
 .l-record .l-split p { max-width: 545px; font-size: 16px; line-height: 1.45; }
 .l-bento { display: grid; grid-template-columns: 640fr 328fr 328fr; grid-template-rows: 206px 203px; gap: 16px; margin-top: 55px; }
-.l-bento > div { position: relative; padding: 26px 24px; border-radius: 4px; background: var(--l-sky); color: #000; overflow: hidden; transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1); will-change: transform; }
+.l-bento > div { position: relative; padding: 26px 24px; border-radius: 8px; background: var(--l-sky); color: #000; overflow: hidden; transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1); will-change: transform; }
 .l-bento > div:hover { transform: translateY(-3px); }
 .l-bento__big { grid-row: span 2; display: flex; flex-direction: column; justify-content: space-between; }
 .l-bento__big strong { font-weight: 400; font-size: clamp(90px, 11vw, 176px); line-height: 0.85; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
@@ -1023,10 +1029,12 @@ html { overflow-x: clip; }
 .l-pcard:is(:hover, :focus-within) .l-pcard__cta .l-btn { opacity: 1; transform: none; transition: opacity 0.35s 0.08s, transform 0.45s var(--l-ease); }
 .l-pcard--dark .l-pcard__cta .l-btn { border-color: rgba(255, 255, 255, 0.85); color: #fff; }
 .l-pcard--dark .l-pcard__cta .l-btn:hover { background: #fff; color: #000 !important; }
-/* Touch screens have no hover: show the button all the time */
-@media (hover: none) {
+/* Touch screens and phone widths have no hover: show the button all the time */
+@media (hover: none), (max-width: 720px) {
   .l-pcard__cta { grid-template-rows: 1fr; }
   .l-pcard__cta .l-btn { opacity: 1; transform: none; }
+  /* The button is always out, so the art sits higher to clear the copy */
+  .l-pcard__art { transform: translateY(-48px); }
 }
 .l-pcard--dark .l-pcard__face { background: #0f0f0f; color: #fff; }
 .l-pcard--dark p { color: #d0d0d0; }
@@ -1463,7 +1471,7 @@ html { overflow-x: clip; }
 .l-feed__copy { display: grid; gap: 14px; padding-right: 16px; }
 .l-feed__copy h3 { margin: 8px 0 0; font-size: 32px; font-weight: 400; line-height: 31.5px; letter-spacing: -0.01em; color: #1c1c1c; }
 .l-feed__copy p { max-width: 30em; margin: 0; font-size: 16px; line-height: 1.1; }
-.l-feed__more { border-radius: 2px; }
+.l-feed__more { border-radius: 4px; }
 /* the copy rises into place, title first */
 .l-feed__feature.is-in :is(.l-feed__copy h3, .l-feed__copy p, .l-feed__more) { animation: l-feed-up 0.55s var(--l-ease) both; }
 .l-feed__feature.is-in .l-feed__copy p { animation-delay: 0.05s; }
@@ -1518,7 +1526,7 @@ html { overflow-x: clip; }
    over the first step; everything printed on it is mono, like a receipt. The paper is drawn: a light grey
    sheet with square corners, sprocket holes punched right through both margins (a mask), the tear
    perforations inside them, and a faint grain. */
-.l-sign { --sign-paper: var(--l-sky); /* the signature sky blue, #c6f4ff (was light grey #ececea) */ --sign-print: #161616; --sign-ease: cubic-bezier(0.2, 0.8, 0.16, 1); padding: 110px var(--l-pad) 70px; overflow: hidden; }
+.l-sign { --sign-paper: var(--l-sky); /* the signature sky blue, #c6f4ff */ --sign-print: #161616; --sign-ease: cubic-bezier(0.2, 0.8, 0.16, 1); padding: 110px var(--l-pad) 70px; overflow: hidden; }
 .l-sign__stage {
   --card-w: 500px;
   --card-h: 640px;
@@ -1554,7 +1562,7 @@ html { overflow-x: clip; }
   height: 44px;
   padding: 0 16px;
   border: 1px solid rgba(0, 0, 0, 0.18);
-  border-radius: 2px;
+  border-radius: 4px;
   background: var(--l-mist);
   font: 400 15px/1 "Aeonik", "Inter", sans-serif;
   color: #000;
@@ -1573,7 +1581,7 @@ html { overflow-x: clip; }
   height: 44px;
   padding: 0 18px;
   border: 0;
-  border-radius: 2px;
+  border-radius: 4px;
   background: #000;
   color: #f2f2f2;
   font: 500 14px/1 "Aeonik", "Inter", sans-serif;
@@ -1768,8 +1776,11 @@ html { overflow-x: clip; }
 }
 
 @media (max-width: 720px) {
-  .l-hero { height: auto; min-height: 100svh; }
-  .l-hero:is([data-hero="studio"], [data-hero="app"]) { height: 100svh; }
+  .l-hero { height: auto; min-height: var(--l-screen, 100svh); } /* --l-screen: js/landing.js, steady when the keyboard opens */
+  .l-hero:is([data-hero="studio"], [data-hero="app"]) { height: var(--l-screen, 100svh); }
+  .l-hero[data-hero="half"] { height: var(--l-screen, 100svh); }
+  .apy { height: calc(var(--l-screen, 100vh) * 7); }
+  .apy__stage { height: var(--l-screen, 100svh); }
   .l-hero__copy--studio { position: absolute; top: 110px; }
   /* Studio on a phone: copy up top, the still life scaled into the lower half and faded into the backdrop */
   .l-hero[data-hero="studio"] { background: #e3e1e0; }
@@ -1786,9 +1797,30 @@ html { overflow-x: clip; }
   .l-nav__actions .l-link { display: none; }
   .l-split { flex-direction: column; }
   .l-product { grid-template-columns: 1fr; }
-  .l-products[data-layout="row"] .l-product { grid-template-columns: 1fr; min-height: 0; }
+  /* Phones: the product cards stack instead of swiping, with tighter copy and a demo that
+     shrinks to the card rather than pushing past it */
+  .l-products[data-layout="row"] .l-products__grid { flex-direction: column; gap: 16px; margin: 32px 0 0; padding: 0; overflow: visible; scroll-snap-type: none; }
+  .l-products[data-layout="row"] .l-product { flex: none; grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  /* No hover on a phone: no lift, shadow or comet round the button */
+  .l-products .l-product, .l-products .l-product:hover { box-shadow: none; }
+  .l-products .l-product:hover { transform: none; }
+  .l-products .l-product .l-ring { display: none; }
+  .l-products[data-layout="row"] .l-product__copy { padding: 20px 18px 28px; }
+  .l-products[data-layout="row"] .l-product__copy h3 { font-size: 30px; }
+  .l-products[data-layout="row"] .l-product__copy p { max-width: none; font-size: 15px; }
+  .l-product__demo { grid-template-columns: minmax(0, 1fr); min-width: 0; padding: 24px 16px; }
+  .w-dots { gap: 0; } /* the 58 dot columns share whatever width there is */
+  .w-dots__col { flex: 1 1 0; min-width: 0; align-items: center; }
   .l-product__copy { gap: 30px; }
+  /* Institutional Commodity Yield fills the screen, the APY sitting at its foot */
+  .l-commodity { height: var(--l-screen, 100svh); min-height: 0; max-height: none; }
+  .l-commodity__inner { padding-bottom: 28px; }
   .l-commodity__stat { align-self: flex-start; }
+  /* Proof in partners: cards closer under the arrows, less air before the next section */
+  .l-stories2 { padding-bottom: 60px; }
+  .l-stories2 .l-display, .l-folio__head h2, .l-products .l-headline, .l-prow .l-headline, .l-partners .l-headline { font-size: 40px; } /* same as What's New */
+  .l-flip { height: calc(var(--h) + 70px); margin-top: 12px; }
+  .l-flip__stage { top: 24px; }
   .l-commodity h2 { font-size: 42px; } /* 64px would push "Institutional" past a phone's edge */
   .l-bento__big strong { font-size: 64px; }
   .l-footer__base { flex-direction: column; align-items: flex-start; gap: 24px; margin-top: 80px; }

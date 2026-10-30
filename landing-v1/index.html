@@ -10,8 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Coded sections, reused as-is from their experiments -->
   <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1032r">
-  <link rel="stylesheet" href="css/landing.css?v=1032r">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1033d">
+  <link rel="stylesheet" href="css/landing.css?v=1033d">
 </head>
 <body class="l-page">
   <!-- Hiring tab: a curved folder tab peeking in from the right edge of every screen. Hover pulls
@@ -39,7 +39,8 @@
             <a href="#products"><strong>Multiply</strong><span>One-click leveraged yield</span></a>
           </div>
         </li>
-        <li class="l-menu">
+        <!-- Enterprise and Issuers are hidden for now: remove "hidden" to bring them back -->
+        <li class="l-menu" hidden>
           <button class="l-menu__button" aria-expanded="false">Enterprise <img src="assets/chevron.svg" alt="" width="12" height="12"></button>
           <div class="l-menu__panel">
             <a href="#platform"><strong>Credit markets</strong><span>Launch and run lending markets</span></a>
@@ -47,7 +48,7 @@
             <a href="#build"><strong>Integrations</strong><span>APIs and SDKs</span></a>
           </div>
         </li>
-        <li class="l-menu">
+        <li class="l-menu" hidden>
           <button class="l-menu__button" aria-expanded="false">Issuers <img src="assets/chevron.svg" alt="" width="12" height="12"></button>
           <div class="l-menu__panel">
             <a href="#commodity"><strong>Onboard an asset</strong><span>Bring RWAs onchain</span></a>
@@ -89,7 +90,7 @@
         <li class="l-menu">
           <button class="l-menu__button" aria-expanded="false">Company <img src="assets/chevron.svg" alt="" width="12" height="12"></button>
           <div class="l-menu__panel">
-            <a href="#stories"><strong>Success stories</strong><span>Partners building on Kamino</span></a>
+            <a href="#stories" hidden><strong>Success stories</strong><span>Partners building on Kamino</span></a>
             <a href="#footer"><strong>Careers</strong><span>Join the team</span></a>
             <a href="#footer"><strong>Contact</strong><span>Talk to us</span></a>
           </div>
@@ -97,7 +98,7 @@
       </ul>
 
       <div class="l-nav__actions">
-        <a class="l-link" href="#build">Build with us</a>
+        <a class="l-link" href="#build" hidden>Build with us</a>
         <a class="l-btn l-btn--dark" href="#">Open Kamino</a>
       </div>
     </nav>
@@ -1138,6 +1139,6 @@
   <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
   <script src="../section-card-lock/js/stack.js"></script>
   <!-- Page interactions + lazy three.js (hero, APY story) -->
-  <script src="js/landing.js?v=1032r"></script>
+  <script src="js/landing.js?v=1033d"></script>
 </body>
 </html>
