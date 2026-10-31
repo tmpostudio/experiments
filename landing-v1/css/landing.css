@@ -1796,7 +1796,7 @@ html { overflow-x: clip; }
   cursor: pointer;
 }
 .l-footer__contact span { transition: translate 0.3s var(--l-ease); }
-.l-footer__contact:hover span { translate: 0.12em 0; }
+.l-footer__contact:hover span { translate: 0.08em -0.08em; }
 .l-footer__cols { display: grid; grid-template-columns: repeat(4, auto); justify-content: end; gap: 0 120px; }
 .l-footer__cols ul { margin: 0; padding: 0; list-style: none; font-size: 24px; line-height: 1.5; letter-spacing: -0.02em; }
 .l-footer__cols a { text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.3s var(--l-ease); }
@@ -1837,8 +1837,12 @@ html.has-contact { overflow: hidden; }
 }
 .l-contact[open] { animation: l-contact-in 0.5s var(--l-ease) both; } /* on the dialog, so the card's travel can't scroll it */
 .l-contact[open]::backdrop { animation: l-contact-fade 0.5s ease both; }
+.l-contact[open].is-closing { animation: l-contact-out 0.5s cubic-bezier(0.4, 0, 1, 1) both; } /* moves as soon as you click, then drops away */
+.l-contact[open].is-closing::backdrop { animation: l-contact-unfade 0.5s ease both; }
 @keyframes l-contact-in { from { transform: translateY(100vh); } }
+@keyframes l-contact-out { to { transform: translateY(100vh); } }
 @keyframes l-contact-fade { from { opacity: 0; } }
+@keyframes l-contact-unfade { to { opacity: 0; } }
 .l-contact__paper {
   position: absolute;
   inset: 0;
@@ -1932,26 +1936,28 @@ html.has-contact { overflow: hidden; }
 .l-contact--swiss .l-contact__card {
   grid-template-columns: var(--cc-cols);
   grid-template-rows: auto minmax(40px, 1fr) auto auto;
-  grid-template-areas: "title controls" ". ." "q where" "body body";
+  grid-template-areas: "q q" ". ." "where where" "body body";
   min-height: 640px;
   font: 400 var(--cc-small)/1.25 "Aeonik", "Inter", sans-serif;
   letter-spacing: -0.01em;
 }
 .l-contact--swiss .l-mono { font: inherit; letter-spacing: inherit; text-transform: none; }
 .l-contact--swiss :is(.l-contact__head, .l-contact__panel) { display: contents; }
-.l-contact--swiss .l-contact__title { position: relative; grid-area: title; margin: -0.15em 0 0; font-size: var(--cc-large); line-height: 1.1; letter-spacing: -0.03em; }
-.l-contact--swiss .l-contact__controls { margin-top: 0; }
+/* The question is the title; "Contact Us" stays only as the dialog's accessible name */
+.l-contact--swiss .l-contact__title { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); }
+.l-contact--swiss .l-contact__controls { z-index: 1; grid-area: q; justify-self: end; align-self: start; margin-top: 0; }
 .l-contact--swiss .l-contact__control { opacity: 1; }
 .l-contact--swiss .l-contact__control:hover { opacity: 0.6; }
 .l-contact--swiss .l-contact__where { position: relative; grid-area: where; align-self: end; gap: 0; margin: 0 0 12px; }
-.l-contact--swiss .l-contact__q { position: relative; grid-area: q; align-self: end; margin: 0 0 12px; }
+.l-contact--swiss .l-contact__q, .l-contact--swiss [data-cc-step] { color: rgba(255, 255, 255, 0.6); }
+.l-contact--swiss .l-contact__q { position: relative; grid-area: q; align-self: start; width: 33%; margin: -0.15em 0 0; font-size: var(--cc-large); line-height: 1.1; letter-spacing: -0.03em; }
 .l-contact--swiss .l-contact__body { position: relative; grid-area: body; min-width: 0; }
 /* Rows */
-.l-contact--swiss .l-contact__row { position: relative; display: grid; grid-template-columns: var(--cc-cols); column-gap: 24px; align-items: baseline; min-height: 0; padding: 8px 0; transition: opacity 0.2s; }
+.l-contact--swiss .l-contact__row { position: relative; display: grid; grid-template-columns: var(--cc-cols); column-gap: 24px; align-items: start; min-height: 0; padding: 8px 0; transition: opacity 0.2s; }
 .l-contact--swiss .l-contact__rows:hover .l-contact__row:not(:hover), .l-contact--swiss .l-contact__rows:has(.is-punched) .l-contact__row:not(.is-punched) { opacity: 0.4; }
 .l-contact--swiss .l-contact__hole { display: none; }
 .l-contact--swiss .l-contact__row-text { display: contents; }
-.l-contact--swiss .l-contact__label { font-size: var(--cc-large); line-height: 1.1; letter-spacing: -0.03em; }
+.l-contact--swiss .l-contact__label { font-size: 28px; line-height: 1.1; letter-spacing: -0.03em; }
 .l-contact--swiss .l-contact__label:only-child { grid-column: 1 / -1; }
 .l-contact--swiss .l-contact__hint { font-size: var(--cc-small); line-height: 1.25; }
 .l-contact--swiss .l-contact__row--link .l-contact__hint { padding-right: 24px; }
@@ -1973,14 +1979,16 @@ html.has-contact { overflow: hidden; }
 @media (max-width: 720px) {
   .l-contact--swiss { --cc-large: 28px; --cc-cols: minmax(0, 1fr); }
   .l-contact--swiss .l-contact__card {
-    grid-template-rows: auto minmax(24px, 1fr) auto auto auto;
-    grid-template-areas: "title" "." "where" "q" "body";
+    grid-template-rows: auto minmax(24px, 1fr) auto auto;
+    grid-template-areas: "q" "." "where" "body";
     min-height: calc(100dvh - 16px);
   }
   .l-contact--swiss .l-contact__top { position: static; display: contents; }
-  .l-contact--swiss .l-contact__controls { grid-area: title; justify-self: end; align-self: start; }
-  .l-contact--swiss .l-contact__title { margin-top: -0.1em; }
+  .l-contact--swiss .l-contact__q { width: 75%; margin-top: -0.1em; text-wrap: balance; }
+  .l-contact--swiss .l-contact__card:has([data-cc-back]:not([hidden])) .l-contact__q { max-width: calc(100% - 112px); } /* always clears Back and Close */
+  .l-contact--swiss .l-contact__where { margin-bottom: 24px; }
   .l-contact--swiss .l-contact__row { row-gap: 2px; min-height: 0; padding: 8px 0; }
+  .l-contact--swiss .l-contact__label { font-size: 20px; letter-spacing: -0.02em; } /* a third size, just here: at 28px the list fills the phone */
 }
 
 /* ---------- Reveal on scroll ---------- */

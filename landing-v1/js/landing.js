@@ -1129,7 +1129,7 @@
       done.append(el("p", "l-contact__label", `We’ll reply to ${email}.`));
       const close = el("button", "l-btn l-btn--dark", "Close");
       close.type = "button";
-      close.addEventListener("click", () => cc.close());
+      close.addEventListener("click", dismiss);
       done.append(close);
       body.append(done);
       close.focus({ preventScroll: true });
@@ -1149,9 +1149,20 @@
       open(b.dataset.contactRoute, b.dataset.contactNeed);
     }));
     back.addEventListener("click", () => { onBack?.(); qEl.focus({ preventScroll: true }); });
-    $("[data-cc-close]", cc).addEventListener("click", () => cc.close());
-    cc.addEventListener("click", (e) => { if (e.target === cc) cc.close(); });
-    cc.addEventListener("close", () => document.documentElement.classList.remove("has-contact"));
+    // Back down the way it came, then really close
+    const dismiss = () => {
+      if (reduced) { cc.close(); return; }
+      if (cc.classList.contains("is-closing")) return;
+      cc.classList.add("is-closing");
+      setTimeout(() => cc.close(), 500);
+    };
+    $("[data-cc-close]", cc).addEventListener("click", dismiss);
+    cc.addEventListener("click", (e) => { if (e.target === cc) dismiss(); });
+    cc.addEventListener("cancel", (e) => { e.preventDefault(); dismiss(); });
+    cc.addEventListener("close", () => {
+      cc.classList.remove("is-closing");
+      document.documentElement.classList.remove("has-contact");
+    });
   }
 
   // ---------- Stories carousel: arrows + drag ----------
