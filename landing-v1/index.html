@@ -10,8 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
   <!-- Coded sections, reused as-is from their experiments -->
   <link rel="stylesheet" href="../kamino-sign-here/css/styles.css?v=1023">
-  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1033y">
-  <link rel="stylesheet" href="css/landing.css?v=1033y">
+  <link rel="stylesheet" href="../section-card-lock/css/styles.css?v=1034x">
+  <link rel="stylesheet" href="css/landing.css?v=1034x">
 </head>
 <body class="l-page">
   <!-- Hiring tab: a curved folder tab peeking in from the right edge of every screen. Hover pulls
@@ -92,7 +92,7 @@
           <div class="l-menu__panel">
             <a href="#stories" hidden><strong>Success stories</strong><span>Partners building on Kamino</span></a>
             <a href="#footer"><strong>Careers</strong><span>Join the team</span></a>
-            <a href="#footer"><strong>Contact</strong><span>Talk to us</span></a>
+            <a href="#footer" data-contact-open><strong>Contact</strong><span>Talk to us</span></a>
           </div>
         </li>
       </ul>
@@ -953,7 +953,7 @@
               <header class="l-folio__meta"><span class="l-mono">Custom · On-chain</span><span class="l-mono">Partnerships</span></header>
               <p class="l-folio__pitch"><i>Big ideas need a custom integration.</i><i>Let’s build it together.</i></p>
               <span class="l-folio__big" aria-hidden="true">Custom</span>
-              <button class="l-folio__go" type="button" data-contact-open>Contact us<span class="l-folio__go-arrow" aria-hidden="true">→</span></button>
+              <button class="l-folio__go" type="button" data-contact-open data-contact-route="build" data-contact-need="Custom integration">Contact us<span class="l-folio__go-arrow" aria-hidden="true">→</span></button>
             </div>
           </article>
           <article class="l-folio__sheet" data-sheet="cli">
@@ -1066,6 +1066,7 @@
         </form>
       </div>
 
+      <div class="l-sign__shade" aria-hidden="true"></div>
       <div class="l-sign__card" data-sign-card>
         <div class="l-sign__paper" aria-hidden="true"></div>
         <form class="l-sign__form" id="sign-form" data-endpoint="" novalidate inert>
@@ -1102,11 +1103,14 @@
   <!-- ============ Footer ============ -->
   <footer class="l-footer" id="footer">
     <div class="l-wrap">
+      <div class="l-footer__top">
+      <button class="l-footer__contact" type="button" data-contact-open>Contact us<span aria-hidden="true">→</span></button>
       <div class="l-footer__cols">
         <ul><li><a href="#products">Earn</a></li><li><a href="#products">Borrow</a></li><li><a href="#products">Swap</a></li><li><a href="#products">Multiply</a></li></ul>
-        <ul><li><a href="#">Company</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li><li><a href="#">Helpdesk</a></li></ul>
-        <ul><li><a href="#stories">Success Stories</a></li><li><a href="#news">News</a></li><li><a href="#">Contact</a></li></ul>
+        <ul><li><a href="#">Company</a></li><li><a href="#">Careers</a></li><li><a href="#" data-contact-open>Contact</a></li><li><a href="#">Helpdesk</a></li></ul>
+        <ul><li><a href="#stories">Success Stories</a></li><li><a href="#news">News</a></li><li><a href="#" data-contact-open>Contact</a></li></ul>
         <ul><li><a href="#">X</a></li><li><a href="#">LinkedIn</a></li><li><a href="#">Telegram</a></li></ul>
+      </div>
       </div>
       <div class="l-footer__base">
         <img class="l-footer__logo" src="assets/logos/kamino.svg" alt="Kamino" width="195" height="45">
@@ -1124,12 +1128,29 @@
     </div>
   </dialog>
 
-  <!-- Contact modal (placeholder: the form isn't built yet). Opened by the Custom sheet's Contact us. -->
-  <dialog class="l-modal" data-contact aria-labelledby="contact-title">
-    <div class="l-modal__frame">
-      <span class="l-mono">Custom integrations</span>
-      <p id="contact-title">Contact form coming soon.</p>
-      <button class="l-btn l-btn--light" data-contact-close>Close</button>
+  <!-- Contact: a punch card that sorts who's getting in touch, step by step (js/landing.js fills it in).
+       Opened by anything with data-contact-open; data-contact-route / -need start it part way through. -->
+  <dialog class="l-contact l-contact--swiss" data-contact-card aria-labelledby="contact-card-title">
+    <div class="l-contact__card">
+      <div class="l-contact__paper" aria-hidden="true"></div>
+      <header class="l-contact__top">
+        <div class="l-contact__controls">
+          <button class="l-contact__control l-mono" type="button" data-cc-back>← Back</button>
+          <button class="l-contact__control l-mono" type="button" data-cc-close>Close</button>
+        </div>
+      </header>
+      <div class="l-contact__head">
+        <h2 class="l-contact__title" id="contact-card-title">Contact Us</h2>
+        <div class="l-contact__where">
+          <p class="l-mono l-contact__route" data-cc-route></p>
+          <span class="l-mono" data-cc-step></span>
+        </div>
+      </div>
+      <div class="l-contact__panel">
+        <p class="l-mono l-contact__q" tabindex="-1" data-cc-q></p>
+        <div class="l-contact__body" data-cc-body></div>
+      </div>
+      <svg class="l-contact__icon" viewBox="0 0 117 115" aria-hidden="true"><path fill="currentColor" d="M0 26.9478C0 22.6567 3.27393 19.3955 7.58174 19.3955C11.8895 19.3955 15.1635 22.6567 15.1635 26.9478C15.1635 31.2388 11.8895 34.5 7.58174 34.5C3.27393 34.5 0 31.2388 0 26.9478ZM0 47.0299C0 42.7388 3.27393 39.4776 7.58174 39.4776C11.8895 39.4776 15.1635 42.7388 15.1635 47.0299C15.1635 51.3209 11.8895 54.5821 7.58174 54.5821C3.27393 54.5821 0 51.3209 0 47.0299ZM0.516937 6.86567C0.516937 2.74627 3.44624 0 7.92636 0H108.901C113.381 0 116.311 2.74627 116.311 6.86567C116.311 10.9851 113.381 13.7313 108.901 13.7313H7.92636C3.44624 13.7313 0.516937 10.9851 0.516937 6.86567ZM0.516937 67.1119C0.516937 62.9925 3.44624 60.2463 7.92636 60.2463H108.901C113.381 60.2463 116.311 62.9925 116.311 67.1119C116.311 71.2313 113.381 73.9776 108.901 73.9776H7.92636C3.44624 73.9776 0.516937 71.2313 0.516937 67.1119ZM14.4742 107.448C14.4742 103.157 17.7482 99.8955 22.056 99.8955C26.3638 99.8955 29.6377 103.157 29.6377 107.448C29.6377 111.739 26.3638 115 22.056 115C17.7482 115 14.4742 111.739 14.4742 107.448ZM14.9912 87.3657C14.9912 83.2463 17.9205 80.5 22.4006 80.5H36.1856C40.6657 80.5 43.595 83.2463 43.595 87.3657C43.595 91.4851 40.6657 94.2313 36.1856 94.2313H22.4006C17.9205 94.2313 14.9912 91.4851 14.9912 87.3657ZM101.837 26.9478C101.837 22.6567 105.11 19.3955 109.418 19.3955C113.726 19.3955 117 22.6567 117 26.9478C117 31.2388 113.726 34.5 109.418 34.5C105.11 34.5 101.837 31.2388 101.837 26.9478ZM101.837 47.0299C101.837 42.7388 105.11 39.4776 109.418 39.4776C113.726 39.4776 117 42.7388 117 47.0299C117 51.3209 113.726 54.5821 109.418 54.5821C105.11 54.5821 101.837 51.3209 101.837 47.0299Z"/></svg>
     </div>
   </dialog>
 
@@ -1139,6 +1160,6 @@
   <!-- Card stack (loads js/card-art.js from this page's build via data-art-src) -->
   <script src="../section-card-lock/js/stack.js"></script>
   <!-- Page interactions + lazy three.js (hero, APY story) -->
-  <script src="js/landing.js?v=1033y"></script>
+  <script src="js/landing.js?v=1034x"></script>
 </body>
 </html>

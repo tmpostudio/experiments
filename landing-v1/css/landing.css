@@ -956,7 +956,7 @@ html { overflow-x: clip; }
 .l-bento > div { position: relative; padding: 16px; /* on the dot strip's 16px inset */ border-radius: 8px; background: var(--l-sky); color: #000; overflow: hidden; transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1); will-change: transform; }
 .l-bento > div:hover { transform: translateY(-3px); }
 /* The API cards' paper grain: the same noise at the same strength, tiled */
-.l-bento > div::before {
+.l-bento > div::before, .l-contact__paper::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1632,6 +1632,26 @@ html { overflow-x: clip; }
   filter: drop-shadow(0 0 0 transparent) drop-shadow(0 0 0 transparent); /* no shadow once it's up */
   transition: transform 0.9s var(--sign-ease), filter 0.9s var(--sign-ease), z-index 0s;
 }
+/* Pointed at, the sheet hovers and its shadow stays on the table: js/landing.js sets --k, 0 flat to 1 at full height.
+   Lying flat it casts nothing beyond its edge; raised, a tight and a wide soft shadow come in and slide toward the viewer. */
+.l-sign__shade {
+  --k: 0;
+  position: absolute;
+  left: 50%;
+  top: var(--card-top);
+  z-index: 1;
+  width: var(--card-w);
+  height: var(--card-h);
+  margin-left: calc(var(--card-w) / -2);
+  transform-origin: 50% 100%;
+  transform: translateY(var(--rest-y)) rotateX(var(--rest-tilt)) translateY(calc(var(--k) * 32px)) scale(calc(1 + var(--k) * 0.02));
+  cursor: pointer;
+  transition: opacity 0.4s var(--sign-ease);
+}
+.l-sign__shade::before, .l-sign__shade::after { content: ""; position: absolute; inset: 0; background: #0b2a3a; }
+.l-sign__shade::before { filter: blur(10px); opacity: calc(var(--k) * 0.13); }
+.l-sign__shade::after { filter: blur(30px); opacity: calc(var(--k) * 0.16); }
+.l-sign.is-lifted .l-sign__shade { opacity: 0; pointer-events: none; }
 .l-sign__paper {
   position: absolute;
   inset: 0;
@@ -1761,6 +1781,22 @@ html { overflow-x: clip; }
 /* ---------- Footer ---------- */
 
 .l-footer { padding: 40px 0 26px; }
+.l-footer__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+.l-footer__contact {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25em;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: 400 24px/1.5 "Aeonik", "Inter", sans-serif;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+.l-footer__contact span { transition: translate 0.3s var(--l-ease); }
+.l-footer__contact:hover span { translate: 0.12em 0; }
 .l-footer__cols { display: grid; grid-template-columns: repeat(4, auto); justify-content: end; gap: 0 120px; }
 .l-footer__cols ul { margin: 0; padding: 0; list-style: none; font-size: 24px; line-height: 1.5; letter-spacing: -0.02em; }
 .l-footer__cols a { text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.3s var(--l-ease); }
@@ -1770,6 +1806,182 @@ html { overflow-x: clip; }
 .l-footer__base p { margin: 0; font-size: 13px; }
 .l-footer__base p span, .l-footer__base p a { margin-left: 14px; }
 .l-footer__base p a { margin-left: 44px; text-decoration: none; }
+
+/* ---------- Contact card ---------- */
+
+/* A black sheet with the record cards' grain, lightened to show on black. Left, the title and step
+   count up top with the icon at the foot; right, what to do next above the rows you punch. */
+html.has-contact { overflow: hidden; }
+.l-contact {
+  max-width: none;
+  max-height: 100dvh;
+  padding: 12px;
+  border: 0;
+  background: transparent;
+  color: #f2f2f2;
+  color-scheme: dark;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+}
+.l-contact::backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); }
+.l-contact__card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas: "head controls" "head panel" "icon panel";
+  column-gap: 24px;
+  width: min(920px, calc(100vw - 24px));
+  min-height: 600px;
+  padding: 40px;
+}
+.l-contact[open] { animation: l-contact-in 0.5s var(--l-ease) both; } /* on the dialog, so the card's travel can't scroll it */
+.l-contact[open]::backdrop { animation: l-contact-fade 0.5s ease both; }
+@keyframes l-contact-in { from { transform: translateY(100vh); } }
+@keyframes l-contact-fade { from { opacity: 0; } }
+.l-contact__paper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+.l-contact__paper::before { filter: grayscale(1) invert(1); opacity: 0.14; mix-blend-mode: screen; }
+.l-contact .l-btn--dark { background: #f2f2f2; color: #000 !important; }
+.l-contact__top { display: contents; } /* its two parts go to opposite corners; on phones it's a row again */
+.l-contact__where { display: grid; gap: 6px; margin-top: 24px; }
+.l-contact__controls { position: relative; grid-area: controls; justify-self: end; display: flex; flex: none; gap: 18px; margin-top: -0.3em; white-space: nowrap; }
+.l-contact__control { padding: 0; border: 0; background: none; color: inherit; line-height: inherit; opacity: 0.6; cursor: pointer; transition: opacity 0.2s; }
+.l-contact__control:hover { opacity: 1; }
+.l-contact__control[hidden] { display: none; }
+.l-contact__head { position: relative; grid-area: head; }
+.l-contact__title { margin: -0.15em 0 0; font-size: 64px; font-weight: 400; line-height: 1; letter-spacing: -0.04em; white-space: nowrap; }
+.l-contact__icon { position: relative; grid-area: icon; align-self: end; display: none; /* hidden for now; block to bring it back */ width: 42px; height: auto; }
+.l-contact__route { margin: 0; }
+.l-contact__route:empty { display: none; }
+.l-contact__panel { position: relative; grid-area: panel; align-self: end; min-width: 0; margin-top: 24px; }
+.l-contact__q { margin: 0 0 14px; outline: none; }
+.is-in.l-contact__q, .is-in.l-contact__body { animation: l-contact-step 0.4s var(--l-ease) both; }
+.is-in.l-contact__body { animation-delay: 0.05s; }
+@keyframes l-contact-step { from { opacity: 0; transform: translateY(8px); } }
+
+/* Rows: one punch hole each, hairlines between */
+.l-contact__rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid rgba(255, 255, 255, 0.18); }
+.l-contact__rows li { border-bottom: 1px solid rgba(255, 255, 255, 0.18); }
+.l-contact__rows li:last-child { border-bottom: 0; }
+.l-contact__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 56px;
+  padding: 9px 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.l-contact__row:disabled { cursor: default; }
+.l-contact__hole { flex: none; width: 12px; height: 12px; border: 1px solid rgba(255, 255, 255, 0.55); border-radius: 50%; transition: background-color 0.15s, border-color 0.15s, transform 0.25s var(--l-ease); }
+.l-contact__row:hover .l-contact__hole { border-color: #fff; background: rgba(255, 255, 255, 0.2); }
+.l-contact__row.is-punched .l-contact__hole { border-color: #fff; background: #fff; transform: scale(1.15); }
+.l-contact__row-text { display: grid; gap: 2px; min-width: 0; }
+.l-contact__label { margin: 0; font-size: 18px; line-height: 1.2; letter-spacing: -0.02em; }
+.l-contact__hint { font-size: 13px; line-height: 1.2; color: rgba(255, 255, 255, 0.6); }
+.l-contact__go { margin-left: auto; font-size: 16px; transition: translate 0.25s var(--l-ease); }
+.l-contact__row--link:hover .l-contact__go { translate: 2px 0; }
+.l-footer__contact:focus-visible { outline: 2px solid #000; outline-offset: 2px; }
+.l-contact__row:focus-visible, .l-contact__control:focus-visible, .l-contact .l-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.l-contact__note { margin: 16px 0 0; line-height: 1.4; }
+
+/* The details form: printed fields on dashed lines, as on the sign-up card */
+.l-contact__form { display: grid; gap: 14px; }
+.l-contact__field { display: grid; gap: 2px; }
+.l-contact__field input, .l-contact__field textarea {
+  width: 100%;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.6) 50%, transparent 0) 0 100% / 6px 1px repeat-x;
+  color: inherit;
+  font: 400 16px/1.25 "Aeonik", "Inter", sans-serif;
+  letter-spacing: -0.01em;
+  outline: none;
+  resize: none;
+}
+.l-contact__field input:focus, .l-contact__field textarea:focus { background: linear-gradient(#fff 0 0) 0 100% / 100% 1px no-repeat; }
+.l-contact__field [aria-invalid] { background: linear-gradient(#ff6b57 0 0) 0 100% / 100% 1px no-repeat; }
+.l-contact__foot { display: flex; align-items: center; gap: 14px; margin-top: 6px; }
+.l-contact__status { margin: 0; font-size: 13px; color: #ff6b57; }
+.l-contact__done { display: grid; justify-items: start; gap: 20px; }
+@media (prefers-reduced-motion: reduce) {
+  .l-contact[open], .l-contact[open]::backdrop, .is-in.l-contact__q, .is-in.l-contact__body { animation: none; }
+}
+
+/* Swiss version (.l-contact--swiss on the dialog; take the class off for the version above). One typeface
+   and two sizes, --cc-large and --cc-small. A two-column table: what you choose on the left, what it means
+   on the right, with the title alone at the top and the white space between them. */
+.l-contact--swiss {
+  --cc-large: 40px;
+  --cc-small: 14px;
+  --cc-cols: minmax(0, 1.25fr) minmax(0, 0.75fr);
+}
+.l-contact--swiss .l-contact__card {
+  grid-template-columns: var(--cc-cols);
+  grid-template-rows: auto minmax(40px, 1fr) auto auto;
+  grid-template-areas: "title controls" ". ." "q where" "body body";
+  min-height: 640px;
+  font: 400 var(--cc-small)/1.25 "Aeonik", "Inter", sans-serif;
+  letter-spacing: -0.01em;
+}
+.l-contact--swiss .l-mono { font: inherit; letter-spacing: inherit; text-transform: none; }
+.l-contact--swiss :is(.l-contact__head, .l-contact__panel) { display: contents; }
+.l-contact--swiss .l-contact__title { position: relative; grid-area: title; margin: -0.15em 0 0; font-size: var(--cc-large); line-height: 1.1; letter-spacing: -0.03em; }
+.l-contact--swiss .l-contact__controls { margin-top: 0; }
+.l-contact--swiss .l-contact__control { opacity: 1; }
+.l-contact--swiss .l-contact__control:hover { opacity: 0.6; }
+.l-contact--swiss .l-contact__where { position: relative; grid-area: where; align-self: end; gap: 0; margin: 0 0 12px; }
+.l-contact--swiss .l-contact__q { position: relative; grid-area: q; align-self: end; margin: 0 0 12px; }
+.l-contact--swiss .l-contact__body { position: relative; grid-area: body; min-width: 0; }
+/* Rows */
+.l-contact--swiss .l-contact__row { position: relative; display: grid; grid-template-columns: var(--cc-cols); column-gap: 24px; align-items: baseline; min-height: 0; padding: 8px 0; transition: opacity 0.2s; }
+.l-contact--swiss .l-contact__rows:hover .l-contact__row:not(:hover), .l-contact--swiss .l-contact__rows:has(.is-punched) .l-contact__row:not(.is-punched) { opacity: 0.4; }
+.l-contact--swiss .l-contact__hole { display: none; }
+.l-contact--swiss .l-contact__row-text { display: contents; }
+.l-contact--swiss .l-contact__label { font-size: var(--cc-large); line-height: 1.1; letter-spacing: -0.03em; }
+.l-contact--swiss .l-contact__label:only-child { grid-column: 1 / -1; }
+.l-contact--swiss .l-contact__hint { font-size: var(--cc-small); line-height: 1.25; }
+.l-contact--swiss .l-contact__row--link .l-contact__hint { padding-right: 24px; }
+.l-contact--swiss .l-contact__go { position: absolute; right: 0; top: 50%; margin: 0; font-size: var(--cc-small); transform: translateY(-50%); }
+.l-contact--swiss .l-contact__note { margin: 12px 0 0; line-height: 1.25; }
+/* Form: small labels, what you type is large */
+.l-contact--swiss .l-contact__form { gap: 12px; }
+.l-contact--swiss .l-contact__field input, .l-contact--swiss .l-contact__field textarea {
+  height: calc(var(--cc-large) * 1.1 + 9px);
+  padding: 0 0 8px;
+  background: linear-gradient(rgba(255, 255, 255, 0.18) 0 0) 0 100% / 100% 1px no-repeat;
+  font: 400 var(--cc-large)/1.1 "Aeonik", "Inter", sans-serif;
+  letter-spacing: -0.03em;
+}
+.l-contact--swiss .l-contact__field input:focus, .l-contact--swiss .l-contact__field textarea:focus { background: linear-gradient(#fff 0 0) 0 100% / 100% 1px no-repeat; }
+.l-contact--swiss .l-contact__field [aria-invalid] { background: linear-gradient(#ff6b57 0 0) 0 100% / 100% 1px no-repeat; }
+.l-contact--swiss .l-contact__status { font-size: var(--cc-small); }
+.l-contact--swiss .l-btn { font: 400 var(--cc-small)/1 "Aeonik", "Inter", sans-serif; letter-spacing: -0.01em; }
+@media (max-width: 720px) {
+  .l-contact--swiss { --cc-large: 28px; --cc-cols: minmax(0, 1fr); }
+  .l-contact--swiss .l-contact__card {
+    grid-template-rows: auto minmax(24px, 1fr) auto auto auto;
+    grid-template-areas: "title" "." "where" "q" "body";
+    min-height: calc(100dvh - 16px);
+  }
+  .l-contact--swiss .l-contact__top { position: static; display: contents; }
+  .l-contact--swiss .l-contact__controls { grid-area: title; justify-self: end; align-self: start; }
+  .l-contact--swiss .l-contact__title { margin-top: -0.1em; }
+  .l-contact--swiss .l-contact__row { row-gap: 2px; min-height: 0; padding: 8px 0; }
+}
 
 /* ---------- Reveal on scroll ---------- */
 
@@ -1788,6 +2000,7 @@ html { overflow-x: clip; }
   .l-build__grid { grid-template-columns: 1fr; height: auto; }
   .l-build__media { height: 420px; }
   .l-build__panel { min-height: 460px; }
+  .l-footer__top { flex-direction: column; }
   .l-footer__cols { justify-content: start; gap: 30px 60px; grid-template-columns: repeat(2, auto); }
 }
 
@@ -1842,6 +2055,13 @@ html { overflow-x: clip; }
   .l-bento__big strong { font-size: 64px; }
   .l-bento__tile strong { font-size: 32px; }
   .l-footer__base { flex-direction: column; align-items: flex-start; gap: 24px; margin-top: 80px; }
+  /* Contact card: fills the phone, everything stacked */
+  .l-contact { padding: 8px; }
+  .l-contact__card { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; grid-template-areas: "head" "panel" "icon"; width: calc(100vw - 16px); min-height: calc(100dvh - 16px); padding: 24px; }
+  .l-contact__top { position: relative; z-index: 1; grid-area: head; align-self: start; justify-self: end; display: flex; } /* same cell as the title, so the title starts at the top */
+  .l-contact__title { font-size: 40px; }
+  .l-contact__icon { width: 28px; margin-top: 24px; }
+  .l-contact__row { min-height: 52px; padding: 7px 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -982,6 +982,178 @@
   $("[data-contact-close]")?.addEventListener("click", () => contact.close());
   contact?.addEventListener("click", (e) => { if (e.target === contact) contact.close(); });
 
+  // ---------- Contact card: sorts who's getting in touch ----------
+  // Step one picks a route. Most then pick what they need and leave their details, routed to a team;
+  // support and security go straight to where they can be helped, without a form. Picking a row
+  // punches its hole. No endpoint yet: sending is a demo (data-endpoint on the form when there is one).
+  const cc = $("[data-contact-card]");
+  if (cc) {
+    const ROUTES = {
+      institution: { label: "Institution or enterprise", hint: "Funds, banks, treasuries and fintechs", team: "Business development", company: true,
+        ask: "What are you looking to do?", needs: ["Allocate capital", "Launch a credit market", "Offer Kamino to our clients", "Explore a partnership"] },
+      build: { label: "Building on Kamino", hint: "Integrations, APIs and SDKs", team: "Integrations", company: true,
+        ask: "What do you need help with?", needs: ["Custom integration", "Help with an existing integration", "API, SDK or CLI question"] },
+      issuer: { label: "Issuer or curator", hint: "Bring an asset onchain or run a vault", team: "Partnerships", company: true,
+        ask: "What are you bringing to Kamino?", needs: ["Onboard an asset", "Curate a vault", "Oracle pricing with Scope", "Risk review"] },
+      user: { label: "Using Kamino", hint: "Help with my account, a position or a swap", ask: "Support can help with that.",
+        note: "Kamino will never ask for your seed phrase or private keys.",
+        links: [["Open the help desk", "Guides for accounts, positions and swaps"], ["Read the docs", "How each product works"], ["Join the community", "Ask other Kamino users on Telegram"]] },
+      press: { label: "Press or ecosystem", hint: "Media, events, research and community", team: "Communications",
+        ask: "What’s this about?", needs: ["Press or media", "Events or speaking", "Research or data", "Community or ecosystem"] },
+      security: { label: "Security report", hint: "I’ve found a vulnerability", ask: "Thanks for looking out.",
+        note: "Please keep the details private until it’s fixed.",
+        links: [["Report a vulnerability", "Our responsible disclosure process"]] },
+      other: { label: "Something else", hint: "Not sure where I fit", team: "The team" },
+    };
+    const stepEl = $("[data-cc-step]", cc), routeEl = $("[data-cc-route]", cc), qEl = $("[data-cc-q]", cc), body = $("[data-cc-body]", cc), back = $("[data-cc-back]", cc);
+    const PUNCH = reduced ? 0 : 260; // ms to see the hole punched before the card moves on
+    let route = null, need = null, draft = {}, onBack = null;
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+    // One step: the header's count and routing line, the question, then whatever fills the body
+    const show = (step, total, q, routing, backTo) => {
+      stepEl.textContent = total ? `Step ${step} of ${total}` : "Received";
+      routeEl.textContent = routing || "";
+      qEl.textContent = q;
+      onBack = backTo;
+      back.hidden = !backTo;
+      body.replaceChildren();
+      [qEl, body].forEach((n) => { n.classList.remove("is-in"); void n.offsetWidth; n.classList.add("is-in"); });
+    };
+    const rowList = (rows) => { const ul = el("ul", "l-contact__rows"); rows.forEach((r) => { const li = el("li"); li.append(r); ul.append(li); }); body.append(ul); };
+    const rowText = (n, label, hint) => { const t = el("span", "l-contact__row-text"); t.append(el("span", "l-contact__label", label)); if (hint) t.append(el("span", "l-contact__hint", hint)); n.append(t); };
+    // A row you punch: the choice goes in, then the card moves on
+    const punchRow = (label, hint, picked, go) => {
+      const b = el("button", "l-contact__row");
+      b.type = "button";
+      b.append(el("i", "l-contact__hole"));
+      rowText(b, label, hint);
+      b.classList.toggle("is-punched", picked);
+      b.addEventListener("click", () => {
+        $$(".l-contact__row", body).forEach((o) => o.classList.remove("is-punched"));
+        b.classList.add("is-punched");
+        $$(".l-contact__row", body).forEach((o) => (o.disabled = true));
+        setTimeout(go, PUNCH);
+      });
+      return b;
+    };
+    const stepWho = () => {
+      show(1, 3, "What brings you to Kamino?", "", null);
+      rowList(Object.entries(ROUTES).map(([key, r]) => punchRow(r.label, r.hint, route === key, () => { route = key; need = null; stepAfterWho(); })));
+      qEl.focus({ preventScroll: true });
+    };
+    const stepAfterWho = () => {
+      const r = ROUTES[route];
+      if (r.links) stepDirect();
+      else if (r.needs) stepNeed();
+      else stepDetails();
+      qEl.focus({ preventScroll: true });
+    };
+    const stepNeed = () => {
+      const r = ROUTES[route];
+      show(2, 3, r.ask, r.label, stepWho);
+      rowList(r.needs.concat("Something else").map((n) => punchRow(n, null, need === n, () => { need = n; stepDetails(); qEl.focus({ preventScroll: true }); })));
+    };
+    // Support and security: no form, straight to the right place
+    const stepDirect = () => {
+      const r = ROUTES[route];
+      show(2, 2, r.ask, r.label, stepWho);
+      const rows = r.links.map(([label, hint]) => {
+        const a = el("a", "l-contact__row l-contact__row--link");
+        a.href = "#";
+        rowText(a, label, hint);
+        a.append(el("span", "l-contact__go", "↗"));
+        return a;
+      });
+      if (route === "user") {
+        const b = el("button", "l-contact__row l-contact__row--link");
+        b.type = "button";
+        rowText(b, "Still need a person?", "Send the team a message");
+        b.append(el("span", "l-contact__go", "→"));
+        b.addEventListener("click", () => { stepDetails(); qEl.focus({ preventScroll: true }); });
+        rows.push(b);
+      }
+      rowList(rows);
+      body.append(el("p", "l-mono l-contact__note", r.note));
+    };
+    const stepDetails = () => {
+      const r = ROUTES[route];
+      const backTo = r.needs ? stepNeed : r.links ? stepDirect : stepWho;
+      const total = r.needs ? 3 : 2;
+      show(total, total, "Where should we reply?", [r.team || "Support", need].filter(Boolean).join(" · "), backTo);
+      const form = el("form", "l-contact__form");
+      form.noValidate = true;
+      const field = (name, label, type, extra = {}) => {
+        const wrap = el("label", "l-contact__field");
+        wrap.append(el("span", "l-mono", label));
+        const input = el(type === "area" ? "textarea" : "input");
+        if (type === "area") input.rows = 3; else input.type = type;
+        input.name = name;
+        input.value = draft[name] || "";
+        Object.assign(input, extra);
+        input.addEventListener("input", () => { draft[name] = input.value; input.removeAttribute("aria-invalid"); status.textContent = ""; });
+        wrap.append(input);
+        form.append(wrap);
+        return input;
+      };
+      const nameIn = field("name", "Name", "text", { autocomplete: "name" });
+      const emailIn = field("email", r.company ? "Work email" : "Email", "email", { autocomplete: "email" });
+      if (r.company) field("company", "Company", "text", { autocomplete: "organization" });
+      field("message", "Anything we should know?", "area");
+      const foot = el("div", "l-contact__foot");
+      const send = el("button", "l-btn l-btn--dark", "Send");
+      send.type = "submit";
+      const status = el("p", "l-contact__status");
+      status.setAttribute("role", "status");
+      foot.append(send, status);
+      form.append(foot);
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const okName = !!nameIn.value.trim(), okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailIn.value.trim());
+        nameIn.toggleAttribute("aria-invalid", !okName);
+        emailIn.toggleAttribute("aria-invalid", !okEmail);
+        if (!okName || !okEmail) {
+          status.textContent = !okName ? "Add your name." : "Enter a valid email address.";
+          (okName ? emailIn : nameIn).focus();
+          return;
+        }
+        send.disabled = true;
+        send.textContent = "Sending…";
+        setTimeout(() => stepDone(nameIn.value.trim().split(/\s+/)[0], emailIn.value.trim()), 700); // demo
+      });
+      body.append(form);
+    };
+    const stepDone = (first, email) => {
+      const r = ROUTES[route];
+      show(0, 0, `Thanks, ${first}.`, [r.team || "Support", need].filter(Boolean).join(" · "), null);
+      const done = el("div", "l-contact__done");
+      done.append(el("p", "l-contact__label", `We’ll reply to ${email}.`));
+      const close = el("button", "l-btn l-btn--dark", "Close");
+      close.type = "button";
+      close.addEventListener("click", () => cc.close());
+      done.append(close);
+      body.append(done);
+      close.focus({ preventScroll: true });
+    };
+    const open = (startRoute, startNeed) => {
+      route = ROUTES[startRoute] ? startRoute : null;
+      need = startNeed || null;
+      draft = {};
+      if (route) stepAfterWho(); else stepWho();
+      cc.showModal();
+      document.documentElement.classList.add("has-contact");
+      qEl.focus({ preventScroll: true });
+    };
+    $$("[data-contact-open]").forEach((b) => b.addEventListener("click", (e) => {
+      e.preventDefault();
+      $$(".l-menu.is-open").forEach((m) => { m.classList.remove("is-open"); $(".l-menu__button", m)?.setAttribute("aria-expanded", "false"); });
+      open(b.dataset.contactRoute, b.dataset.contactNeed);
+    }));
+    back.addEventListener("click", () => { onBack?.(); qEl.focus({ preventScroll: true }); });
+    $("[data-cc-close]", cc).addEventListener("click", () => cc.close());
+    cc.addEventListener("click", (e) => { if (e.target === cc) cc.close(); });
+    cc.addEventListener("close", () => document.documentElement.classList.remove("has-contact"));
+  }
+
   // ---------- Stories carousel: arrows + drag ----------
   const list = $("[data-stories]");
   if (list) {
@@ -1116,9 +1288,39 @@
       ink.style.setProperty("--fit", scale.toFixed(3));
       ink.style.setProperty("--offset", `${Math.max(2, -inkL * scale + 2).toFixed(1)}px`);
     };
+    // Pointing at the flat sheet raises it off the table, where it hovers with a slow drift. The sheet
+    // moves along its own tilted normal; its shadow stays on the table and softens with height, and
+    // counts as part of the target so the rising sheet can't slip out from under the pointer.
+    const shade = $(".l-sign__shade", sign);
+    const canHover = matchMedia("(hover: hover)").matches;
+    const RISE = 18, TILT = (80 * Math.PI) / 180;
+    let height = 0, hoverRaf = 0;
+    const setHeight = (h) => {
+      height = h;
+      card.style.translate = `0 ${(-h * Math.sin(TILT)).toFixed(2)}px ${(h * Math.cos(TILT)).toFixed(2)}px`;
+      shade.style.setProperty("--k", (h / RISE).toFixed(3));
+    };
+    // Two smoothing stages in a row ease both ends of the move: "aim" chases the goal and the height chases
+    // aim. Over and off take well over a second; Continue clears it fast so it doesn't drag on the lift.
+    let aim = 0, lastT = 0;
+    const hover = (t) => {
+      hoverRaf = 0;
+      const lifted = sign.classList.contains("is-lifted");
+      const over = canHover && !lifted && (card.matches(":hover") || shade.matches(":hover"));
+      const goal = over ? RISE - 2 + (reduced ? 0 : Math.sin(t / 1400) * 2) : 0;
+      const ease = 1 - Math.exp(-Math.min(50, t - lastT || 16) / (lifted ? 80 : 340));
+      lastT = t;
+      aim = reduced ? goal : aim + (goal - aim) * ease;
+      const next = reduced ? goal : height + (aim - height) * ease;
+      if (over && !reduced || Math.abs(goal - next) > 0.02) { setHeight(next); hoverRaf = requestAnimationFrame(hover); }
+      else { aim = goal; lastT = 0; setHeight(goal); }
+    };
+    const wakeHover = () => { if (shade && !hoverRaf) hoverRaf = requestAnimationFrame(hover); };
+    if (shade && canHover) [card, shade].forEach((n) => { n.addEventListener("pointerenter", wakeHover); n.addEventListener("pointerleave", wakeHover); });
     let writeTimer = 0;
     const lift = (on) => {
       sign.classList.toggle("is-lifted", on);
+      wakeHover();
       form.inert = !on;
       intro.inert = on;
       clearTimeout(writeTimer);
@@ -1142,6 +1344,7 @@
     start.addEventListener("submit", (e) => { e.preventDefault(); ask(); });
     nameIn.addEventListener("input", () => nameIn.removeAttribute("aria-invalid"));
     card.addEventListener("click", () => { if (!sign.classList.contains("is-lifted")) ask(); });
+    shade?.addEventListener("click", ask);
     $("[data-sign-back]", sign).addEventListener("click", (e) => { e.stopPropagation(); lift(false); }); // not on to the card, which would lift it again
     addEventListener("resize", () => { if (sign.classList.contains("is-lifted")) fit(); });
 
