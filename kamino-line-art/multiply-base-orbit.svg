@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 356 160" fill="none">
+  <!-- Multiply base orbit — the opening state of the welcome set's slide 3/4.
+       Native proportions from createMultiplyStack: ry = rx * 0.42, inner
+       ellipse at 0.42, centre vault r4, 12 bodies r3 at t = 0. Ink #111111. -->
+  <ellipse cx="178" cy="80" rx="169.2" ry="71.1" stroke="#111111" stroke-width="1" stroke-dasharray="1.5 5"/>
+  <ellipse cx="178" cy="80" rx="71.06" ry="29.86" stroke="#111111" stroke-width="1"/>
+  <circle cx="178" cy="80" r="4" stroke="#111111" stroke-width="1"/>
+  <g fill="#111111">
+    <circle cx="347.2" cy="80" r="3"/>
+    <circle cx="324.53" cy="115.55" r="3"/>
+    <circle cx="262.6" cy="141.57" r="3"/>
+    <circle cx="178" cy="151.1" r="3"/>
+    <circle cx="93.4" cy="141.57" r="3"/>
+    <circle cx="31.47" cy="115.55" r="3"/>
+    <circle cx="8.8" cy="80" r="3"/>
+    <circle cx="31.47" cy="44.45" r="3"/>
+    <circle cx="93.4" cy="18.43" r="3"/>
+    <circle cx="178" cy="8.9" r="3"/>
+    <circle cx="262.6" cy="18.43" r="3"/>
+    <circle cx="324.53" cy="44.45" r="3"/>
+  </g>
+</svg>
